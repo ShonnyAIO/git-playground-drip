@@ -38,11 +38,11 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
     <aside className="sidebar" id="sidebar-container">
       <div className="brand-container">
         <div className="brand-icon">
-          <Terminal size={24} />
+          <Terminal size={20} />
         </div>
-        <div className="brand-name">
-          <h1>GitPlayground</h1>
-        </div>
+        <h1 className="brand-name">
+          GitPlayground
+        </h1>
       </div>
 
       <nav aria-label="Navegación principal">

@@ -62,21 +62,24 @@ export default function Dashboard({ setCurrentTab, progress }) {
   const totalCompletados = Object.values(progress).filter(Boolean).length;
 
   return (
-    <div className="dashboard-container" id="dashboard-root">
+    <div className="dashboard-container fade-in-slide" id="dashboard-root">
       <header className="top-bar">
         <div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800 }}>Hola de nuevo, Desarrollador 👋</h2>
+          <h2 style={{ fontSize: '2rem', fontWeight: 800, background: 'linear-gradient(135deg, var(--text-primary), var(--primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Hola de nuevo, Desarrollador 👋
+          </h2>
           <p style={{ marginTop: '0.25rem' }}>Bienvenido a tu campo de entrenamiento de Git y GitHub visual.</p>
         </div>
       </header>
 
       {/* Welcome Banner */}
       <section className="card" style={{ 
-        background: 'linear-gradient(135deg, var(--primary-light), rgba(170, 59, 255, 0.03))',
+        background: 'linear-gradient(135deg, var(--primary-light), rgba(162, 28, 255, 0.03))',
         border: '1px solid var(--primary)',
         marginBottom: '2rem',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        boxShadow: 'var(--shadow-neon-primary)'
       }}>
         <div style={{ maxWidth: '70%', position: 'relative', zIndex: 2 }}>
           <span style={{ 
@@ -87,7 +90,8 @@ export default function Dashboard({ setCurrentTab, progress }) {
             padding: '0.25rem 0.75rem', 
             borderRadius: 'var(--radius-full)',
             textTransform: 'uppercase',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.05em',
+            boxShadow: '0 2px 8px rgba(162, 28, 255, 0.2)'
           }}>
             Proyecto de Innovación Educativa (DPRED - UCV)
           </span>
@@ -101,7 +105,7 @@ export default function Dashboard({ setCurrentTab, progress }) {
           </p>
           <button 
             id="start-training-btn"
-            className="btn btn-primary"
+            className="btn btn-primary shadow-neon-primary"
             onClick={() => setCurrentTab('simulator')}
           >
             <Play size={16} fill="white" />

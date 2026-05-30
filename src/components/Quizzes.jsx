@@ -40,6 +40,26 @@ export default function Quizzes({ progress, setProgress, addTutorMessage }) {
         { text: 'Actuar como un repositorio personal exclusivo del líder técnico del proyecto.', isCorrect: false }
       ],
       explanation: 'En Gitflow, "develop" es el núcleo de integración. Las ramas "feature" nacen de ella y regresan a ella tras completar las revisiones. Solo se promueve a "main" cuando se prepara un release estable.'
+    },
+    {
+      id: 4,
+      question: 'Si ya subiste tus commits a una rama compartida en GitHub y necesitas deshacer los cambios de uno de ellos, ¿cuál es la mejor práctica?',
+      options: [
+        { text: 'Usar "git reset --hard HEAD~1" para borrar el commit de la historia local y remota.', isCorrect: false },
+        { text: 'Usar "git revert <commit_hash>" para crear un nuevo commit que compensa y anula los cambios del commit previo de forma segura.', isCorrect: true },
+        { text: 'Borrar la carpeta local ".git" y volver a clonar el proyecto entero.', isCorrect: false }
+      ],
+      explanation: 'git revert crea un nuevo commit seguro con los cambios invertidos sin alterar la historia existente. git reset reescribe la historia pública, lo cual crearía graves problemas de sincronización al resto del equipo.'
+    },
+    {
+      id: 5,
+      question: '¿Qué significa entrar en un estado de "Detached HEAD" (HEAD desasociado) en Git?',
+      options: [
+        { text: 'Tu editor de código ha perdido la conexión de internet con el servidor remoto GitHub.', isCorrect: false },
+        { text: 'El puntero HEAD está apuntando directamente a un commit hash específico del historial en lugar de a una rama local.', isCorrect: true },
+        { text: 'Has borrado accidentalmente la rama "main" en tu repositorio local.', isCorrect: false }
+      ],
+      explanation: 'Un Detached HEAD ocurre cuando haces checkout a un commit hash específico. Los commits nuevos que realices en este estado no pertenecerán a ninguna rama y podrían perderse si cambias de rama sin guardarlos en una nueva.'
     }
   ];
 
@@ -88,10 +108,12 @@ export default function Quizzes({ progress, setProgress, addTutorMessage }) {
   };
 
   return (
-    <div className="quizzes-container" id="quizzes-root">
+    <div className="quizzes-container fade-in-slide" id="quizzes-root">
       <header className="top-bar">
         <div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>Desafíos y Quizzes Interactivos</h2>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, background: 'linear-gradient(135deg, var(--text-primary), var(--primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Desafíos y Quizzes Interactivos
+          </h2>
           <p style={{ marginTop: '0.2rem' }}>Prueba tus destrezas sobre flujos de trabajo profesionales y comandos avanzados.</p>
         </div>
       </header>

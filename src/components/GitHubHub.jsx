@@ -31,21 +31,34 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
   const [prMerged, setPrMerged] = useState(false);
   const [localSynced, setLocalSynced] = useState(false);
 
+  // Interactive Review state
+  const [reviewSolved, setReviewSolved] = useState(false);
+
   // Pull Request Details
   const reviews = [
-    { user: 'Javier Darder', role: 'Reviewer', text: 'El flujo de OAuth2 se ve limpio y seguro. ¿Probaste qué pasa si el token expira?', status: 'approved' },
-    { user: 'Ricardo Riera', role: 'Reviewer', text: 'Buen trabajo con el diseño responsivo en las vistas de recuperación de contraseña. Se ve excelente.', status: 'approved' }
+    { 
+      user: 'Javier Darder', 
+      role: 'Reviewer', 
+      text: 'El flujo de OAuth2 se ve limpio y seguro. ¿Probaste qué pasa si el token expira?', 
+      status: reviewSolved ? 'approved' : 'pending' 
+    },
+    { 
+      user: 'Ricardo Riera', 
+      role: 'Reviewer', 
+      text: 'Buen trabajo con el diseño responsivo en las vistas de recuperación de contraseña. Se ve excelente.', 
+      status: 'approved' 
+    }
   ];
 
   // Logic to track module completion
   useEffect(() => {
-    if (remoteAdded && localPushed && prCreated && prMerged && localSynced && !progress.github) {
+    if (remoteAdded && localPushed && prCreated && reviewSolved && prMerged && localSynced && !progress.github) {
       setProgress(prev => ({ ...prev, github: true }));
       addTutorMessage(
-        '¡Impresionante! Has terminado el módulo de GitHub y Remotos. Lograste simular el flujo completo de colaboración profesional: 1) Conectarte al servidor remoto (git remote add). 2) Empujar tus ramas locales (git push). 3) Proponer cambios mediante un Pull Request. 4) Recibir y aprobar Code Reviews del equipo. 5) Integrar el PR en el servidor y 6) Sincronizar de vuelta a tu máquina (git pull).'
+        '¡Impresionante! Has terminado el módulo de GitHub y Remotos. Lograste simular el flujo completo de colaboración profesional: 1) Conectarte al servidor remoto (git remote add). 2) Empujar tus ramas locales (git push). 3) Proponer cambios mediante un Pull Request. 4) Recibir y resolver Code Reviews del equipo. 5) Integrar el PR en el servidor y 6) Sincronizar de vuelta a tu máquina (git pull).'
       );
     }
-  }, [remoteAdded, localPushed, prCreated, prMerged, localSynced, progress.github]);
+  }, [remoteAdded, localPushed, prCreated, reviewSolved, prMerged, localSynced, progress.github]);
 
   const handleAddRemote = () => {
     setRemoteAdded(true);
@@ -111,10 +124,12 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
   };
 
   return (
-    <div className="github-container" id="github-hub-root">
+    <div className="github-container fade-in-slide" id="github-hub-root">
       <header className="top-bar">
         <div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>El Puente: Conexión con GitHub y Colaboración</h2>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, background: 'linear-gradient(135deg, var(--text-primary), var(--primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            El Puente: Conexión con GitHub y Colaboración
+          </h2>
           <p style={{ marginTop: '0.2rem' }}>Simula flujos de trabajo profesionales, Pull Requests y revisiones de código de tu equipo.</p>
         </div>
       </header>
@@ -135,7 +150,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
           1. Vincula el servidor remoto haciendo click en "Conectar Remoto".
           2. Sube la rama de características local haciendo click en "git push".
           3. Abre un "Pull Request (PR)" para proponer los cambios.
-          4. Lee y analiza el Code Review del equipo y haz "Fusionar PR" (Merge).
+          4. Lee y analiza el Code Review del equipo, resuelve el comentario de revisión sugerido en la ventana de GitHub y haz "Fusionar PR" (Merge).
           5. Vuelve al repositorio local y haz "git pull" para sincronizar la historia oficial de main.
         </p>
       </section>
@@ -171,7 +186,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 id="btn-remote-add"
-                className={`btn ${remoteAdded ? 'btn-secondary' : 'btn-primary'}`} 
+                className={`btn ${remoteAdded ? 'btn-secondary' : 'btn-primary glow-active'}`} 
                 onClick={handleAddRemote} 
                 disabled={remoteAdded}
                 style={{ flex: 1 }}
@@ -182,7 +197,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
               
               <button 
                 id="btn-git-push"
-                className="btn btn-secondary" 
+                className={`btn btn-secondary ${remoteAdded && !localPushed ? 'glow-active' : ''}`} 
                 onClick={handlePush} 
                 disabled={!remoteAdded || localPushed}
                 style={{ flex: 1 }}
@@ -194,7 +209,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
             
             <button 
               id="btn-git-pull"
-              className="btn btn-outline" 
+              className={`btn btn-outline ${prMerged && !localSynced ? 'glow-active' : ''}`} 
               onClick={handlePull} 
               disabled={!prMerged || localSynced}
               style={{ justifyContent: 'center' }}
@@ -243,7 +258,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
                 {localPushed && !prCreated && (
                   <button 
                     id="btn-create-pr"
-                    className="btn btn-primary" 
+                    className="btn btn-primary glow-active" 
                     onClick={handleCreatePR}
                     style={{ justifyContent: 'center', backgroundColor: 'var(--color-remote)' }}
                   >
@@ -262,24 +277,78 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
                     {/* Simulated Code Review */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
                       {reviews.map((r, idx) => (
-                        <div key={idx} style={{ fontSize: '0.78rem', borderLeft: '2px solid var(--color-local)', paddingLeft: '0.5rem' }}>
+                        <div key={idx} style={{ fontSize: '0.78rem', borderLeft: r.status === 'approved' ? '2px solid var(--color-local)' : '2px solid var(--color-working)', paddingLeft: '0.5rem', paddingBottom: '0.2rem' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
                             <span>{r.user}</span>
-                            <span style={{ color: 'var(--color-local)' }}>Aprobado ✔️</span>
+                            <span style={{ color: r.status === 'approved' ? 'var(--color-local)' : 'var(--color-working)' }}>
+                              {r.status === 'approved' ? 'Aprobado ✔' : 'Cambio Sugerido ⚠'}
+                            </span>
                           </div>
                           <p style={{ color: 'var(--text-secondary)', marginTop: '0.1rem' }}>"{r.text}"</p>
+                          
+                          {/* If pending and Javier Darder, render Code Diff and solver action */}
+                          {r.status === 'pending' && r.user === 'Javier Darder' && (
+                            <div style={{ margin: '0.5rem 0', border: '1px solid var(--border-color)', borderRadius: '4px', overflow: 'hidden', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>
+                              <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '0.25rem 0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>
+                                file: src/auth.js (líneas 10-14)
+                              </div>
+                              <div style={{ backgroundColor: 'rgba(244, 63, 94, 0.08)', color: 'var(--color-working)', padding: '0.15rem 0.5rem' }}>
+                                - const login = (token) =&gt; &#123;
+                              </div>
+                              <div style={{ backgroundColor: 'rgba(244, 63, 94, 0.08)', color: 'var(--color-working)', padding: '0.15rem 0.5rem' }}>
+                                -   saveSession(token);
+                              </div>
+                              <div style={{ backgroundColor: 'rgba(244, 63, 94, 0.08)', color: 'var(--color-working)', padding: '0.15rem 0.5rem' }}>
+                                - &#125;
+                              </div>
+                              <div style={{ padding: '0.4rem', backgroundColor: 'var(--bg-card)', display: 'flex', justifyContent: 'center' }}>
+                                <button 
+                                  className="btn btn-primary glow-active" 
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem' }}
+                                  onClick={() => {
+                                    setReviewSolved(true);
+                                    addTutorMessage('¡Excelente! Has resuelto la revisión de código aplicando la expiración de sesión. El Pull Request ahora cuenta con la aprobación requerida para fusionarse.');
+                                  }}
+                                >
+                                  Resolver Comentario (Aplicar código sugerido)
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
 
+                    {/* Applied code preview once resolved */}
+                    {reviewSolved && (
+                      <div style={{ margin: '0.5rem 0 1rem 0', border: '1px solid var(--color-local)', borderRadius: '4px', overflow: 'hidden', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', backgroundColor: 'rgba(16, 185, 129, 0.05)' }}>
+                        <div style={{ backgroundColor: 'var(--color-local-bg)', padding: '0.25rem 0.5rem', fontSize: '0.7rem', color: 'var(--color-local)', borderBottom: '1px solid var(--color-local)' }}>
+                          file: src/auth.js (Líneas modificadas)
+                        </div>
+                        <div style={{ color: 'var(--color-local)', padding: '0.25rem 0.5rem' }}>
+                          + const login = (token, expiration) =&gt; &#123;<br/>
+                          +   saveSession(token);<br/>
+                          +   scheduleSessionCleanup(expiration); // ¡Corrección aplicada!<br/>
+                          + &#125;
+                        </div>
+                      </div>
+                    )}
+
                     <button 
                       id="btn-merge-pr"
-                      className="btn btn-primary" 
+                      className={`btn btn-primary ${reviewSolved ? 'glow-active' : ''}`} 
                       onClick={handleMergePR}
-                      style={{ width: '100%', justifyContent: 'center', backgroundColor: 'var(--color-local)' }}
+                      disabled={!reviewSolved}
+                      style={{ 
+                        width: '100%', 
+                        justifyContent: 'center', 
+                        backgroundColor: reviewSolved ? 'var(--color-local)' : 'var(--bg-tertiary)', 
+                        color: reviewSolved ? 'white' : 'var(--text-tertiary)',
+                        cursor: reviewSolved ? 'pointer' : 'not-allowed'
+                      }}
                     >
                       <CheckCircle size={16} />
-                      <span>Fusionar Pull Request (Merge)</span>
+                      <span>{reviewSolved ? 'Fusionar Pull Request (Merge)' : 'Fusión bloqueada por Review'}</span>
                     </button>
                   </div>
                 )}

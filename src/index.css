@@ -11,94 +11,96 @@
   --font-mono: 'Fira Code', ui-monospace, monospace;
 
   /* HSL Color System */
-  --hue-primary: 262;   /* Violet/Indigo */
-  --hue-success: 142;   /* Emerald */
-  --hue-warning: 38;    /* Amber */
-  --hue-danger: 350;    /* Rose/Coral */
-  --hue-info: 199;      /* Cyan */
+  --hue-primary: 270;   /* Electric Purple */
+  --hue-success: 150;   /* Neo Emerald Green */
+  --hue-warning: 32;    /* Amber Orange */
+  --hue-danger: 345;    /* Crimson Red/Rose */
+  --hue-info: 195;      /* Cyber Cyan */
 
   /* Light Theme Variables */
-  --bg-primary: hsl(220, 20%, 97%);
-  --bg-secondary: hsl(220, 20%, 94%);
-  --bg-tertiary: hsl(220, 20%, 90%);
-  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-primary: hsl(230, 30%, 97%);
+  --bg-secondary: hsl(230, 25%, 93%);
+  --bg-tertiary: hsl(230, 20%, 89%);
+  --bg-card: rgba(255, 255, 255, 0.75);
   --bg-glass: rgba(255, 255, 255, 0.45);
   
-  --border-color: hsl(220, 15%, 85%);
-  --border-glass: rgba(255, 255, 255, 0.4);
+  --border-color: hsl(230, 15%, 84%);
+  --border-glass: rgba(255, 255, 255, 0.6);
   
-  --text-primary: hsl(220, 20%, 15%);
-  --text-secondary: hsl(220, 15%, 40%);
-  --text-tertiary: hsl(220, 10%, 55%);
+  --text-primary: hsl(230, 30%, 15%);
+  --text-secondary: hsl(230, 15%, 38%);
+  --text-tertiary: hsl(230, 10%, 55%);
   
-  --primary: hsl(var(--hue-primary), 85%, 60%);
-  --primary-hover: hsl(var(--hue-primary), 85%, 50%);
-  --primary-light: hsl(var(--hue-primary), 85%, 95%);
+  --primary: hsl(var(--hue-primary), 85%, 55%);
+  --primary-hover: hsl(var(--hue-primary), 90%, 45%);
+  --primary-light: hsl(var(--hue-primary), 85%, 94%);
   
   /* Git States - Light Mode */
-  --color-working: hsl(var(--hue-danger), 85%, 55%);
+  --color-working: hsl(var(--hue-danger), 85%, 52%);
   --color-working-bg: hsl(var(--hue-danger), 85%, 96%);
   
-  --color-staging: hsl(var(--hue-warning), 85%, 45%);
-  --color-staging-bg: hsl(var(--hue-warning), 85%, 95%);
+  --color-staging: hsl(var(--hue-warning), 85%, 43%);
+  --color-staging-bg: hsl(var(--hue-warning), 85%, 94%);
   
-  --color-local: hsl(var(--hue-success), 70%, 40%);
-  --color-local-bg: hsl(var(--hue-success), 70%, 95%);
+  --color-local: hsl(var(--hue-success), 75%, 38%);
+  --color-local-bg: hsl(var(--hue-success), 70%, 94%);
   
-  --color-remote: hsl(var(--hue-info), 85%, 45%);
-  --color-remote-bg: hsl(var(--hue-info), 85%, 95%);
+  --color-remote: hsl(var(--hue-info), 85%, 43%);
+  --color-remote-bg: hsl(var(--hue-info), 85%, 94%);
   
-  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 10px 20px -8px rgba(0, 0, 0, 0.06);
-  --shadow-primary: 0 12px 20px -8px hsl(var(--hue-primary), 60%, 75%);
+  --shadow-sm: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 4px 16px -8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 24px 50px -12px rgba(0, 0, 0, 0.12), 0 8px 24px -10px rgba(0, 0, 0, 0.06);
+  --shadow-primary: 0 8px 20px -6px hsl(var(--hue-primary), 70%, 75%);
+  --shadow-neon-primary: 0 0 15px rgba(162, 28, 255, 0.2);
 
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 24px;
   --radius-full: 9999px;
 
-  --transition-fast: 0.15s ease;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark Mode Overrides */
+/* Dark Mode Overrides (Obsidian Cyberpunk Tech) */
 [data-theme="dark"] {
-  --bg-primary: hsl(222, 24%, 7%);
-  --bg-secondary: hsl(222, 24%, 10%);
-  --bg-tertiary: hsl(222, 20%, 14%);
-  --bg-card: rgba(15, 17, 26, 0.65);
-  --bg-glass: rgba(10, 12, 20, 0.55);
+  --bg-primary: hsl(230, 24%, 5%);
+  --bg-secondary: hsl(230, 24%, 8%);
+  --bg-tertiary: hsl(230, 20%, 12%);
+  --bg-card: rgba(13, 15, 23, 0.65);
+  --bg-glass: rgba(8, 10, 18, 0.55);
   
-  --border-color: hsl(222, 15%, 18%);
-  --border-glass: rgba(255, 255, 255, 0.05);
+  --border-color: hsl(230, 15%, 15%);
+  --border-glass: rgba(255, 255, 255, 0.04);
   
-  --text-primary: hsl(222, 20%, 95%);
-  --text-secondary: hsl(222, 15%, 70%);
-  --text-tertiary: hsl(222, 10%, 48%);
+  --text-primary: hsl(230, 20%, 96%);
+  --text-secondary: hsl(230, 15%, 72%);
+  --text-tertiary: hsl(230, 10%, 50%);
   
-  --primary: hsl(var(--hue-primary), 85%, 65%);
-  --primary-hover: hsl(var(--hue-primary), 85%, 75%);
-  --primary-light: hsl(var(--hue-primary), 40%, 15%);
+  --primary: hsl(var(--hue-primary), 90%, 65%);
+  --primary-hover: hsl(var(--hue-primary), 90%, 75%);
+  --primary-light: hsl(var(--hue-primary), 50%, 12%);
   
   /* Git States - Dark Mode */
-  --color-working: hsl(var(--hue-danger), 85%, 65%);
-  --color-working-bg: hsl(var(--hue-danger), 85%, 12%);
+  --color-working: hsl(var(--hue-danger), 90%, 65%);
+  --color-working-bg: hsl(var(--hue-danger), 90%, 11%);
   
-  --color-staging: hsl(var(--hue-warning), 85%, 60%);
-  --color-staging-bg: hsl(var(--hue-warning), 85%, 11%);
+  --color-staging: hsl(var(--hue-warning), 90%, 60%);
+  --color-staging-bg: hsl(var(--hue-warning), 90%, 10%);
   
-  --color-local: hsl(var(--hue-success), 70%, 55%);
-  --color-local-bg: hsl(var(--hue-success), 75%, 10%);
+  --color-local: hsl(var(--hue-success), 80%, 55%);
+  --color-local-bg: hsl(var(--hue-success), 80%, 10%);
   
-  --color-remote: hsl(var(--hue-info), 85%, 60%);
-  --color-remote-bg: hsl(var(--hue-info), 85%, 11%);
+  --color-remote: hsl(var(--hue-info), 90%, 60%);
+  --color-remote-bg: hsl(var(--hue-info), 90%, 10%);
   
-  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 16px -6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 10px 20px -8px rgba(0, 0, 0, 0.5);
-  --shadow-primary: 0 12px 24px -6px hsl(var(--hue-primary), 70%, 25%);
+  --shadow-sm: 0 4px 10px -2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 12px 30px -8px rgba(0, 0, 0, 0.75), 0 4px 16px -8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 60px -15px rgba(0, 0, 0, 0.85), 0 8px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-primary: 0 8px 24px -6px hsl(var(--hue-primary), 80%, 35%);
+  --shadow-neon-primary: 0 0 25px rgba(162, 28, 255, 0.35);
 }
 
 /* Global Reset & Base Styling */
@@ -223,8 +225,10 @@ code {
 }
 
 .brand-name {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 800;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
   background: linear-gradient(135deg, var(--text-primary), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -861,7 +865,7 @@ code {
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -872,7 +876,7 @@ code {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(30px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -886,9 +890,79 @@ code {
     opacity: 0.12;
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.16;
+    transform: scale(1.08);
+    opacity: 0.22;
   }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(162, 28, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(162, 28, 255, 0);
+  }
+}
+
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Animations Utilities classes */
+.fade-in-slide {
+  animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.shake-error {
+  animation: shake 0.35s ease-in-out;
+}
+
+.pop-in-file {
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.glow-active {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Interactive elements refinements */
+.state-column {
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+.state-column:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.file-box {
+  transition: all var(--transition-fast);
+}
+.file-box:hover {
+  transform: translateX(4px) scale(1.02);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--bg-secondary);
 }
 
 /* Dashboard Map / Mission Nodes */

@@ -1,0 +1,302 @@
+Universidad Central de Venezuela
+Facultad de Ciencias
+Escuela de Computación
+Programa de la asignatura
+DISEÑO Y PROTOTIPADO DE
+RECURSOS EDUCATIVOS DIGITALES
+Tipo de asignatura:​
+
+Optativa / Electiva
+
+Código:​
+
+6570
+
+Unidades de crédito:​ 5
+Requisitos:​
+
+Ingeniería de Software (6203)
+
+Horas semana:​
+
+3 horas teóricas y 2 horas de práctica
+
+Vigencia:​
+Pensum 2004-rev2005, actualización 2025.
+​
+Incorporación en el semestre 01-2025.
+
+FUNDAMENTACIÓN Y OBJETIVOS
+La creación de Recursos Educativos Digitales (RED) innovadores y efectivos es esencial para mejorar los
+procesos de enseñanza, aprendizaje y evaluación. Estos recursos se han convertido en herramientas
+imprescindibles que enriquecen la experiencia educativa en una era digital, donde la tecnología
+desempeña un papel central en la educación. Ya sea en entornos presenciales, híbridos o completamente
+en línea, es crucial que los RED sean diseñados para lograr objetivos curriculares, mientras satisfacen
+necesidades del estudiantado, facilitan el aprendizaje, son accesibles e inclusivos.
+La asignatura "Diseño y Prototipado de Recursos Educativos Digitales" se presenta como un componente
+esencial en la formación de futuras y futuros profesionales de la computación, con un conjunto de
+conocimientos y de habilidades orientado a proporcionar una visión integral de la creación de software
+desde el enfoque del desarrollo de prototipos y de productos mínimos viables (PMV), fomentando la
+creatividad y la innovación, incorporando habilidades de gestión de proyectos de desarrollo de software
+educativo y familiarizando al estudiantado con metodologías y herramientas que permiten crear
+aplicaciones de manera más rápida, eficiente y sin necesidad de escribir código complejo,
+específicamente, plataformas de bajo código (low-code) y sin código (no-code).
+Esta asignatura amplía el espectro profesional, abriendo las puertas a roles relacionados con el diseño de
+experiencias de aprendizaje digital, la creación de contenido formativo interactivo y la consultoría en
+tecnología educativa, dominios con un alto potencial de crecimiento y demanda laboral donde quienes
+egresen de la licenciatura podrán aplicar conocimientos teóricos y técnicos.
+OBJETIVO GENERAL
+Capacitar para el diseño y prototipo de recursos educativos digitales innovadores y efectivos, aplicando
+metodologías de desarrollo de software educativo y utilizando herramientas de desarrollo de bajo código
+y sin código.
+
+​
+
+​
+
+1
+
+Objetivos Competenciales Cognitivos (OCC)
+Se espera que quien haya cursado la asignatura desarrolle competencias para:
+1.​ Comprender los fundamentos del diseño de software educativo y su aplicación en el contexto de
+los Recursos Educativos Digitales (RED).
+2.​ Analizar y aplicar el concepto de innovación en el diseño de RED.
+3.​ Diseñar productos, servicios y propuestas de valor en el ámbito de los RED.
+4.​ Aplicar el proceso de diseño y las metodologías de diseño para la creación de RED.
+5.​ Comprender los conceptos de prototipado y Producto Mínimo Viable (PMV o MVP, Minimum Viable
+Product).
+6.​ Utilizar metodologías y técnicas de prototipado para la creación de RED.
+7.​ Aplicar plataformas de bajo código (low-code) y sin código (no-code) en el desarrollo de
+prototipos y PMV.
+8.​ Evaluar y mejorar RED utilizando los principios de prototipado, de un producto mínimo viable de
+calidad, de usabilidad y de accesibilidad.
+Esta es una asignatura diseñada para complementar la formación en computación, enriqueciéndola al
+proporcionar una perspectiva más amplia y holística del desarrollo de software, fomentando la
+creatividad, la innovación y el compromiso con el diseño universal para el aprendizaje (DUA).
+
+CONTENIDO PROGRAMÁTICO TEÓRICO
+Tema 1. Fundamentos del Diseño para Recursos Educativos Digitales (RED)​
+
+(1 semana)
+
+Conceptos básicos del diseño: principios de diseño visual, teoría del color, tipografía, usabilidad y
+accesibilidad. La importancia del diseño centrado en el usuario (DCU) en la creación de RED. Análisis de
+ejemplos de diseño de RED exitosos y no exitosos.
+Considera los Objetivos Competenciales Cognitivos (OCC): 1.
+Tema 2. Metodologías de Diseño e Innovación​
+
+(1 semana)
+
+Metodologías de diseño: Design Thinking, Lean UX, Agile. Concepto de innovación: tipos de innovación
+(incremental, disruptiva, etc.). Estrategias y metodologías para innovar en el diseño de Recursos
+Educativos Digitales.
+OCC: 2.
+Tema 3. Proceso de diseño y análisis de referencias (Benchmarking)​
+
+(2 semanas)
+
+El proceso de diseño: investigación, ideación, innovación, prototipado, evaluación y mejora continua.
+Técnicas de investigación para comprender las necesidades de las y los usuarios, así como el contexto
+educativo. Técnicas de benchmarking aplicado al análisis de RED existentes para identificar buenas
+prácticas y oportunidades de mejora.
+OCC: 2, 3, 4.
+Tema 4. Productos, Servicios y Propuesta de Valor​
+
+(1 semana)
+
+Desarrollo de productos y servicios en el ámbito del software educativo. Identificación de la propuesta de
+valor de un recurso educativo digital RED. Diseño de un proyecto de desarrollo de un RED.
+OCC: 3.
+Tema 5. Prototipado y Producto Mínimo Viable (PMV)​
+
+(1 semana)
+
+Conceptos, tipos e importancia del prototipado en el diseño de RED. Concepto, tipos e importancia del
+Producto Mínimo Viable. Diferencias clave entre prototipo y PMV.
+OCC: 5.
+​
+
+​
+
+2
+
+Tema 6. Metodologías y Técnicas para el Prototipado de Software​
+
+(2 semanas)
+
+Metodologías y técnicas para el prototipado de RED: bocetos, esquemas (wireframes), representaciones
+visuales no interactivas (mockups). prototipos interactivos. Herramientas de diseño para el prototipado.
+Evaluación de prototipos, pruebas de usabilidad y de accesibilidad.
+OCC: 6.
+Tema 7. Enfoque Low-Code y No-Code aplicado al diseño de RED​
+
+(2 semanas)
+
+Principios y conceptos asociados a los enfoques desarrollo de software con bajo código (low-code) y sin
+código (no-code). Introducción a las plataformas low-code y no-code. Aplicación de los enfoques
+low-code y no-code en el desarrollo de Recursos Educativos Digitales.
+OCC: 7.
+Tema 8. Prototipado aplicado al diseño de RED​
+
+(4 semanas)
+
+Estudios de caso de RED desarrollados mediante prototipado y PMV. Diseño y desarrollo del prototipo de
+un Recurso Educativo Digital. Evaluación y mejora del prototipo.
+OCC: 5, 6, 7, 8.
+CONTENIDO PROGRAMÁTICO PRÁCTICO
+Proyecto​
+
+(semana 7 a la semana 14 del semestre)
+
+Elaboración de un recurso educativo digital. A realizar durante el semestre, con entregas y revisiones
+progresivas utilizando la estrategia de portafolio.
+El proyecto contempla tres (3) etapas:
+Etapa 1.​ Análisis y Diseño: selección del tópico, selección del método para la elaboración del material o
+recurso educativo, análisis de requerimientos pedagógicos e informáticos y diseño de
+principales funcionalidades (Informe preliminar de diseño del RED).
+Etapa 2.​ Diseño del recurso educativo digital aplicando técnicas de prototipado.
+Etapa 3.​ Presentación del recurso e informe final del diseño del RED: documentación del proceso de
+diseño, aplicación de una metodología de desarrollo de software educativo y creación del
+prototipo.
+NOTA: La entrega e incorporación de correcciones de la etapa 1 es condición para evaluar las etapas 2 y 3.
+OCC: 1 al 8.
+ESTRATEGIAS DE ENSEÑANZA Y DE APRENDIZAJE
+1.​ Clases, consultas, sesiones de guiatura y seguimiento de las actividades de la asignatura
+(proyecto, ensayo o exposición) mediante una combinación de plataformas digitales (Google
+Meet, Zoom, Google Drive, Aula Virtual del Sistema de Educación a Distancia de la UCV, entre
+otras).
+2.​ Publicación de contenidos educativos (guías, presentaciones, lecturas, enlaces, videos) que serán
+de consulta para los participantes en la asignatura.
+3.​ Foros en donde se planteen preguntas o elementos de discusión derivados de contenidos
+educativos recomendados, favoreciendo el intercambio de ideas, la elaboración de análisis, la
+discusión y la exposición de puntos de vista.
+4.​ Encuestas y cuestionarios en línea.
+​
+
+​
+
+3
+
+ESTRATEGIAS DE EVALUACIÓN
+1.​ Evaluación diagnóstica: Prueba inicial para identificar el nivel de conocimientos previos de los
+estudiantes.
+2.​ Evaluación formativa:
+●​ Participación en clase, foros, chats, encuestas u otras dinámicas de intercambios de ideas
+(e-Colaboración).
+●​ Presentación y retroalimentación de los avances del proyecto.
+3.​ Evaluación sumativa:
+●​ Exámenes cortos o actividades prácticas asociadas al temario.
+●​ Desarrollo y presentación de un prototipo de Recurso Educativo Digital.
+●​ Informes del proyecto (preliminar y final).
+DISTRIBUCIÓN TENTATIVA DE LA EVALUACIÓN:
+●​ e-Colaboración (8%, hasta 1,6 puntos):
+Participación en chats, foros, encuestas, intercambiando de ideas con el grupo, realizando críticas
+y recomendando lecturas, videos y otros recursos de interés.
+●​ Exámenes cortos o actividades prácticas (32%, hasta 6,4 puntos):
+Consiste en responder un examen con preguntas para la reflexión y el análisis, no de repetición
+de conceptos. Incluye preguntas asociadas a los temas de la materia, enfoques y métodos de
+elaboración de los recursos educativos, etapas del proyecto o los temas discutidos en los foros.
+Se permite la consulta de materiales de apoyo y de fuentes bibliográficas o digitales. Se penaliza
+la copia y el plagio de contenidos.
+●​ Proyecto de diseño de un prototipo de RED (48%, hasta 9,6 puntos):
+Elaboración del recurso educativo digital. A realizar durante el semestre, con entregas y
+revisiones progresivas utilizando la estrategia de portafolio.
+●​ Presentación del RED (12%, hasta 2,4 puntos):
+Elaboración de un material instruccional o recurso educativo digital. A realizar durante el
+semestre, con entregas y revisiones progresivas utilizando la estrategia de portafolio.
+La distribución queda de la siguiente forma:
+ND (100%) = 8% e-Colab. + 32% Exámenes o actividades + 48% Proyecto + 12% Presentación RED
+NProyecto (48%) = 30% Informe Análisis y Diseño + 50% Recurso educativo desarrollado
++ 20% Informe final
+BIBLIOGRAFÍA RECOMENDADA
+En línea (actualizada cada semestre)
+●​ Álvarez L., Carballo Barrera, Y., Collazos, C., Echenagusía, J., Gutiérrez, R., Hernández Bieliukas, Y.,
+Hernández F., Muñoz, J., Solano, A., y Velázquez, C. (2015). Objetos de Aprendizaje de Contenidos
+Abiertos Accesibles: del Diseño a la Reutilización. Iniciativa Latinoamericana de Libros de Texto
+Abiertos (LATIn). Distribuido bajo licencia CC BY-SA 3.0. 1era Ed., marzo 2014. 64 p. Recuperado de
+https://www.researchgate.net/publication/312039527_Objetos_de_Aprendizaje_de_Contenidos_Abier
+tos_Accesibles_del_Diseno_a_la_Reutilizacion
+​
+
+​
+
+4
+
+●​ Costa-Montenegro, E., Díaz-Otero, F., Caeiro-Rodríguez, M., Cuiñas-Gómez, I., Mariño-Espiñeira, P., y
+Fernández-Iglesias, M. (2016). Evaluación de la implantación de la metodología Design Thinking en
+una asignatura de proyectos. Congreso In-Red 2016UPV, 7 y 8 de julio de 2016. Doi:
+http://dx.doi.org/10.4995/INRED2016.2016.4357. Recuperado de
+https://www.researchgate.net/publication/305026934_Evaluacion_de_la_implantacion_de_la_metodol
+ogia_Design_Thinking_en_una_asignatura_de_proyectos
+●​ Del Prado, J. (2024). Design Thinking, Waterfall, Agile y Lean UX. Cuál usar. Uxables Blog.
+Recuperado de
+https://www.uxables.com/herramientas-recursos-ux-ui/design-thinking-waterfall-agile-y-lean-ux-cualusar/
+●​ García-Bullé, S. (2023). Cinco tendencias educativas para 2023. Observatorio, Instituto para el Futuro
+de la Educación del Tecnológico de Monterrey, México. Recuperado de
+https://observatorio.tec.mx/edu-news/cinco-tendencias-educativas-para-2023
+●​ IBM Cloud Education. (2022). Low-Code vs. No-Code: What’s the difference? Recuperado de
+https://www-ibm-com.translate.goog/think/topics/low-code-vs-no-code
+●​ Lodi, M. y Martini, S. (2021). Computational Thinking, Between Papert and Wing. Science &
+Education 30(4). August 2021. License CC BY 4.0. DOI: 10.1007/s11191-021-00202-5. Recuperado
+de https://www.researchgate.net/publication/351133230_Computational_Thinking_Between_Papert_​
+and_Wing
+●​ Minaya, C., Mendoza, O., Arias, I., Minaya, A., y Bravo, H. (2022). El desarrollo Low/No-code y el
+futuro de los desarrolladores de software. Minerva 1. (Special):21-33. Diciembre de 2022. DOI:
+10.47460/minerva.v1iSpecial.76. Recuperado de
+https://www.researchgate.net/publication/366602359_LowNo-code_development_platforms_and_the
+_future_of_software_developers
+●​ Ospina, M. y Carballo Barrera, Y. 2022). Revisión de Técnicas y Tecnologías para la Construcción del
+Producto Mínimo Viable en el Contexto del Emprendimiento Universitario. Novena Conferencia
+Nacional de Computación, Informática y Sistemas (CoNCISa 2022). Noviembre 2022. Caracas,
+Venezuela. Recuperado de
+https://www.researchgate.net/publication/377235110_Revision_de_Tecnicas_y_Tecnologias_para_la_
+Construccion_del_Producto_Minimo_Viable_en_el_Contexto_del_Emprendimiento_Universitario
+●​ SAP. (s.f.). What is low-code/no-code application development? Recuperado de
+https://www.sap.com/products/technology-platform/build/what-is-low-code-no-code.html
+●​ Wangsa, K., Chugh, R., Karim, S., and Sandu, R. (2022). A comparative study between design
+thinking, agile, and design sprint methodologies. International Journal of Agile Systems and
+Management 15(2):2022. DOI:10.1504/IJASM.2022.10049716. Recuperado de
+https://www.researchgate.net/publication/362144093_A_comparative_study_between_design_thinkin
+g_agile_and_design_sprint_methodologies
+●​ W3C. (2021). Resumen de los estándares de accesibilidad de W3C. Recuperado de
+https://www.w3.org/WAI/standards-guidelines/es
+Libros
+●​ Ballester M., y otros. (2000). Evaluación como ayuda al aprendizaje. Serie 4 Claves para la Innovación
+Educativa. Editorial Laboratorio Educativo, Caracas, Venezuela, Editorial Graó, Barcelona, España.
+●​ Díaz-Barriga, F. y Hernández, G. (2002). Estrategias Docentes para un Aprendizaje Significativo: una
+interpretación constructivista. México. Edit. McGraw Hill.
+●​ Gros, Begoña. (1997). Diseño y Programas educativos. Pautas pedagógicas para la elaboración de
+software. Editorial Ariel. España.
+●​ Herrera, M. (2006). Consideraciones para el diseño didáctico de ambientes virtuales de aprendizaje:
+​
+
+​
+
+5
+
+Una propuesta basada en las funciones cognitivas del aprendizaje. Revista Iberoamericana de
+Educación, 38(5). ISSN: 1681-5653. Recuperado de
+https://rieoei.org/historico/deloslectores/1326Herrera.pd
+●​ Novak, J. D. and Gowin, D. (1988). Aprendiendo a aprender. Barcelona. Edit. Martínez Roca.
+Recuperado de
+https://salazarvirtual.sistemaeducativosalazar.mx/assets/biblioteca/1e2e7801bf28ea50480872f2cf2da
+a85-2.-kupdf.net_novak-j-y-gowin-d-aprendiendo-a-aprender.pdf
+●​ Orta, R. y Vásquez, E. (2015). Formación por competencias. Estrategias para la docencia en
+educación universitaria. Vicerrectorado Académico, Centro de Investigación, Innovación y Desarrollo
+Académico, Universidad Católica Andrés Bello. ISBN: 978-980-244-809-1. 102 p.
+●​ Shneiderman, B. and Plaisant, C. (2006). Diseño de interfaces de usuario. 4ta Ed. Addison Wesley.
+También se indican otras lecturas, la revisión de aplicaciones y de sitios web especializados en el área de
+Tecnologías Educativas según el tópico de estudio y las tendencias analizadas en cada semestre.
+Diseñado por:
+Prof. Felix Urbano
+Prof. José Antonio Fernández
+Profa. Yusneyi Carballo Barrera (C)
+Última actualización: 17 de febrero de 2025.
+
+​
+
+​
+
+6
+
+

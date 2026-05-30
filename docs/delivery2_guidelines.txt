@@ -1,0 +1,71 @@
+República Bolivariana de Venezuela
+Ministerio de Educación para la Ciencia y Tecnología
+Universidad Central de Venezuela
+Facultad de Ciencias
+Escuela de Computación
+DISEÑO Y PROTOTIPADO DE RECURSOS EDUCATIVOS DIGITALES (DPRED)
+
+ENTREGA #2
+
+Grupo #4:
+Jonathan Torres
+Ricardo Riera
+Javier Darder
+
+Profesor: Felix Urbano
+Profesora: Yusneyi Carballo
+
+CASO DE INNOVACION #1 - EL OCR
+El OCR (Optical Caracter Recognition) Es una tecnología
+que convierte imágenes de texto —como documentos
+escaneados, fotos o archivos PDF— en datos de texto
+editables, buscables y legibles por una máquina. Permite
+transformar documentos físicos en información digital
+procesable.
+Gracias a esto con la inteligencia artificial, podemos
+extraer textos ya sea de infografias, imágenes y luego
+poder hacer las ediciones a texto y no tener que
+sobreescribir
+
+CASO DE INNOVACION #2 - TRANSCRIBIR
+NOTAS DE AUDIO DE WHATSAPP
+Esto empezó desde 2025, donde tenias la posibilidad de
+poder transcribir las notas de voz, ya que tenia personas
+que mandaban nota de voz superior de 1 minuto,
+también dependiendo la forma en que exprese la
+persona, donde antes tenia que volver a escuchar la
+nota de voz, una y otra vez para poder entender el
+contexto. Ahora gracias al texto puedo leer y entender la
+temática. También pasaba cuando estaba en reunión y
+la persona te responde con nota de voz.
+
+CASO DE INNOVACION #3 - INFOGRAFIA DE
+NOTEBOOKLM
+Gracias
+
+a
+
+NotebookLM
+
+conceptuales,
+
+mentales
+
+podemos
+o
+
+generar
+
+infografia
+
+para
+
+mapas
+poder
+
+complementar el material de estudio. Lo genial es que
+podemos utilizar la creatividad para poder diseñar
+infografia visuales, entendible y resumiendo un cierto
+tema que nos ayuda a poder aprender mas preciso.
+
+

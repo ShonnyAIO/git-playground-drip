@@ -1,0 +1,118 @@
+República Bolivariana de Venezuela
+Ministerio de Educación para la Ciencia y Tecnología
+Universidad Central de Venezuela
+Facultad de Ciencias
+Escuela de Computación
+DISEÑO Y PROTOTIPADO DE RECURSOS EDUCATIVOS DIGITALES (DPRED)
+
+ENTREGA #1
+
+Grupo #4:
+Jonathan Torres
+Ricardo Riera
+Javier Darder
+
+Profesor: Felix Urbano
+Profesora: Yusneyi Carballo
+
+¿DISEÑAR RED IMPLICA INTEGRAR PEDAGOGÍA,
+COMUNICACIÓN VISUAL E INTERACCIÓN?
+Sí, de forma absoluta. El diseño de un RED no es un
+proceso aislado; es una intersección de tres pilares
+fundamentales:
+Pedagogía: Define el "qué" y el "cómo" se aprende
+(objetivos, estrategias didácticas). Sin ella, el recurso
+es solo entretenimiento.
+Comunicación Visual: Organiza la información para
+que sea legible y estética, facilitando la carga
+cognitiva.
+Interacción: Permite que el usuario deje de ser un
+espectador pasivo y se convierta en un participante
+activo de su propio aprendizaje.
+
+¿LA ACCESIBILIDAD ES UN AÑADIDO
+OPCIONAL?
+No.
+Históricamente se veía como un "extra", pero en el
+diseño moderno y ético, la accesibilidad es un requisito
+intrínseco.
+Diseñar pensando en la accesibilidad desde el inicio
+(Diseño Universal para el Aprendizaje) garantiza que
+personas con discapacidades visuales, auditivas o
+motoras puedan usar el recurso. Si es opcional, estás
+excluyendo deliberadamente a una parte de tu
+audiencia.
+
+¿Un mal diseño crea barreras?
+Sí. Un diseño deficiente actúa como un "muro" entre el
+estudiante y el conocimiento.
+Barreras cognitivas: Demasiado texto o colores
+estridentes que distraen.
+Barreras tecnológicas: Botones que no funcionan o
+interfaces confusas que frustran al usuario.
+Cuando el usuario gasta más energía intentando
+entender cómo usar la herramienta que aprendiendo
+el contenido, el diseño ha fallado.
+
+1. Zara (App Móvil y Web)
+Aunque es un gigante del retail, su diseño ha sido
+criticado
+
+frecuentemente
+
+por
+
+priorizar
+
+la
+
+estética
+
+"editorial" sobre la funcionalidad.
+Heurística fallida: Consistencia y Estándares (#4) y
+Reconocimiento antes que recuerdo (#6).
+El problema: Zara suele romper las convenciones de la
+navegación e-commerce. Por ejemplo, el botón de
+"Añadir a la cesta" a veces está oculto tras gestos
+poco
+
+intuitivos
+
+o
+
+se
+
+confunde
+
+con
+
+elementos
+
+decorativos. Los menús de navegación no siempre
+parecen menús; a veces son listas de texto minimalista
+sin iconos claros.
+Consecuencia: El usuario tiene que "aprender" a
+comprar en Zara cada vez que entra, en lugar de
+aplicar lo que ya sabe de otras tiendas online. La curva
+de aprendizaje es innecesariamente alta para una
+tarea transaccional.
+
+WhatsApp (Específicamente la función "Eliminar para todos")
+A pesar de su popularidad, esta función es un ejemplo
+clásico de un fallo en la gestión de errores y el estado del
+sistema.
+Heurística fallida: Visibilidad del estado del sistema
+(#1) y Ayudar a los usuarios a reconocer, diagnosticar y
+recuperarse de errores (#10).
+El problema: Cuando borras un mensaje "para todos",
+la aplicación deja un rastro visual que dice: "Eliminaste
+este mensaje".
+Consecuencia: El objetivo de borrar un mensaje suele
+ser que la otra persona no sepa que hubo un error o un
+arrepentimiento. Al dejar el aviso, el sistema comunica
+un cambio de estado de forma "agresiva", generando
+curiosidad o incomodidad en el receptor y ansiedad en
+el emisor. No permite una recuperación del error que
+sea invisible o natural.
+
+

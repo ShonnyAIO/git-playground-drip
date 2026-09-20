@@ -15,7 +15,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-export default function VisualSimulator({ progress, setProgress, addTutorMessage }) {
+export default function VisualSimulator({ progress, setProgress, addTutorMessage, unlockBadge, setGitContext }) {
   // Git State
   const [gitInit, setGitInit] = useState(false);
   const [currentBranch, setCurrentBranch] = useState('main');
@@ -30,6 +30,20 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
   const [commits, setCommits] = useState([
     { id: 'c0', hash: '3a5b2f1', message: 'Initial commit', parent: null, branch: 'main', x: 80, y: 125 }
   ]);
+
+  // Sync state to parent gitContext for ShonnyProxy AI Tutor
+  useEffect(() => {
+    if (setGitContext) {
+      setGitContext({
+        currentBranch,
+        branches: Object.keys(branches),
+        commits: commits.map(c => ({ id: c.id, message: c.message })),
+        workingDirectory: Object.keys(files).filter(f => files[f] === 'modified' || files[f] === 'untracked'),
+        stagingArea: Object.keys(files).filter(f => files[f] === 'staged'),
+        lastCommands: terminalLogs.filter(l => typeof l === 'string' && l.startsWith('$')).map(l => l.replace('$', '').trim())
+      });
+    }
+  }, [currentBranch, branches, files, commits, terminalLogs, setGitContext]);
 
   // Mission Selection State
   const [activeMission, setActiveMission] = useState('branching'); // 'branching' or 'undo'
@@ -53,6 +67,8 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
 
   // Terminal state
   const [inputVal, setInputVal] = useState('');
+  const [commandHistory, setCommandHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
   const [terminalLogs, setTerminalLogs] = useState([
     'Bienvenido al simulador interactivo de Git.',
     'Escribe un comando o usa los botones de asistencia rápida para comenzar.',
@@ -185,6 +201,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
           return updated;
         });
         logTerminal('Initialized empty Git repository in /home/workspace/project/.git/');
+        unlockBadge('init');
         addTutorMessage(
           '¡Excelente! Has inicializado el repositorio con "git init". Esto crea un directorio oculto ".git". Ahora puedes modificar archivos en tu "Working Directory" (en rojo) y prepararlos.'
         );
@@ -281,6 +298,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
         if (next[fileTarget] === 'modified') {
           next[fileTarget] = 'committed';
           logTerminal(`Restaurado ${fileTarget} al último estado guardado.`);
+          unlockBadge('restore');
           
           if (activeMission === 'undo' && m2Step === 2) {
             setM2Restored(true);
@@ -347,6 +365,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
 
       setCommits(prev => [...prev, newCommit]);
       setBranches(prev => ({ ...prev, [currentBranch]: newId }));
+      unlockBadge('commit');
       
       // Mark files as committed
       setFiles(prev => {
@@ -393,6 +412,9 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
       const currentHeadCommitId = branches[currentBranch];
       setBranches(prev => ({ ...prev, [bName]: currentHeadCommitId }));
       logTerminal(`Created branch '${bName}' starting at ${currentHeadCommitId}`);
+      if (bName.includes('feature')) {
+        unlockBadge('branch');
+      }
       return;
     }
 
@@ -420,6 +442,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
           if (next[fileTarget] === 'modified') {
             next[fileTarget] = 'committed';
             logTerminal(`Restaurado ${fileTarget} al último estado guardado.`);
+            unlockBadge('restore');
             
             if (activeMission === 'undo' && m2Step === 2) {
               setM2Restored(true);
@@ -451,6 +474,9 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
         setBranches(prev => ({ ...prev, [bName]: currentHeadCommitId }));
         setCurrentBranch(bName);
         logTerminal(`Switched to a new branch '${bName}'`);
+        if (bName.includes('feature')) {
+          unlockBadge('branch');
+        }
         return;
       }
 
@@ -506,6 +532,8 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
         } else {
           logTerminal(`HEAD está ahora en ${parentCommitId}`);
         }
+
+        unlockBadge('restore');
 
         if (activeMission === 'undo' && m2Step === 4) {
           setM2ResetDone(true);
@@ -622,6 +650,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
       logTerminal(`Updating ${targetCommitId.substring(0,7)}..${sourceCommitId.substring(0,7)}`);
       logTerminal('Fast-forward (simulated merge successful)');
       logTerminal(`Merge branch '${sourceBranch}' successfully integrated.`);
+      unlockBadge('merge');
       return;
     }
 
@@ -658,7 +687,33 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
 
   const handleTerminalSubmit = (e) => {
     e.preventDefault();
+    const cmd = inputVal.trim();
+    if (cmd) {
+      setCommandHistory(prev => [...prev, cmd]);
+      setHistoryIndex(-1);
+    }
     executeCommand(inputVal);
+  };
+
+  const handleTerminalKeyDown = (e) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistory.length === 0) return;
+      const nextIndex = historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
+      setHistoryIndex(nextIndex);
+      setInputVal(commandHistory[nextIndex]);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (commandHistory.length === 0 || historyIndex === -1) return;
+      const nextIndex = historyIndex + 1;
+      if (nextIndex >= commandHistory.length) {
+        setHistoryIndex(-1);
+        setInputVal('');
+      } else {
+        setHistoryIndex(nextIndex);
+        setInputVal(commandHistory[nextIndex]);
+      }
+    }
   };
 
   return (
@@ -981,11 +1036,24 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
               return elements;
             })}
 
-            {/* Draw Commit Nodes */}
+            {/* Draw Commit Nodes with Keyboard Accessibility & ARIA */}
             {commits.map((c) => {
               const isHead = branches[currentBranch] === c.id;
               return (
-                <g key={c.id} className="graph-node">
+                <g 
+                  key={c.id} 
+                  className="graph-node"
+                  tabIndex="0"
+                  role="button"
+                  aria-label={`Commit ${c.hash}: ${c.message}${isHead ? ' (HEAD actual)' : ''}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      executeCommand('git log');
+                    }
+                  }}
+                  style={{ cursor: 'pointer', outline: 'none' }}
+                >
                   <circle
                     cx={c.x}
                     cy={c.y}
@@ -1007,38 +1075,56 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
               );
             })}
 
-            {/* Draw Branch Heads Labels */}
-            {Object.keys(branches).map((b, idx) => {
-              const headCommitId = branches[b];
-              const node = commits.find(c => c.id === headCommitId);
-              if (!node) return null;
-              
-              const isCurrent = b === currentBranch;
-              
-              return (
-                <g key={`branch-tag-${b}`} transform={`translate(${node.x - 25}, ${node.y - 32})`}>
-                  <rect
-                    width="75"
-                    height="20"
-                    rx="6"
-                    fill={isCurrent ? 'var(--primary-light)' : 'var(--bg-secondary)'}
-                    stroke={isCurrent ? 'var(--primary)' : 'var(--border-color)'}
-                    strokeWidth="1.5"
-                    style={{ filter: isCurrent ? 'drop-shadow(0 2px 4px rgba(162, 28, 255, 0.15))' : 'none' }}
-                  />
-                  <text 
-                    x="37.5" 
-                    y="13" 
-                    textAnchor="middle" 
-                    className="graph-branch-tag"
-                    fill={isCurrent ? 'var(--primary)' : 'var(--text-secondary)'}
-                    style={{ fontSize: '0.65rem', fontWeight: 700 }}
+            {/* Draw Branch Heads Labels with Dynamic Vertical Stacking */}
+            {(() => {
+              const branchCommitCounts = {};
+              const branchOffsets = {};
+              Object.keys(branches).forEach(b => {
+                const cId = branches[b];
+                const count = branchCommitCounts[cId] || 0;
+                branchOffsets[b] = count;
+                branchCommitCounts[cId] = count + 1;
+              });
+
+              return Object.keys(branches).map((b) => {
+                const headCommitId = branches[b];
+                const node = commits.find(c => c.id === headCommitId);
+                if (!node) return null;
+                
+                const isCurrent = b === currentBranch;
+                const stackIndex = branchOffsets[b] || 0;
+                const offsetY = node.y - 32 - (stackIndex * 24);
+                
+                return (
+                  <g 
+                    key={`branch-tag-${b}`} 
+                    transform={`translate(${node.x - 30}, ${offsetY})`}
+                    role="note"
+                    aria-label={`Rama ${b}${isCurrent ? ' (activa)' : ''}`}
                   >
-                    {isCurrent ? `* ${b}` : b}
-                  </text>
-                </g>
-              );
-            })}
+                    <rect
+                      width="80"
+                      height="20"
+                      rx="6"
+                      fill={isCurrent ? 'var(--primary-light)' : 'var(--bg-secondary)'}
+                      stroke={isCurrent ? 'var(--primary)' : 'var(--border-color)'}
+                      strokeWidth="1.5"
+                      style={{ filter: isCurrent ? 'drop-shadow(0 2px 4px rgba(162, 28, 255, 0.15))' : 'none' }}
+                    />
+                    <text 
+                      x="40" 
+                      y="13" 
+                      textAnchor="middle" 
+                      className="graph-branch-tag"
+                      fill={isCurrent ? 'var(--primary)' : 'var(--text-secondary)'}
+                      style={{ fontSize: '0.65rem', fontWeight: 700 }}
+                    >
+                      {isCurrent ? `* ${b}` : b}
+                    </text>
+                  </g>
+                );
+              });
+            })()}
           </svg>
         </div>
       </section>
@@ -1070,22 +1156,82 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
           <div ref={terminalEndRef} />
         </div>
 
-        <form onSubmit={handleTerminalSubmit} className="terminal-input-container">
-          <span className="terminal-prompt" style={{ fontSize: '0.9rem' }}>dpred-user $</span>
-          <input
-            id="terminal-user-input"
-            type="text"
-            className="terminal-input"
-            value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
-            placeholder={activeMission === 'branching' ? "git init, git add ., git commit -m 'Commit'..." : "git restore README.md, git reset --hard HEAD~1..."}
-            autoFocus
-            autoComplete="off"
-            aria-label="Entrada de comando Git"
-          />
-          <button id="btn-submit-command" type="submit" style={{ display: 'none' }}>
-            <CornerDownLeft size={16} />
-          </button>
+        <form onSubmit={handleTerminalSubmit} className="terminal-input-container" style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'stretch', padding: 0 }}>
+          {(() => {
+            const allSuggestions = [
+              'git init',
+              'git add .',
+              'git commit -m "',
+              'git checkout ',
+              'git branch ',
+              'git merge ',
+              'git status',
+              'git log',
+              'git reset --hard HEAD~1',
+              'git restore README.md'
+            ];
+            const filteredSuggestions = inputVal.trim() 
+              ? allSuggestions.filter(s => s.toLowerCase().startsWith(inputVal.toLowerCase()) && s.toLowerCase() !== inputVal.toLowerCase())
+              : [];
+            if (filteredSuggestions.length === 0) return null;
+            return (
+              <div style={{ display: 'flex', gap: '0.4rem', padding: '0.4rem 1rem', backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', flexWrap: 'wrap', zIndex: 10, width: '100%' }}>
+                <span style={{ color: 'var(--text-tertiary)', fontSize: '0.7rem', display: 'flex', alignItems: 'center', marginRight: '0.2rem' }}>Autocompletar:</span>
+                {filteredSuggestions.map((s, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setInputVal(s);
+                      setTimeout(() => {
+                        const inputEl = document.getElementById('terminal-user-input');
+                        if (inputEl) {
+                          inputEl.focus();
+                          // Put cursor at the end or inside quotes for commit message
+                          if (s.endsWith('"')) {
+                            inputEl.setSelectionRange(s.length - 1, s.length - 1);
+                          } else {
+                            inputEl.setSelectionRange(s.length, s.length);
+                          }
+                        }
+                      }, 50);
+                    }}
+                    style={{
+                      backgroundColor: 'var(--bg-card)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--primary)',
+                      borderRadius: '4px',
+                      padding: '0.15rem 0.45rem',
+                      fontSize: '0.72rem',
+                      fontFamily: 'var(--font-mono)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
+          <div style={{ display: 'flex', alignItems: 'center', padding: '0.85rem 1.25rem', width: '100%' }}>
+            <span className="terminal-prompt" style={{ fontSize: '0.9rem' }}>dpred-user $</span>
+            <input
+              id="terminal-user-input"
+              type="text"
+              className="terminal-input"
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              onKeyDown={handleTerminalKeyDown}
+              placeholder={activeMission === 'branching' ? "git init, git add ., git commit -m 'Commit'... (↑/↓ historial)" : "git restore README.md, git reset --hard HEAD~1... (↑/↓ historial)"}
+              autoFocus
+              autoComplete="off"
+              aria-label="Entrada de comando Git con historial de flechas arriba y abajo"
+            />
+            <button id="btn-submit-command" type="submit" style={{ display: 'none' }}>
+              <CornerDownLeft size={16} />
+            </button>
+          </div>
         </form>
       </section>
 

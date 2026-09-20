@@ -1,13 +1,3 @@
- 2. Aprende Git Interactivo
-El problema que resuelve: El 80% de estudiantes de sistemas llega a su primer trabajo sin saber Git correctamente. Lo aprendieron de memoria sin entender qué pasa internamente.
-Qué tendría la plataforma:
-Simulador visual de ramas, commits y merges en tiempo real
-Ejercicios guiados por niveles (init → branching → rebase → conflictos)
-Quizzes de flujos de trabajo (Gitflow, trunk-based)
-Modo "¿qué pasó aquí?" para diagnosticar historiales rotos
-Por qué es buena idea: Tema acotado, visual por naturaleza, y muy buscado. Ya existen referencias como learngitbranching.js.org que validan que el formato funciona.
-
-
 🗺 El Roadmap del Recurso Educativo (RED)
 Para que el estudiante no solo memorice comandos, el RED podría estructurarse en tres grandes módulos interactivos:
 
@@ -46,11 +36,12 @@ Idea: Si el usuario se queda "pegado" en un conflicto de Git por más de 2 minut
 
 Esto cumple con el objetivo de innovación en el diseño de RED que menciona el Tema 2 del programa.
 
+🥈 2. Aprende Git Interactivo
+El problema que resuelve: El 80% de estudiantes de sistemas llega a su primer trabajo sin saber Git correctamente. Lo aprendieron de memoria sin entender qué pasa internamente.
+Qué tendría la plataforma:
 
-# PARA LA ENTREGA #1 - 25 de Junio de 2026
-
-Cual es el problema y definir su alcance,
-Análisis de competidores,
-Análisis del cliente el cliente
-Explicar su propuesta de solución y justificación de la misma
-Encaje de valor
+Simulador visual de ramas, commits y merges en tiempo real
+Ejercicios guiados por niveles (init → branching → rebase → conflictos)
+Quizzes de flujos de trabajo (Gitflow, trunk-based)
+Modo "¿qué pasó aquí?" para diagnosticar historiales rotos
+Por qué es buena idea: Tema acotado, visual por naturaleza, y muy buscado. Ya existen referencias como learngitbranching.js.org que validan que el formato funciona.

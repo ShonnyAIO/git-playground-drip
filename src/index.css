@@ -10,12 +10,12 @@
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Fira Code', ui-monospace, monospace;
 
-  /* HSL Color System */
-  --hue-primary: 270;   /* Electric Purple */
-  --hue-success: 150;   /* Neo Emerald Green */
-  --hue-warning: 32;    /* Amber Orange */
-  --hue-danger: 345;    /* Crimson Red/Rose */
-  --hue-info: 195;      /* Cyber Cyan */
+  /* HSL Color System: Git Brand & Google Colors */
+  --hue-primary: 9;     /* Git Brand Orange (#F05032) */
+  --hue-success: 136;   /* Google Green (#34A853) - Local Repository */
+  --hue-warning: 44;    /* Google Yellow (#FBBC05) - Staging Area */
+  --hue-danger: 5;      /* Google Red (#EA4335) - Working Directory */
+  --hue-info: 217;      /* Google Blue (#4285F4) - Remote/GitHub */
 
   /* Light Theme Variables */
   --bg-primary: hsl(230, 30%, 97%);
@@ -52,7 +52,7 @@
   --shadow-md: 0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 4px 16px -8px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 24px 50px -12px rgba(0, 0, 0, 0.12), 0 8px 24px -10px rgba(0, 0, 0, 0.06);
   --shadow-primary: 0 8px 20px -6px hsl(var(--hue-primary), 70%, 75%);
-  --shadow-neon-primary: 0 0 15px rgba(162, 28, 255, 0.2);
+  --shadow-neon-primary: 0 0 15px rgba(240, 80, 50, 0.2);
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -100,7 +100,7 @@
   --shadow-md: 0 12px 30px -8px rgba(0, 0, 0, 0.75), 0 4px 16px -8px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 24px 60px -15px rgba(0, 0, 0, 0.85), 0 8px 30px -12px rgba(0, 0, 0, 0.6);
   --shadow-primary: 0 8px 24px -6px hsl(var(--hue-primary), 80%, 35%);
-  --shadow-neon-primary: 0 0 25px rgba(162, 28, 255, 0.35);
+  --shadow-neon-primary: 0 0 25px rgba(240, 80, 50, 0.35);
 }
 
 /* Global Reset & Base Styling */
@@ -914,10 +914,10 @@ code {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(162, 28, 255, 0.4);
+    box-shadow: 0 0 0 0 rgba(240, 80, 50, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 12px rgba(162, 28, 255, 0);
+    box-shadow: 0 0 0 12px rgba(240, 80, 50, 0);
   }
 }
 

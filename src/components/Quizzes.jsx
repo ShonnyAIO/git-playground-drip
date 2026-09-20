@@ -9,7 +9,7 @@ import {
   BookOpen
 } from 'lucide-react';
 
-export default function Quizzes({ progress, setProgress, addTutorMessage }) {
+export default function Quizzes({ progress, setProgress, addTutorMessage, unlockBadge }) {
   const quizData = [
     {
       id: 1,
@@ -72,6 +72,7 @@ export default function Quizzes({ progress, setProgress, addTutorMessage }) {
   useEffect(() => {
     if (quizFinished && correctAnswers === quizData.length && !progress.quizzes) {
       setProgress(prev => ({ ...prev, quizzes: true }));
+      unlockBadge('quiz');
       addTutorMessage(
         '¡Formidable! Has aprobado todas las preguntas sobre flujos de Git. Comprender las arquitecturas de trabajo (Trunk-based y Gitflow) y saber cuándo aplicar merge vs rebase es lo que distingue a un estudiante júnior de un ingeniero que entra al campo profesional. ¡Has completado con éxito la ruta teórica!'
       );

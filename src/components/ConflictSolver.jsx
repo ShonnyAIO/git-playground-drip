@@ -6,10 +6,12 @@ import {
   Code, 
   Check, 
   HelpCircle,
-  Maximize2
+  Maximize2,
+  CheckCircle,
+  RotateCcw
 } from 'lucide-react';
 
-export default function ConflictSolver({ progress, setProgress, addTutorMessage }) {
+export default function ConflictSolver({ progress, setProgress, addTutorMessage, unlockBadge }) {
   const [conflictActive, setConflictActive] = useState(false);
   const [selectedChange, setSelectedChange] = useState(null); // 'current', 'incoming', 'both'
   const [resolved, setResolved] = useState(false);
@@ -27,6 +29,7 @@ export default function ConflictSolver({ progress, setProgress, addTutorMessage 
   useEffect(() => {
     if (commitCreated && !progress.conflicts) {
       setProgress(prev => ({ ...prev, conflicts: true }));
+      unlockBadge('conflict');
       addTutorMessage(
         `¡Soberbio! Has resuelto el conflicto usando el flujo de ${conflictType === 'merge' ? 'Merge (Fusión)' : 'Rebase (Reorganización)'}. Entender la diferencia entre ambos y saber cómo elegir cambios en el editor es lo que te mantendrá a salvo de perder código en tus proyectos de trabajo real.`
       );
@@ -42,11 +45,8 @@ export default function ConflictSolver({ progress, setProgress, addTutorMessage 
     setConflictActive(true);
     setCurrentTab('simulator');
     
-    // Trigger visual crash overlay
+    // Trigger persistent visual crash overlay until acknowledged
     setShowCrashAlert(true);
-    setTimeout(() => {
-      setShowCrashAlert(false);
-    }, 1800);
 
     if (type === 'merge') {
       addTutorMessage(
@@ -240,16 +240,35 @@ const LoginButton = () => {
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               zIndex: 10, borderRadius: 'var(--radius-md)', color: 'white',
               backdropFilter: 'blur(4px)',
+              padding: '2rem',
               animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both'
             }}>
-              <AlertTriangle size={72} style={{ animation: 'shake 0.4s infinite', color: 'white' }} />
-              <h3 style={{ color: 'white', fontSize: '2rem', fontWeight: 900, marginTop: '1rem', letterSpacing: '-0.02em' }}>
+              <AlertTriangle size={68} style={{ animation: 'shake 0.4s infinite', color: 'white' }} />
+              <h3 style={{ color: 'white', fontSize: '1.85rem', fontWeight: 900, marginTop: '1rem', letterSpacing: '-0.02em', textAlign: 'center' }}>
                 ¡CHOQUE DE COMMITS DETECTADO!
               </h3>
-              <p style={{ color: 'white', marginTop: '0.5rem', opacity: 0.9, fontSize: '1rem', maxWidth: '70%', textAlign: 'center' }}>
-                Git no puede decidir automáticamente qué cambio conservar en <strong>App.jsx</strong>.
-                Resolución requerida en: {conflictType === 'merge' ? 'git merge' : 'git rebase'}.
+              <p style={{ color: 'white', marginTop: '0.5rem', opacity: 0.95, fontSize: '0.95rem', maxWidth: '80%', textAlign: 'center' }}>
+                Git no puede decidir automáticamente qué cambio conservar en <strong>App.jsx</strong>.<br />
+                Resolución requerida en: <code>{conflictType === 'merge' ? 'git merge' : 'git rebase'}</code>.
               </p>
+              <button 
+                id="btn-dismiss-crash-alert"
+                className="btn" 
+                onClick={() => setShowCrashAlert(false)}
+                style={{ 
+                  marginTop: '1.5rem', 
+                  backgroundColor: 'white', 
+                  color: '#e11d48', 
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  padding: '0.65rem 1.6rem',
+                  borderRadius: 'var(--radius-sm)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+                  cursor: 'pointer'
+                }}
+              >
+                Entendido, examinar conflicto →
+              </button>
             </div>
           )}
 
@@ -381,6 +400,26 @@ const LoginButton = () => {
                     <Check size={16} />
                     <span>Marcar como Resuelto</span>
                   </button>
+
+                  {resolved && !commitCreated && (
+                    <button 
+                      id="btn-conflict-undo-selection"
+                      type="button"
+                      className="btn btn-secondary" 
+                      onClick={() => setResolved(false)}
+                      style={{ 
+                        justifyContent: 'center', 
+                        borderColor: 'var(--color-working)', 
+                        color: 'var(--color-working)',
+                        fontSize: '0.82rem',
+                        padding: '0.45rem'
+                      }}
+                      aria-label="Reabrir opciones de selección de conflicto"
+                    >
+                      <RotateCcw size={14} />
+                      <span>Cambiar / Reabrir Selección</span>
+                    </button>
+                  )}
 
                   <button 
                     id="btn-conflict-commit"

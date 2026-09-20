@@ -13,7 +13,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 
-export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
+export default function GitHubHub({ progress, setProgress, addTutorMessage, unlockBadge }) {
   // Remote state
   const [remoteAdded, setRemoteAdded] = useState(false);
   const [remoteCommits, setRemoteCommits] = useState([
@@ -62,6 +62,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage }) {
 
   const handleAddRemote = () => {
     setRemoteAdded(true);
+    unlockBadge('remote');
     addTutorMessage(
       'Has configurado la conexión remota con: "git remote add origin https://github.com/dpred-ucv/proyecto-git.git". Esto enlaza tu repositorio local con el de la nube.'
     );

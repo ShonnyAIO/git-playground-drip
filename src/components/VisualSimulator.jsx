@@ -31,19 +31,16 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
     { id: 'c0', hash: '3a5b2f1', message: 'Initial commit', parent: null, branch: 'main', x: 80, y: 125 }
   ]);
 
-  // Sync state to parent gitContext for ShonnyProxy AI Tutor
-  useEffect(() => {
-    if (setGitContext) {
-      setGitContext({
-        currentBranch,
-        branches: Object.keys(branches),
-        commits: commits.map(c => ({ id: c.id, message: c.message })),
-        workingDirectory: Object.keys(files).filter(f => files[f] === 'modified' || files[f] === 'untracked'),
-        stagingArea: Object.keys(files).filter(f => files[f] === 'staged'),
-        lastCommands: terminalLogs.filter(l => typeof l === 'string' && l.startsWith('$')).map(l => l.replace('$', '').trim())
-      });
-    }
-  }, [currentBranch, branches, files, commits, terminalLogs, setGitContext]);
+  // Terminal state
+  const [inputVal, setInputVal] = useState('');
+  const [commandHistory, setCommandHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [terminalLogs, setTerminalLogs] = useState([
+    'Bienvenido al simulador interactivo de Git.',
+    'Escribe un comando o usa los botones de asistencia rápida para comenzar.',
+    'Consejo: Empieza inicializando tu repositorio con "git init".'
+  ]);
+  const terminalEndRef = useRef(null);
 
   // Mission Selection State
   const [activeMission, setActiveMission] = useState('branching'); // 'branching' or 'undo'
@@ -65,17 +62,19 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
   const [m2ResetDone, setM2ResetDone] = useState(false);
   const [m2Completed, setM2Completed] = useState(false);
 
-  // Terminal state
-  const [inputVal, setInputVal] = useState('');
-  const [commandHistory, setCommandHistory] = useState([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
-  const [terminalLogs, setTerminalLogs] = useState([
-    'Bienvenido al simulador interactivo de Git.',
-    'Escribe un comando o usa los botones de asistencia rápida para comenzar.',
-    'Consejo: Empieza inicializando tu repositorio con "git init".'
-  ]);
-
-  const terminalEndRef = useRef(null);
+  // Sync state to parent gitContext for ShonnyProxy AI Tutor
+  useEffect(() => {
+    if (setGitContext) {
+      setGitContext({
+        currentBranch,
+        branches: Object.keys(branches),
+        commits: commits.map(c => ({ id: c.id, message: c.message })),
+        workingDirectory: Object.keys(files).filter(f => files[f] === 'modified' || files[f] === 'untracked'),
+        stagingArea: Object.keys(files).filter(f => files[f] === 'staged'),
+        lastCommands: terminalLogs.filter(l => typeof l === 'string' && l.startsWith('$')).map(l => l.replace('$', '').trim())
+      });
+    }
+  }, [currentBranch, branches, files, commits, terminalLogs, setGitContext]);
 
   // Auto-scroll terminal to bottom
   useEffect(() => {

@@ -378,6 +378,7 @@ export default function VideoLearning({ setCurrentTab, unlockBadge }) {
 
               {/* Jump to interactive practice button */}
               <button
+                id="btn-practice-current-lesson"
                 onClick={() => setCurrentTab(selectedLesson.targetTab)}
                 className="btn btn-primary"
                 style={{
@@ -422,7 +423,17 @@ export default function VideoLearning({ setCurrentTab, unlockBadge }) {
               return (
                 <div
                   key={lesson.id}
+                  id={`playlist-item-${lesson.id}`}
+                  role="button"
+                  tabIndex="0"
+                  aria-label={`Lección ${lesson.title}`}
                   onClick={() => setSelectedLessonId(lesson.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedLessonId(lesson.id);
+                    }
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',

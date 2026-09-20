@@ -304,6 +304,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage, unlo
                               </div>
                               <div style={{ padding: '0.4rem', backgroundColor: 'var(--bg-card)', display: 'flex', justifyContent: 'center' }}>
                                 <button 
+                                  id="btn-resolve-review"
                                   className="btn btn-primary glow-active" 
                                   style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem' }}
                                   onClick={() => {

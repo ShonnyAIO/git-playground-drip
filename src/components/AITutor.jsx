@@ -32,15 +32,23 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
     }
   }, [tutorMessages, isOpen, isLoading]);
 
+  const [userDismissed, setUserDismissed] = useState(false);
+
   useEffect(() => {
-    if (tutorMessages.length > 1) {
+    if (tutorMessages.length > 1 && !userDismissed) {
       setIsOpen(true);
     }
-  }, [tutorMessages.length]);
+  }, [tutorMessages.length, userDismissed]);
 
   const handleToggle = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) setShowSettings(false);
+    if (isOpen) {
+      setUserDismissed(true);
+      setIsOpen(false);
+      setShowSettings(false);
+    } else {
+      setUserDismissed(false);
+      setIsOpen(true);
+    }
   };
 
   const handleSend = async (e) => {
@@ -193,6 +201,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
                   Endpoint Base URL
                 </label>
                 <input
+                  id="proxy-endpoint-input"
                   type="text"
                   className="tutor-input"
                   style={{ width: '100%', fontSize: '0.75rem', padding: '0.35rem 0.5rem' }}
@@ -208,6 +217,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
                     Modelo
                   </label>
                   <input
+                    id="proxy-model-input"
                     type="text"
                     className="tutor-input"
                     style={{ width: '100%', fontSize: '0.75rem', padding: '0.35rem 0.5rem' }}
@@ -221,6 +231,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
                     API Key (Opcional)
                   </label>
                   <input
+                    id="proxy-apikey-input"
                     type="password"
                     className="tutor-input"
                     style={{ width: '100%', fontSize: '0.75rem', padding: '0.35rem 0.5rem' }}
@@ -233,6 +244,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.3rem' }}>
                 <button
+                  id="btn-proxy-test"
                   onClick={handleTestConnection}
                   disabled={testStatus === 'testing'}
                   className="btn"

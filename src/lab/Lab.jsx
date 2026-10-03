@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { LESSONS } from '../lessons/content/index.js';
 import { layoutGraph, lessonDuration, validateLesson } from '../lessons/engine/index.js';
-import { FIXTURE } from './fixture.js';
 import LessonPlayer from '../lessons/render/LessonPlayer.jsx';
 import SceneView from '../lessons/render/SceneView.jsx';
 import { layoutScene } from '../lessons/render/sceneLayout.js';
 import './lab.css';
 
 // Laboratorio solo de desarrollo (npm run dev → /lab.html): valida cada lección y muestra sus escenas.
-const ALL = [FIXTURE, ...LESSONS];
+const ALL = LESSONS;
 
 function LayoutTable({ graph }) {
   const l = layoutGraph(graph);

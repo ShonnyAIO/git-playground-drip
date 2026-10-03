@@ -235,7 +235,6 @@
   border-radius: var(--radius-full);
   background: var(--primary);
   transform-origin: left;
-  box-shadow: inset 0 0 0 100px transparent;
 }
 
 .lesson-segment::before {

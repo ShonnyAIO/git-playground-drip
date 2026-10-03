@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Captions, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
-import { formatClock, lessonDuration, stepDuration } from '../engine/index.js';
-import { initialPlayback, playbackReducer, SPEEDS } from '../engine/playback.js';
+import { formatClock, initialPlayback, lessonDuration, playbackReducer, SPEEDS, stepDuration } from '../engine/index.js';
 import { layoutScene } from './sceneLayout.js';
 import SceneView from './SceneView.jsx';
 import './player.css';
@@ -86,7 +85,9 @@ export default function LessonPlayer({ lesson, onComplete }) {
   }, [state.ended, onComplete, lesson.id]);
 
   const onKeyDown = (e) => {
-    const onControl = e.target.closest('button, select');
+    // Los controles nativos conservan sus teclas: Espacio en botones, flechas en el selector.
+    if (e.target.closest('select')) return;
+    const onControl = e.target.closest('button');
     if ((e.key === ' ' || e.key === 'k' || e.key === 'K') && !onControl) {
       e.preventDefault();
       dispatch({ type: 'toggle' });

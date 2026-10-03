@@ -22,6 +22,16 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Al pasar a escritorio (p. ej. rotar una tablet) no hay drawer: se cierra y suelta el foco.
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1025px)');
+    const onChange = (e) => {
+      if (e.matches) setDrawerOpen(false);
+    };
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
+
   const asideRef = useRef(null);
   const menuBtnRef = useRef(null);
   const wasOpen = useRef(false);

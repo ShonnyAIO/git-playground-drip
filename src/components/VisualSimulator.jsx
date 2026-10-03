@@ -755,13 +755,13 @@ export default function VisualSimulator({ progress, completeModule, addTutorMess
       </div>
 
       {/* Interactive Mission Card with Stepper */}
-      <section className="card" style={{ 
+      <section className="card layout-split" style={{ 
         borderLeft: '4px solid var(--primary)',
         backgroundColor: 'var(--bg-card)',
         padding: '1.5rem',
         marginBottom: '1.5rem',
         display: 'grid',
-        gridTemplateColumns: '1.5fr 1fr',
+        '--cols': '1.5fr 1fr',
         gap: '1.5rem',
         alignItems: 'center'
       }}>
@@ -976,7 +976,7 @@ export default function VisualSimulator({ progress, completeModule, addTutorMess
           <span style={{ fontSize: '0.72rem', fontWeight: 500, padding: '0.15rem 0.4rem', borderRadius: '4px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>Interactiva (Click en nodos)</span>
         </h3>
         
-        <div className="graph-canvas-container">
+        <div className="graph-canvas-container" data-scroll-x tabIndex={0} role="region" aria-label="Grafo de commits (desplazable)">
           <svg className="graph-svg" style={{ backgroundImage: 'radial-gradient(var(--border-color) 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">

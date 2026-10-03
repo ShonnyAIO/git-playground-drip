@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   Terminal, 
   Share2, 
@@ -8,14 +8,33 @@ import {
   Sun, 
   Moon, 
   Home,
-  RotateCcw
+  RotateCcw,
+  Menu,
+  X
 } from 'lucide-react';
 
 export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress }) {
   
+  // Bajo 1024 px el sidebar es un drawer; en escritorio esta bandera no tiene efecto visual.
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!drawerOpen) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setDrawerOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [drawerOpen]);
+
+  const selectTab = (id) => {
+    setCurrentTab(id);
+    setDrawerOpen(false);
+  };
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -36,7 +55,26 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
   const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   return (
-    <aside className="sidebar" id="sidebar-container">
+    <>
+    <header className="mobile-topbar">
+      <div className="brand-icon brand-icon-sm">
+        <Terminal size={16} />
+      </div>
+      <span className="brand-name">GitPlayground</span>
+      <span className="mobile-topbar-xp">{xp} XP</span>
+      <button
+        id="mobile-menu-btn"
+        className="icon-btn"
+        aria-label={drawerOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={drawerOpen}
+        aria-controls="sidebar-container"
+        onClick={() => setDrawerOpen(open => !open)}
+      >
+        {drawerOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+    </header>
+    {drawerOpen && <div className="drawer-backdrop" onClick={() => setDrawerOpen(false)} />}
+    <aside className={`sidebar ${drawerOpen ? 'open' : ''}`} id="sidebar-container">
       <div className="brand-container">
         <div className="brand-icon">
           <Terminal size={20} />
@@ -105,7 +143,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
                 <button
                   id={`nav-btn-${item.id}`}
                   className={`nav-item-btn ${currentTab === item.id ? 'active' : ''}`}
-                  onClick={() => setCurrentTab(item.id)}
+                  onClick={() => selectTab(item.id)}
                 >
                   <Icon size={18} />
                   <span>{item.name}</span>
@@ -166,5 +204,6 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
         </button>
       </div>
     </aside>
+    </>
   );
 }

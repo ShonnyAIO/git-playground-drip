@@ -43,3 +43,22 @@ internas necesitan clase (solo las que generan desborde).
 
 Lint, build, tests, suite Playwright. Escritorio a 1440 px sin cambios visibles salvo el
 reset de scroll.
+
+## Estado
+
+✅ Implementado. Evidencia en `assets/slice02/` (375, 768, 1440 px y drawer abierto).
+
+- Rejillas: clase `.layout-split` con columnas en la variable `--cols` (el inline solo
+  fija la variable; el breakpoint de 900 px colapsa a una columna). Hijos con
+  `min-width: 0` para que el texto `nowrap` no desborde.
+- El grafo del simulador conserva su scroll horizontal propio: región marcada con
+  `data-scroll-x`, enfocable y etiquetada.
+- Brillos decorativos contenidos con `overflow-x: clip` en `.app-container` (desbordaban
+  hasta 1512 px en escritorio).
+- Comparación contra `assets/baseline/` a 1440 px: Conflictos, Quizzes y GitHub ≤ 1,4 %;
+  Dashboard y Videoteca ≤ 5 % (animaciones); Simulador difiere a propósito porque la
+  línea base heredaba el scroll de la pestaña anterior.
+- Lección del proceso: `page.screenshot(full_page=True)` de Chromium deforma este layout
+  (sidebar aplastado) aunque la página real esté bien; `scripts/capture.py` fija la
+  altura del viewport en su lugar. La comparación píxel a píxel fue la que destapó tanto
+  una regresión real (sidebar encogiéndose por `min-width: 0`) como este artefacto.

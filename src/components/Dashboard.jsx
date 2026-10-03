@@ -102,8 +102,8 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
         position: 'relative',
         overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
-          <div style={{
+        <div className="hero-mission" style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
+          <div className="hero-mission-icon" style={{
             backgroundColor: 'var(--primary-light)',
             color: 'var(--primary)',
             padding: '1rem',
@@ -124,7 +124,8 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
               padding: '0.2rem 0.6rem', 
               borderRadius: 'var(--radius-sm)',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em'
+              letterSpacing: '0.05em',
+              display: 'inline-block'
             }}>
               Misión de Rescate de Código
             </span>
@@ -233,7 +234,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
       </section>
 
       {/* Main Grid: Roadmap & Achievements */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+      <div className="layout-split" style={{ '--cols': '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
         
         {/* Left Side: Learning Roadmap */}
         <section>

@@ -2,7 +2,7 @@
 
 ## Next Agent Prompt
 
-> Última actualización: 2026-10-03. Estado: **slice 01 cerrado; siguiente: 02.**
+> Última actualización: 2026-10-03. Estado: **slices 01–02 cerrados; siguiente: 03.**
 >
 > Trabajas en la rama `feat/lecciones-animadas-base-ux` (nunca en `main`). Haz commit al
 > cerrar cada slice; **no hagas `push` ni deploy a Netlify** sin confirmación de Shonny.
@@ -15,7 +15,7 @@
 ### TODO global
 
 - [x] [01 — Estado persistente del estudiante](slices/01-estado-persistente.md)
-- [ ] [02 — Layout responsive](slices/02-layout-responsive.md)
+- [x] [02 — Layout responsive](slices/02-layout-responsive.md)
 - [ ] [03 — Accesibilidad base](slices/03-accesibilidad.md)
 - [ ] [04 — Motor de escenas (puro)](slices/04-motor-escenas.md)
 - [ ] [05 — Reproductor de lecciones](slices/05-reproductor.md)
@@ -102,7 +102,7 @@ YouTube inventados.
   sobre sus capturas como último chequeo antes de aceptarlo. Si el slice cambia un aspecto
   previo, además la skill `compare-screenshots`
   contra la línea base en `assets/baseline/`.
-- Capturas a 375, 768, 1024 y 1440 px de ancho para los slices de layout.
+- Capturas con `uv run --with playwright==1.57.0 python scripts/capture.py <dir>` (requiere `npm run preview` en :4173): cada pestaña a 375, 768, 1024 y 1440 px, e informa elementos que se salen del viewport. No usar `full_page=True`: deforma el layout.
 
 ## Referencias investigadas
 

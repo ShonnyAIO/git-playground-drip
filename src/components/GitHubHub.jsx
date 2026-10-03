@@ -152,7 +152,7 @@ export default function GitHubHub({ progress, completeModule, addTutorMessage, u
       </section>
 
       {/* Simulation Layout: Local vs Remote */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <section className="layout-split" style={{ '--cols': '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
         {/* Local Repository Simulator Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>

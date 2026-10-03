@@ -58,6 +58,11 @@ function App() {
     }, 600);
   };
 
+  // Cada pestaña empieza arriba; si no, hereda el scroll de la anterior.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentTab]);
+
   const xp = deriveXp(learner);
   const level = deriveLevel(xp);
 

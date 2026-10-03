@@ -162,7 +162,7 @@ const LoginButton = () => {
             <p style={{ fontSize: '0.95rem' }}>Cuando trabajas con ramas paralelas, tarde o temprano querrás unificar tu código. Hay dos caminos:</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="layout-split" style={{ '--cols': '1fr 1fr', gap: '1.5rem' }}>
             <div style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-secondary)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', marginBottom: '0.5rem', fontWeight: 800 }}>
@@ -308,7 +308,7 @@ const LoginButton = () => {
           </section>
 
           {conflictActive && (
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr', gap: '1.5rem' }}>
+            <div className="layout-split" style={{ '--cols': '2fr 1.2fr', gap: '1.5rem' }}>
               
               {/* Diff Code Selection Area */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

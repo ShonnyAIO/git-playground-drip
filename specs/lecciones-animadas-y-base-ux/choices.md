@@ -16,3 +16,15 @@ Decisiones tomadas donde el spec callaba. Se consolida al cerrar el spec.
 - **El reinicio de progreso conserva el tema** elegido. Reversible.
 - **La medalla `video_master` exige completar todas las lecciones** (antes 3 y con el ID
   `quiz` por error). El spec ya lo pedía en el slice 12; se adelantó.
+
+## Slice 02
+
+- **Breakpoint de rejillas en 900 px**, distinto del de 1024 px del shell: entre 900 y
+  1024 px hay espacio para dos columnas una vez que el sidebar pasa a drawer. Reversible.
+- **En móvil el hero del Dashboard oculta su ícono decorativo** (< 600 px) para ganar
+  ancho de lectura. Reversible.
+- **El botón flotante del tutor tapa texto mientras se hace scroll** en móvil. Se aceptó
+  como patrón estándar; no se agregó espacio de reserva. Revisar si molesta en pruebas
+  con estudiantes.
+- **Se descartaron las capturas de 1024 px** de la evidencia por redundantes (el script las
+  sigue generando).

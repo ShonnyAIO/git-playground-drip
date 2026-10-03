@@ -5,12 +5,15 @@ Follows software-project-standards (Arrange - Act - Assert / TUC)
 """
 
 import os
+import subprocess
 import sys
 import time
 from playwright.sync_api import sync_playwright, expect
 
-SCREENSHOTS_DIR = "/home/shonny-torres/Workspace/UCV/Semestre I-2026/DRIP/tests/screenshots"
-BASE_URL = "http://127.0.0.1:4173"
+HERE = os.path.dirname(os.path.abspath(__file__))
+SCREENSHOTS_DIR = os.path.join(HERE, "screenshots")
+BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4173")
+TABS = ["dashboard", "videolearning", "simulator", "github", "conflicts", "quizzes"]
 
 os.makedirs(SCREENSHOTS_DIR, exist_ok=True)
 
@@ -33,6 +36,14 @@ def run_test_suite():
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(viewport={"width": 1440, "height": 900})
         page = context.new_page()
+        # Un build puede pasar y aun así dejar la app en blanco por un error en tiempo de ejecución.
+        page_errors = []
+
+        def watch(pg):
+            pg.on("pageerror", lambda err: page_errors.append(str(err)))
+            return pg
+
+        watch(page)
 
         # -------------------------------------------------------------------
         # TUC-UX-01: Carga Inicial & Dashboard Navigation
@@ -65,19 +76,20 @@ def run_test_suite():
         # -------------------------------------------------------------------
         # TUC-UX-02: Videoteca Interactiva & Puente de Práctica Dual
         # -------------------------------------------------------------------
-        test_name = "TUC-UX-02: Videoteca, Clases Magistrales & Salto al Simulador"
+        test_name = "TUC-UX-02: Lecciones Animadas, Temario & Salto al Simulador"
         try:
             start_time = time.time()
             page.click("#nav-btn-videolearning")
-            page.wait_for_selector("text=Temario del Curso", timeout=5000)
+            page.wait_for_selector("text=Temario (6 lecciones)", timeout=5000)
             
-            # Verificar lección 1 en el selector y detalles
-            expect(page.locator("h3:has-text('1. La Trinidad de Git')").first).to_be_visible()
-            expect(page.locator("text=git init").first).to_be_visible()
+            # Lección 1 seleccionada, con su póster y sus comandos
+            expect(page.locator("#lesson-title")).to_have_text("Los tres estados de Git")
+            expect(page.locator(".lesson-poster")).to_be_visible()
+            expect(page.locator(".library-commands code", has_text="git init")).to_be_visible()
             
-            # Seleccionar Lección 2 (Ramas y Punteros) mediante su ID accesible
-            page.click("#playlist-item-2")
-            expect(page.locator("text=Una rama en Git no es una copia de archivos").first).to_be_visible()
+            # Seleccionar la lección 2 desde el temario
+            page.click("#playlist-item-ramas-head")
+            expect(page.locator("#lesson-title")).to_have_text("Ramas y HEAD")
             
             # Screenshot evidence
             screenshot_path = os.path.join(SCREENSHOTS_DIR, "02_videolearning_and_bridge.png")
@@ -328,6 +340,132 @@ def run_test_suite():
             log_step(f"{test_name} — Error: {str(e)}", "FAIL")
             results["failed"] += 1
             results["tests"].append({"name": test_name, "status": "FAILED", "error": str(e)})
+
+        # -------------------------------------------------------------------
+        # TUC-UX-08: Progreso persistente tras recargar
+        # -------------------------------------------------------------------
+        test_name = "TUC-UX-08: Progreso, Medallas y Pestaña Persisten al Recargar"
+        try:
+            start_time = time.time()
+            p2 = watch(browser.new_page(viewport={"width": 1440, "height": 900}))
+            p2.goto(BASE_URL, wait_until="networkidle")
+            p2.click("#nav-btn-simulator")
+            p2.fill("#terminal-user-input", "git init")
+            p2.press("#terminal-user-input", "Enter")
+            expect(p2.locator("#sidebar-container")).to_contain_text("100 / 1000 XP")
+            p2.reload(wait_until="networkidle")
+            expect(p2.locator("#sidebar-container")).to_contain_text("100 / 1000 XP")
+            expect(p2.locator("#nav-btn-simulator")).to_have_attribute("aria-current", "page")
+            p2.once("dialog", lambda d: d.accept())
+            p2.click("#reset-progress-btn")
+            expect(p2.locator("#sidebar-container")).to_contain_text("0 / 1000 XP")
+            p2.close()
+            duration = round((time.time() - start_time) * 1000, 1)
+            log_step(f"{test_name} ({duration}ms)")
+            results["passed"] += 1
+            results["tests"].append({"name": test_name, "status": "PASSED", "duration_ms": duration})
+        except Exception as e:
+            log_step(f"{test_name} — Error: {str(e)}", "FAIL")
+            results["failed"] += 1
+            results["tests"].append({"name": test_name, "status": "FAILED", "error": str(e)})
+
+        # -------------------------------------------------------------------
+        # TUC-UX-09: Móvil 375 px — drawer y sin scroll horizontal
+        # -------------------------------------------------------------------
+        test_name = "TUC-UX-09: Móvil 375px, Drawer de Navegación y Sin Desbordes"
+        try:
+            start_time = time.time()
+            m = watch(browser.new_page(viewport={"width": 375, "height": 812}))
+            m.goto(BASE_URL, wait_until="networkidle")
+            for tab in TABS:
+                m.click("#mobile-menu-btn")
+                m.click(f"#nav-btn-{tab}")
+                expect(m.locator("#mobile-menu-btn")).to_have_attribute("aria-expanded", "false")
+                overflow = m.evaluate("document.documentElement.scrollWidth - innerWidth")
+                assert overflow <= 0, f"{tab}: desborde horizontal de {overflow}px"
+            screenshot_path = os.path.join(SCREENSHOTS_DIR, "09_mobile_lessons.png")
+            m.screenshot(path=screenshot_path)
+            m.close()
+            duration = round((time.time() - start_time) * 1000, 1)
+            log_step(f"{test_name} ({duration}ms)")
+            results["passed"] += 1
+            results["tests"].append({"name": test_name, "status": "PASSED", "duration_ms": duration, "evidence": screenshot_path})
+        except Exception as e:
+            log_step(f"{test_name} — Error: {str(e)}", "FAIL")
+            results["failed"] += 1
+            results["tests"].append({"name": test_name, "status": "FAILED", "error": str(e)})
+
+        # -------------------------------------------------------------------
+        # TUC-UX-10: Reproductor — teclado y autocompletado al terminar
+        # -------------------------------------------------------------------
+        test_name = "TUC-UX-10: Reproductor de Lecciones, Teclado y Lección Completada"
+        try:
+            start_time = time.time()
+            p3 = watch(browser.new_page(viewport={"width": 1440, "height": 900}))
+            p3.goto(BASE_URL, wait_until="networkidle")
+            p3.click("#nav-btn-videolearning")
+            p3.click("#playlist-item-remotos")
+            player = p3.locator(".lesson-player")
+            # El póster arranca la lección y desaparece
+            p3.locator(".lesson-poster-play").click()
+            expect(p3.locator(".lesson-poster")).to_have_count(0)
+            expect(p3.locator(".lesson-btn-main")).to_have_attribute("aria-label", "Pausar")
+            # Teclado: Espacio pausa, flechas cambian de paso
+            player.focus()
+            p3.keyboard.press("Space")
+            expect(p3.locator(".lesson-btn-main")).to_have_attribute("aria-label", "Reproducir")
+            p3.keyboard.press("Home")
+            p3.keyboard.press("Space")
+            p3.keyboard.press("ArrowRight")
+            expect(p3.locator(".lesson-caption")).to_contain_text("Paso 2 de 8")
+            p3.keyboard.press("ArrowLeft")
+            expect(p3.locator(".lesson-caption")).to_contain_text("Paso 1 de 8")
+            # Reproducir hasta el final a 1,5×
+            p3.select_option(".lesson-speed select", "1.5")
+            p3.click(".lesson-btn-main")
+            p3.wait_for_selector("button[aria-label='Volver a ver']", timeout=60000)
+            expect(p3.locator(".library-done")).to_have_text("Completada")
+            screenshot_path = os.path.join(SCREENSHOTS_DIR, "10_lesson_completed.png")
+            p3.screenshot(path=screenshot_path)
+            p3.close()
+            duration = round((time.time() - start_time) * 1000, 1)
+            log_step(f"{test_name} ({duration}ms)")
+            results["passed"] += 1
+            results["tests"].append({"name": test_name, "status": "PASSED", "duration_ms": duration, "evidence": screenshot_path})
+        except Exception as e:
+            log_step(f"{test_name} — Error: {str(e)}", "FAIL")
+            results["failed"] += 1
+            results["tests"].append({"name": test_name, "status": "FAILED", "error": str(e)})
+
+        # -------------------------------------------------------------------
+        # TUC-UX-11: Accesibilidad (axe-core + teclado), delegada a scripts/a11y.py
+        # -------------------------------------------------------------------
+        test_name = "TUC-UX-11: Accesibilidad WCAG AA (axe-core) y Navegación por Teclado"
+        try:
+            start_time = time.time()
+            run = subprocess.run([sys.executable, os.path.join(HERE, "..", "scripts", "a11y.py"), BASE_URL], capture_output=True, text=True)
+            assert run.returncode == 0, run.stdout[-1500:]
+            duration = round((time.time() - start_time) * 1000, 1)
+            log_step(f"{test_name} ({duration}ms)")
+            results["passed"] += 1
+            results["tests"].append({"name": test_name, "status": "PASSED", "duration_ms": duration})
+        except Exception as e:
+            log_step(f"{test_name} — Error: {str(e)}", "FAIL")
+            results["failed"] += 1
+            results["tests"].append({"name": test_name, "status": "FAILED", "error": str(e)})
+
+        # -------------------------------------------------------------------
+        # TUC-UX-12: Sin errores de JavaScript durante toda la suite
+        # -------------------------------------------------------------------
+        test_name = "TUC-UX-12: Sin Errores de Página en Tiempo de Ejecución"
+        if page_errors:
+            log_step(f"{test_name} — Errores: {page_errors[:3]}", "FAIL")
+            results["failed"] += 1
+            results["tests"].append({"name": test_name, "status": "FAILED", "error": "; ".join(page_errors[:3])})
+        else:
+            log_step(test_name)
+            results["passed"] += 1
+            results["tests"].append({"name": test_name, "status": "PASSED"})
 
         browser.close()
 

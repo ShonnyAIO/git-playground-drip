@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   AlertTriangle, 
   GitMerge, 
   GitCommit, 
   Code, 
   Check, 
-  HelpCircle,
-  Maximize2,
   CheckCircle,
   RotateCcw
 } from 'lucide-react';
 
-export default function ConflictSolver({ progress, setProgress, addTutorMessage, unlockBadge }) {
+export default function ConflictSolver({ progress, completeModule, addTutorMessage, unlockBadge }) {
   const [conflictActive, setConflictActive] = useState(false);
   const [selectedChange, setSelectedChange] = useState(null); // 'current', 'incoming', 'both'
   const [resolved, setResolved] = useState(false);
@@ -28,7 +26,7 @@ export default function ConflictSolver({ progress, setProgress, addTutorMessage,
 
   useEffect(() => {
     if (commitCreated && !progress.conflicts) {
-      setProgress(prev => ({ ...prev, conflicts: true }));
+      completeModule('conflicts');
       unlockBadge('conflict');
       addTutorMessage(
         `¡Soberbio! Has resuelto el conflicto usando el flujo de ${conflictType === 'merge' ? 'Merge (Fusión)' : 'Rebase (Reorganización)'}. Entender la diferencia entre ambos y saber cómo elegir cambios en el editor es lo que te mantendrá a salvo de perder código en tus proyectos de trabajo real.`
@@ -164,10 +162,10 @@ const LoginButton = () => {
             <p style={{ fontSize: '0.95rem' }}>Cuando trabajas con ramas paralelas, tarde o temprano querrás unificar tu código. Hay dos caminos:</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="layout-split" style={{ '--cols': '1fr 1fr', gap: '1.5rem' }}>
             <div style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-secondary)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', marginBottom: '0.5rem', fontWeight: 800 }}>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-text)', marginBottom: '0.5rem', fontWeight: 800 }}>
                   <GitMerge size={20} />
                   <span>Método 1: Git Merge</span>
                 </h4>
@@ -310,7 +308,7 @@ const LoginButton = () => {
           </section>
 
           {conflictActive && (
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr', gap: '1.5rem' }}>
+            <div className="layout-split" style={{ '--cols': '2fr 1.2fr', gap: '1.5rem' }}>
               
               {/* Diff Code Selection Area */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -327,8 +325,17 @@ const LoginButton = () => {
                     <div 
                       id="diff-pane-current"
                       className={`diff-pane-body ${selectedChange === 'current' ? 'selected' : ''}`}
-                      onClick={() => handleSelect('current')}
-                      disabled={resolved}
+                      onClick={() => !resolved && handleSelect('current')}
+                      onKeyDown={(e) => {
+                        if (!resolved && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault();
+                          handleSelect('current');
+                        }
+                      }}
+                      role="button"
+                      tabIndex={resolved ? -1 : 0}
+                      aria-pressed={selectedChange === 'current'}
+                      aria-disabled={resolved}
                       aria-label="Seleccionar cambio actual"
                       style={{ opacity: resolved && selectedChange !== 'current' ? 0.4 : 1 }}
                     >
@@ -345,8 +352,17 @@ const LoginButton = () => {
                     <div 
                       id="diff-pane-incoming"
                       className={`diff-pane-body ${selectedChange === 'incoming' ? 'selected' : ''}`}
-                      onClick={() => handleSelect('incoming')}
-                      disabled={resolved}
+                      onClick={() => !resolved && handleSelect('incoming')}
+                      onKeyDown={(e) => {
+                        if (!resolved && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault();
+                          handleSelect('incoming');
+                        }
+                      }}
+                      role="button"
+                      tabIndex={resolved ? -1 : 0}
+                      aria-pressed={selectedChange === 'incoming'}
+                      aria-disabled={resolved}
                       aria-label="Seleccionar cambio entrante"
                       style={{ opacity: resolved && selectedChange !== 'incoming' ? 0.4 : 1 }}
                     >

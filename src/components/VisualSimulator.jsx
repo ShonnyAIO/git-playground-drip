@@ -1,21 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
-  Play, 
-  Terminal as TermIcon, 
   CornerDownLeft, 
   FileText, 
   Plus, 
   RefreshCw, 
   ArrowRight,
   GitCommit,
-  GitBranch,
-  GitMerge,
   Info,
   CheckCircle,
-  HelpCircle
 } from 'lucide-react';
 
-export default function VisualSimulator({ progress, setProgress, addTutorMessage, unlockBadge, setGitContext }) {
+export default function VisualSimulator({ progress, completeModule, addTutorMessage, unlockBadge, setGitContext }) {
   // Git State
   const [gitInit, setGitInit] = useState(false);
   const [currentBranch, setCurrentBranch] = useState('main');
@@ -60,7 +55,20 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
   const [m2Restored, setM2Restored] = useState(false);
   const [m2Committed, setM2Committed] = useState(false);
   const [m2ResetDone, setM2ResetDone] = useState(false);
-  const [m2Completed, setM2Completed] = useState(false);
+
+  // Helper to log terminal messages
+  const logTerminal = (msg) => {
+    setTerminalLogs(prev => [...prev, msg]);
+  };
+
+  const completeMission2 = () => {
+    setM2ResetDone(true);
+    setM2Step(5);
+    logTerminal('🎉 ¡SOBERBIO! Has completado la Misión 2: Recuperación ante Desastres.');
+    addTutorMessage(
+      '¡Formidable! Completaste la Misión 2 de Git Core. Aprendiste a descartar modificaciones con "git restore" y a deshacer commits erróneos moviendo la historia con "git reset --hard". Estas son las destrezas de control de daños más valiosas en el trabajo real.'
+    );
+  };
 
   // Sync state to parent gitContext for ShonnyProxy AI Tutor
   useEffect(() => {
@@ -88,7 +96,9 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
     const m1Done = m1Steps.init && m1Steps.commitMain && m1Steps.createBranch && m1Steps.commitBranch && m1Steps.merge;
 
     if (m1Done && !progress.simulator) {
-      setProgress(prev => ({ ...prev, simulator: true }));
+      completeModule('simulator');
+      // La misión 1 se cumple desde varios comandos; el efecto anuncia el cierre una sola vez.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       logTerminal('🎉 ¡FELICITACIONES! Has completado la Misión 1: Tu primer flujo de ramas.');
       addTutorMessage(
         '¡Increíble trabajo! Has completado el simulador local para la fusión de ramas. Lograste inicializar un repositorio, staged/commit de archivos, creaste una rama paralela (feature/login) para desarrollar código seguro, e hiciste una fusión (merge). ¡Intenta ahora completar la Misión 2 para dominar la recuperación ante errores!'
@@ -96,21 +106,6 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
     }
   }, [commits, branches, gitInit, progress.simulator]);
 
-  // Mission 2 completion detection
-  useEffect(() => {
-    if (m2ResetDone && !m2Completed) {
-      setM2Completed(true);
-      logTerminal('🎉 ¡SOBERBIO! Has completado la Misión 2: Recuperación ante Desastres.');
-      addTutorMessage(
-        '¡Formidable! Completaste la Misión 2 de Git Core. Aprendiste a descartar modificaciones con "git restore" y a deshacer commits erróneos moviendo la historia con "git reset --hard". Estas son las destrezas de control de daños más valiosas en el trabajo real.'
-      );
-    }
-  }, [m2ResetDone]);
-
-  // Helper to log terminal messages
-  const logTerminal = (msg) => {
-    setTerminalLogs(prev => [...prev, msg]);
-  };
 
   // Create or modify files in the working directory
   const modifyOrCreateFile = (filename, isNew = false) => {
@@ -120,7 +115,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
     }
     setFiles(prev => {
       const currentStatus = prev[filename];
-      let newStatus = 'untracked';
+      let newStatus;
       
       if (isNew) {
         newStatus = 'untracked';
@@ -224,7 +219,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
       
       if (staged.length > 0) {
         logTerminal('Changes to be committed:');
-        staged.forEach(f => logTerminal(`  (use "git restore --staged <file>..." to unstage)`));
+        logTerminal(`  (use "git restore --staged <file>..." to unstage)`);
         staged.forEach(f => logTerminal(`\tstaged:    ${f}`));
       }
       
@@ -535,8 +530,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
         unlockBadge('restore');
 
         if (activeMission === 'undo' && m2Step === 4) {
-          setM2ResetDone(true);
-          setM2Step(5);
+          completeMission2();
         }
         return;
       } else {
@@ -592,8 +586,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
         logTerminal(' Revertido con éxito.');
         
         if (activeMission === 'undo' && m2Step === 4) {
-          setM2ResetDone(true);
-          setM2Step(5);
+          completeMission2();
         }
         return;
       } else {
@@ -762,13 +755,13 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
       </div>
 
       {/* Interactive Mission Card with Stepper */}
-      <section className="card" style={{ 
+      <section className="card layout-split" style={{ 
         borderLeft: '4px solid var(--primary)',
         backgroundColor: 'var(--bg-card)',
         padding: '1.5rem',
         marginBottom: '1.5rem',
         display: 'grid',
-        gridTemplateColumns: '1.5fr 1fr',
+        '--cols': '1.5fr 1fr',
         gap: '1.5rem',
         alignItems: 'center'
       }}>
@@ -788,7 +781,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
             <>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span>Misión 2: Recuperación ante Desastres (Reset & Restore)</span>
-                {m2Completed && <CheckCircle size={16} style={{ color: 'var(--color-local)' }} />}
+                {m2ResetDone && <CheckCircle size={16} style={{ color: 'var(--color-local)' }} />}
               </h3>
               <p style={{ fontSize: '0.85rem', marginTop: '0.4rem', color: 'var(--text-secondary)' }}>
                 ¡Equivocarse es de humanos! Git brilla por su capacidad de viajar al pasado.
@@ -983,7 +976,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
           <span style={{ fontSize: '0.72rem', fontWeight: 500, padding: '0.15rem 0.4rem', borderRadius: '4px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>Interactiva (Click en nodos)</span>
         </h3>
         
-        <div className="graph-canvas-container">
+        <div className="graph-canvas-container" data-scroll-x tabIndex={0} role="region" aria-label="Grafo de commits (desplazable)">
           <svg className="graph-svg" style={{ backgroundImage: 'radial-gradient(var(--border-color) 1px, transparent 1px)', backgroundSize: '16px 16px' }}>
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -1137,7 +1130,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
             <span className="dot dot-green"></span>
           </div>
           <span className="terminal-title">bash - git@ucv-dpred: ~/workspace/project</span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>Rama actual: {currentBranch}</span>
+          <span style={{ fontSize: '0.75rem', color: 'hsl(222, 12%, 65%)', fontFamily: 'var(--font-mono)' }}>Rama actual: {currentBranch}</span>
         </div>
 
         <div className="terminal-body" style={{ minHeight: '220px' }}>
@@ -1198,7 +1191,7 @@ export default function VisualSimulator({ progress, setProgress, addTutorMessage
                     style={{
                       backgroundColor: 'var(--bg-card)',
                       border: '1px solid var(--border-color)',
-                      color: 'var(--primary)',
+                      color: 'var(--primary-text)',
                       borderRadius: '4px',
                       padding: '0.15rem 0.45rem',
                       fontSize: '0.72rem',

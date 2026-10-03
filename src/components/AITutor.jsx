@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   MessageSquare, 
   X, 
@@ -17,8 +17,11 @@ import {
   testShonnyProxyConnection 
 } from '../services/shonnyProxyService';
 
-export default function AITutor({ tutorMessages, addTutorMessage, xp, level, gitContext = {} }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function AITutor({ tutorMessages, addTutorMessage, xp, gitContext = {} }) {
+  const [userDismissed, setUserDismissed] = useState(false);
+  const [userOpened, setUserOpened] = useState(false);
+  // Se abre sola con el primer mensaje nuevo, salvo que el estudiante la haya cerrado.
+  const isOpen = userOpened || (tutorMessages.length > 1 && !userDismissed);
   const [inputVal, setInputVal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -32,22 +35,15 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
     }
   }, [tutorMessages, isOpen, isLoading]);
 
-  const [userDismissed, setUserDismissed] = useState(false);
-
-  useEffect(() => {
-    if (tutorMessages.length > 1 && !userDismissed) {
-      setIsOpen(true);
-    }
-  }, [tutorMessages.length, userDismissed]);
 
   const handleToggle = () => {
     if (isOpen) {
       setUserDismissed(true);
-      setIsOpen(false);
+      setUserOpened(false);
       setShowSettings(false);
     } else {
       setUserDismissed(false);
-      setIsOpen(true);
+      setUserOpened(true);
     }
   };
 
@@ -64,7 +60,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
     try {
       const response = await askShonnyProxy(query, gitContext);
       addTutorMessage(response.text, 'bot', response.source);
-    } catch (err) {
+    } catch {
       addTutorMessage('Ocurrió una anomalía temporal consultando al tutor. Intenta de nuevo.', 'bot', 'error');
     } finally {
       setIsLoading(false);
@@ -133,7 +129,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
             justifyContent: 'space-between'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '0.88rem' }}>
-              <Sparkles size={16} style={{ color: 'var(--primary)' }} />
+              <Sparkles size={16} style={{ color: 'var(--primary-text)' }} />
               <span>Nova AI Tutor</span>
               <span style={{
                 fontSize: '0.62rem',
@@ -167,7 +163,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
               >
                 <Settings size={15} />
               </button>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary)' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary-text)' }}>
                 {xp} XP
               </span>
             </div>
@@ -299,7 +295,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, level, git
 
             {isLoading && (
               <div className="tutor-msg bot" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-                <RefreshCw size={13} className="animate-spin" style={{ color: 'var(--primary)' }} />
+                <RefreshCw size={13} className="animate-spin" style={{ color: 'var(--primary-text)' }} />
                 <span>Nova está analizando tu grafo con ShonnyProxy...</span>
               </div>
             )}

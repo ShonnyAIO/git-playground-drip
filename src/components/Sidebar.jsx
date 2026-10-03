@@ -1,22 +1,79 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { 
   Terminal, 
   Share2, 
   AlertTriangle, 
-  HelpCircle, 
   Award, 
-  BookOpen, 
   Video,
   Sun, 
   Moon, 
-  Home
+  Home,
+  RotateCcw,
+  Menu,
+  X
 } from 'lucide-react';
 
-export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges }) {
+export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress }) {
   
+  // Bajo 1024 px el sidebar es un drawer; en escritorio esta bandera no tiene efecto visual.
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Al pasar a escritorio (p. ej. rotar una tablet) no hay drawer: se cierra y suelta el foco.
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1025px)');
+    const onChange = (e) => {
+      if (e.matches) setDrawerOpen(false);
+    };
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
+
+  const asideRef = useRef(null);
+  const menuBtnRef = useRef(null);
+  const wasOpen = useRef(false);
+
+  // Drawer abierto: foco adentro, Tab no se escapa y Esc cierra. Al cerrar, el foco vuelve al botón.
+  useEffect(() => {
+    if (!drawerOpen) {
+      if (wasOpen.current) menuBtnRef.current?.focus();
+      wasOpen.current = false;
+      return undefined;
+    }
+    wasOpen.current = true;
+    const focusables = () => [...asideRef.current.querySelectorAll('button:not([disabled])')];
+    const frame = requestAnimationFrame(() => focusables()[0]?.focus());
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setDrawerOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const list = focusables();
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [drawerOpen]);
+
+  const selectTab = (id) => {
+    setCurrentTab(id);
+    setDrawerOpen(false);
+  };
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -24,7 +81,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
 
   const navItems = [
     { id: 'dashboard', name: 'Dashboard', icon: Home },
-    { id: 'videolearning', name: 'Clases & Videos', icon: Video },
+    { id: 'videolearning', name: 'Lecciones animadas', icon: Video },
     { id: 'simulator', name: 'Simulador Core', icon: Terminal },
     { id: 'github', name: 'GitHub & Remotos', icon: Share2 },
     { id: 'conflicts', name: 'Resolución de Conflictos', icon: AlertTriangle },
@@ -37,7 +94,27 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
   const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   return (
-    <aside className="sidebar" id="sidebar-container">
+    <>
+    <header className="mobile-topbar">
+      <div className="brand-icon brand-icon-sm">
+        <Terminal size={16} />
+      </div>
+      <span className="brand-name">GitPlayground</span>
+      <span className="mobile-topbar-xp">{xp} XP</span>
+      <button
+        id="mobile-menu-btn"
+        ref={menuBtnRef}
+        className="icon-btn"
+        aria-label={drawerOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={drawerOpen}
+        aria-controls="sidebar-container"
+        onClick={() => setDrawerOpen(open => !open)}
+      >
+        {drawerOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+    </header>
+    {drawerOpen && <div className="drawer-backdrop" onClick={() => setDrawerOpen(false)} />}
+    <aside ref={asideRef} className={`sidebar ${drawerOpen ? 'open' : ''}`} id="sidebar-container" aria-label="Menú y progreso del estudiante">
       <div className="brand-container">
         <div className="brand-icon">
           <Terminal size={20} />
@@ -85,7 +162,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
         <div style={{ marginTop: '0.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.2rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Experiencia (XP)</span>
-            <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{xp} / 1000 XP</span>
+            <span style={{ color: 'var(--primary-text)', fontWeight: 700 }}>{xp} / 1000 XP</span>
           </div>
           <div style={{ width: '100%', height: '5px', backgroundColor: 'var(--border-color)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
             <div style={{ width: `${(xp / 1000) * 100}%`, height: '100%', backgroundColor: 'var(--primary)', transition: 'width 0.5s ease-out' }}></div>
@@ -106,7 +183,8 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
                 <button
                   id={`nav-btn-${item.id}`}
                   className={`nav-item-btn ${currentTab === item.id ? 'active' : ''}`}
-                  onClick={() => setCurrentTab(item.id)}
+                  aria-current={currentTab === item.id ? 'page' : undefined}
+                  onClick={() => selectTab(item.id)}
                 >
                   <Icon size={18} />
                   <span>{item.name}</span>
@@ -152,7 +230,21 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
             </>
           )}
         </button>
+
+        <button
+          id="reset-progress-btn"
+          className="btn-link-subtle"
+          onClick={() => {
+            if (window.confirm('¿Reiniciar todo tu progreso? Perderás XP, medallas y lecciones completadas.')) {
+              onResetProgress();
+            }
+          }}
+        >
+          <RotateCcw size={14} />
+          <span>Reiniciar progreso</span>
+        </button>
       </div>
     </aside>
+    </>
   );
 }

@@ -1,0 +1,63 @@
+.lab {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.lab-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lab-header h1 {
+  font-size: 1.4rem;
+  margin-right: auto;
+}
+
+.lab h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.lab-error {
+  color: var(--color-working);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.lab-mono {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.lab-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.lab-sheet {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+  gap: 1rem;
+}
+
+.lab-frame {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.lab-frame figcaption {
+  margin-top: 0.5rem;
+}

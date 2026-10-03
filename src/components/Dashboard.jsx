@@ -1,4 +1,5 @@
-import React from 'react';
+
+import { LESSONS } from '../lessons/content/index.js';
 import { 
   Terminal, 
   Share2, 
@@ -7,7 +8,6 @@ import {
   BookOpen, 
   CheckCircle,
   Play,
-  ExternalLink,
   GitCommit,
   GitBranch,
   GitMerge,
@@ -15,7 +15,6 @@ import {
   CloudLightning,
   Lock,
   Sparkles,
-  User,
   Compass,
   Video
 } from 'lucide-react';
@@ -31,7 +30,7 @@ const iconMap = {
   Award
 };
 
-export default function Dashboard({ setCurrentTab, progress, xp, level, badges, unlockBadge }) {
+export default function Dashboard({ setCurrentTab, progress, xp, level, badges }) {
   
   const modules = [
     {
@@ -43,7 +42,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges, 
       time: '15 min',
       completed: progress.simulator,
       icon: Terminal,
-      color: 'var(--primary)'
+      color: 'var(--primary-text)'
     },
     {
       id: 'github',
@@ -104,10 +103,10 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges, 
         position: 'relative',
         overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
-          <div style={{
+        <div className="hero-mission" style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
+          <div className="hero-mission-icon" style={{
             backgroundColor: 'var(--primary-light)',
-            color: 'var(--primary)',
+            color: 'var(--primary-text)',
             padding: '1rem',
             borderRadius: 'var(--radius-md)',
             display: 'flex',
@@ -126,7 +125,8 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges, 
               padding: '0.2rem 0.6rem', 
               borderRadius: 'var(--radius-sm)',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em'
+              letterSpacing: '0.05em',
+              display: 'inline-block'
             }}>
               Misión de Rescate de Código
             </span>
@@ -157,7 +157,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges, 
                 style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'var(--bg-secondary)' }}
               >
                 <Video size={16} style={{ color: '#3b82f6' }} />
-                <span>Clases en Video (6 Lecciones)</span>
+                <span>Lecciones animadas ({LESSONS.length})</span>
               </button>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges, 
         {/* XP Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ backgroundColor: 'rgba(240, 80, 50, 0.1)', color: 'var(--primary)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ backgroundColor: 'rgba(240, 80, 50, 0.1)', color: 'var(--primary-text)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
               <Sparkles size={24} />
             </div>
             <div>
@@ -235,7 +235,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges, 
       </section>
 
       {/* Main Grid: Roadmap & Achievements */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+      <div className="layout-split" style={{ '--cols': '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
         
         {/* Left Side: Learning Roadmap */}
         <section>

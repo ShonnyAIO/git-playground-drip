@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   GitPullRequest, 
-  GitBranch, 
   GitCommit, 
   CloudLightning, 
-  Share2, 
-  User, 
-  MessageSquare,
   CheckCircle,
-  FileCode,
   ArrowDownLeft,
   ArrowUpRight
 } from 'lucide-react';
 
-export default function GitHubHub({ progress, setProgress, addTutorMessage, unlockBadge }) {
+export default function GitHubHub({ progress, completeModule, addTutorMessage, unlockBadge }) {
   // Remote state
   const [remoteAdded, setRemoteAdded] = useState(false);
   const [remoteCommits, setRemoteCommits] = useState([
@@ -25,7 +20,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage, unlo
     { hash: 'e5f6g7h', message: 'Agrega vistas de recuperación de contraseña', branch: 'feature/oauth' }
   ]);
   
-  const [remoteBranches, setRemoteBranches] = useState({ main: '3a5b2f1' });
+  const [, setRemoteBranches] = useState({ main: '3a5b2f1' });
   const [localPushed, setLocalPushed] = useState(false);
   const [prCreated, setPrCreated] = useState(false);
   const [prMerged, setPrMerged] = useState(false);
@@ -53,7 +48,7 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage, unlo
   // Logic to track module completion
   useEffect(() => {
     if (remoteAdded && localPushed && prCreated && reviewSolved && prMerged && localSynced && !progress.github) {
-      setProgress(prev => ({ ...prev, github: true }));
+      completeModule('github');
       addTutorMessage(
         '¡Impresionante! Has terminado el módulo de GitHub y Remotos. Lograste simular el flujo completo de colaboración profesional: 1) Conectarte al servidor remoto (git remote add). 2) Empujar tus ramas locales (git push). 3) Proponer cambios mediante un Pull Request. 4) Recibir y resolver Code Reviews del equipo. 5) Integrar el PR en el servidor y 6) Sincronizar de vuelta a tu máquina (git pull).'
       );
@@ -157,14 +152,14 @@ export default function GitHubHub({ progress, setProgress, addTutorMessage, unlo
       </section>
 
       {/* Simulation Layout: Local vs Remote */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <section className="layout-split" style={{ '--cols': '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
         {/* Local Repository Simulator Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
             <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.15rem' }}>
-              <span style={{ color: 'var(--primary)' }}>💻 Repositorio Local</span>
+              <span style={{ color: 'var(--primary-text)' }}>💻 Repositorio Local</span>
             </h4>
-            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
+            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: 'var(--primary-light)', color: 'var(--primary-text)' }}>
               branch: main
             </span>
           </div>

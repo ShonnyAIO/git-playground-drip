@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import VisualSimulator from './components/VisualSimulator';
@@ -7,19 +7,16 @@ import ConflictSolver from './components/ConflictSolver';
 import Quizzes from './components/Quizzes';
 import AITutor from './components/AITutor';
 import VideoLearning from './components/VideoLearning';
+import { BADGES } from './state/badges';
+import { deriveLevel, deriveXp } from './state/learnerStore';
+import { useLearner } from './state/useLearner';
 
 function App() {
-  const [currentTab, setCurrentTab] = useState('dashboard');
-  const [theme, setTheme] = useState('dark');
-  
-  // Progress tracking for modules
-  const [progress, setProgress] = useState({
-    simulator: false,
-    github: false,
-    conflicts: false,
-    quizzes: false,
-    videolearning: false
-  });
+  const [learner, dispatch] = useLearner();
+  const { currentTab, theme, progress } = learner;
+  const setCurrentTab = (tab) => dispatch({ type: 'setTab', tab });
+  const setTheme = (next) => dispatch({ type: 'setTheme', theme: typeof next === 'function' ? next(theme) : next });
+  const completeModule = (module) => dispatch({ type: 'completeModule', module });
 
   // Git state context shared with AI Tutor
   const [gitContext, setGitContext] = useState({
@@ -31,23 +28,12 @@ function App() {
     lastCommands: []
   });
 
-  // Badges system for gamification
-  const [badges, setBadges] = useState([
-    { id: 'init', name: 'Repositorio Iniciado', desc: 'Inicializaste tu primer repositorio con git init.', icon: 'Terminal', unlocked: false },
-    { id: 'commit', name: 'Creador de Historias', desc: 'Creaste tu primer commit local.', icon: 'GitCommit', unlocked: false },
-    { id: 'branch', name: 'Explorador de Ramas', desc: 'Creaste una rama feature/login.', icon: 'GitBranch', unlocked: false },
-    { id: 'merge', name: 'Maestro del Merge', desc: 'Fusionaste ramas con git merge exitosamente.', icon: 'GitMerge', unlocked: false },
-    { id: 'restore', name: 'Viajero del Tiempo', desc: 'Descartaste cambios con git restore o reset.', icon: 'RotateCcw', unlocked: false },
-    { id: 'remote', name: 'Enlazador de Nube', desc: 'Conectaste un repositorio remoto origin.', icon: 'CloudLightning', unlocked: false },
-    { id: 'conflict', name: 'Domador de Conflictos', desc: 'Resolviste una colisión de código en merge/rebase.', icon: 'AlertTriangle', unlocked: false },
-    { id: 'video_master', name: 'Autodidacta Visual', desc: 'Completaste lecciones magistrales en video.', icon: 'Video', unlocked: false },
-    { id: 'quiz', name: 'Sabio de Git', desc: 'Respondiste correctamente todos los desafíos.', icon: 'Award', unlocked: false },
-  ]);
+  const badges = BADGES.map(b => ({ ...b, unlocked: learner.unlockedBadges.includes(b.id) }));
 
   // AI Tutor message log state
   const [tutorMessages, setTutorMessages] = useState([
     { 
-      text: '¡Hola! Bienvenido a GitPlayground, la plataforma educativa libre y abierta para dominar Git. Soy Nova, tu tutora impulsada por ShonnyProxy. Te guiaré con explicaciones socráticas y pistas mientras exploras el simulador y las clases en video.', 
+      text: '¡Hola! Bienvenido a GitPlayground, la plataforma educativa libre y abierta para dominar Git. Soy Nova, tu tutora impulsada por ShonnyProxy. Te guiaré con explicaciones socráticas y pistas mientras exploras el simulador y las lecciones animadas.', 
       sender: 'bot' 
     }
   ]);
@@ -56,42 +42,40 @@ function App() {
     setTutorMessages(prev => [...prev, { text, sender }]);
   };
 
+  // Ref, no estado: varias llamadas en el mismo render no deben notificar dos veces.
+  const unlockedRef = useRef(new Set(learner.unlockedBadges));
+  useEffect(() => {
+    unlockedRef.current = new Set(learner.unlockedBadges);
+  }, [learner.unlockedBadges]);
+
   const unlockBadge = (id) => {
-    setBadges(prev => {
-      let isNewUnlock = false;
-      const nextBadges = prev.map(badge => {
-        if (badge.id === id && !badge.unlocked) {
-          isNewUnlock = true;
-          return { ...badge, unlocked: true };
-        }
-        return badge;
-      });
-
-      if (isNewUnlock) {
-        const found = prev.find(b => b.id === id);
-        // Show tutor message / badge notification
-        setTimeout(() => {
-          addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${found.name}". ${found.desc}`, 'bot');
-        }, 600);
-      }
-      return nextBadges;
-    });
+    const badge = BADGES.find(b => b.id === id);
+    if (!badge || unlockedRef.current.has(id)) return;
+    unlockedRef.current.add(id);
+    dispatch({ type: 'unlockBadge', id });
+    setTimeout(() => {
+      addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${badge.name}". ${badge.desc}`, 'bot');
+    }, 600);
   };
 
-  // XP and Level Calculation
-  const completedModulesCount = Object.values(progress).filter(Boolean).length;
-  const unlockedBadgesCount = badges.filter(b => b.unlocked).length;
-  const xp = (completedModulesCount * 50) + (unlockedBadgesCount * 100);
+  // Cada pestaña empieza arriba y, si la eligió el estudiante, el foco va a su título
+  // para que el lector de pantalla anuncie el cambio. En la carga inicial no se mueve el foco.
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const heading = document.querySelector('#main-content-panel h2');
+    if (heading) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+    }
+  }, [currentTab]);
 
-  const getLevel = () => {
-    if (xp < 250) return 'Novato en Git 👶';
-    if (xp < 500) return 'Desarrollador Local 💻';
-    if (xp < 750) return 'Colaborador de Ramas 🌿';
-    if (xp < 1000) return 'Guardián de Integración 🛡️';
-    return 'Maestro Git de la UCV 🎓';
-  };
-
-  const level = getLevel();
+  const xp = deriveXp(learner);
+  const level = deriveLevel(xp);
 
   // Render view based on active tab
   const renderContent = () => {
@@ -104,7 +88,6 @@ function App() {
             xp={xp}
             level={level}
             badges={badges}
-            unlockBadge={unlockBadge}
           />
         );
       case 'videolearning':
@@ -112,13 +95,16 @@ function App() {
           <VideoLearning 
             setCurrentTab={setCurrentTab} 
             unlockBadge={unlockBadge} 
+            completeModule={completeModule}
+            completedLessons={learner.completedLessons}
+            setLessonCompleted={(id, completed) => dispatch({ type: 'setLessonCompleted', id, completed })}
           />
         );
       case 'simulator':
         return (
           <VisualSimulator 
             progress={progress} 
-            setProgress={setProgress} 
+            completeModule={completeModule} 
             addTutorMessage={addTutorMessage} 
             unlockBadge={unlockBadge}
             setGitContext={setGitContext}
@@ -128,7 +114,7 @@ function App() {
         return (
           <GitHubHub 
             progress={progress} 
-            setProgress={setProgress} 
+            completeModule={completeModule} 
             addTutorMessage={addTutorMessage} 
             unlockBadge={unlockBadge}
           />
@@ -137,7 +123,7 @@ function App() {
         return (
           <ConflictSolver 
             progress={progress} 
-            setProgress={setProgress} 
+            completeModule={completeModule} 
             addTutorMessage={addTutorMessage} 
             unlockBadge={unlockBadge}
           />
@@ -146,7 +132,7 @@ function App() {
         return (
           <Quizzes 
             progress={progress} 
-            setProgress={setProgress} 
+            completeModule={completeModule} 
             addTutorMessage={addTutorMessage} 
             unlockBadge={unlockBadge}
           />
@@ -159,7 +145,6 @@ function App() {
             xp={xp}
             level={level}
             badges={badges}
-            unlockBadge={unlockBadge}
           />
         );
     }
@@ -167,6 +152,7 @@ function App() {
 
   return (
     <div className="app-container" id="app-root-container">
+      <a href="#main-content-panel" className="skip-link">Saltar al contenido</a>
       {/* Decorative Glow Elements */}
       <div className="bg-glow-1"></div>
       <div className="bg-glow-2"></div>
@@ -181,10 +167,11 @@ function App() {
         xp={xp}
         level={level}
         badges={badges}
+        onResetProgress={() => dispatch({ type: 'reset' })}
       />
 
       {/* Main Core Workstation */}
-      <main className="main-content" id="main-content-panel">
+      <main className="main-content" id="main-content-panel" tabIndex={-1}>
         {renderContent()}
       </main>
 

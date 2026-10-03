@@ -58,9 +58,20 @@ function App() {
     }, 600);
   };
 
-  // Cada pestaña empieza arriba; si no, hereda el scroll de la anterior.
+  // Cada pestaña empieza arriba y, si la eligió el estudiante, el foco va a su título
+  // para que el lector de pantalla anuncie el cambio. En la carga inicial no se mueve el foco.
+  const isFirstRender = useRef(true);
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const heading = document.querySelector('#main-content-panel h2');
+    if (heading) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+    }
   }, [currentTab]);
 
   const xp = deriveXp(learner);
@@ -141,6 +152,7 @@ function App() {
 
   return (
     <div className="app-container" id="app-root-container">
+      <a href="#main-content-panel" className="skip-link">Saltar al contenido</a>
       {/* Decorative Glow Elements */}
       <div className="bg-glow-1"></div>
       <div className="bg-glow-2"></div>
@@ -159,7 +171,7 @@ function App() {
       />
 
       {/* Main Core Workstation */}
-      <main className="main-content" id="main-content-panel">
+      <main className="main-content" id="main-content-panel" tabIndex={-1}>
         {renderContent()}
       </main>
 

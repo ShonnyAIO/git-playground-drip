@@ -41,7 +41,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
       time: '15 min',
       completed: progress.simulator,
       icon: Terminal,
-      color: 'var(--primary)'
+      color: 'var(--primary-text)'
     },
     {
       id: 'github',
@@ -105,7 +105,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
         <div className="hero-mission" style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
           <div className="hero-mission-icon" style={{
             backgroundColor: 'var(--primary-light)',
-            color: 'var(--primary)',
+            color: 'var(--primary-text)',
             padding: '1rem',
             borderRadius: 'var(--radius-md)',
             display: 'flex',
@@ -179,7 +179,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
         {/* XP Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ backgroundColor: 'rgba(240, 80, 50, 0.1)', color: 'var(--primary)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ backgroundColor: 'rgba(240, 80, 50, 0.1)', color: 'var(--primary-text)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
               <Sparkles size={24} />
             </div>
             <div>

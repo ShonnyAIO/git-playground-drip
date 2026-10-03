@@ -157,9 +157,9 @@ export default function GitHubHub({ progress, completeModule, addTutorMessage, u
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
             <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.15rem' }}>
-              <span style={{ color: 'var(--primary)' }}>💻 Repositorio Local</span>
+              <span style={{ color: 'var(--primary-text)' }}>💻 Repositorio Local</span>
             </h4>
-            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
+            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', padding: '0.2rem 0.5rem', borderRadius: '4px', backgroundColor: 'var(--primary-light)', color: 'var(--primary-text)' }}>
               branch: main
             </span>
           </div>

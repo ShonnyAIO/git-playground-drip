@@ -262,7 +262,7 @@ export default function VideoLearning({ setCurrentTab, unlockBadge, completeModu
                 <span style={{ 
                   fontSize: '0.68rem', 
                   fontWeight: 700, 
-                  color: 'var(--primary)', 
+                  color: 'var(--primary-text)', 
                   backgroundColor: 'rgba(59, 130, 246, 0.1)', 
                   padding: '0.2rem 0.5rem', 
                   borderRadius: 'var(--radius-sm)',
@@ -322,8 +322,8 @@ export default function VideoLearning({ setCurrentTab, unlockBadge, completeModu
                       color: 'var(--text-primary)'
                     }}
                   >
-                    <Clock size={12} style={{ color: 'var(--primary)' }} />
-                    <strong style={{ color: 'var(--primary)' }}>{t.time}</strong>
+                    <Clock size={12} style={{ color: 'var(--primary-text)' }} />
+                    <strong style={{ color: 'var(--primary-text)' }}>{t.time}</strong>
                     <span>{t.label}</span>
                   </div>
                 ))}
@@ -350,7 +350,7 @@ export default function VideoLearning({ setCurrentTab, unlockBadge, completeModu
                       backgroundColor: 'var(--bg-primary)', 
                       padding: '0.15rem 0.4rem', 
                       borderRadius: 'var(--radius-sm)',
-                      color: '#60a5fa',
+                      color: 'var(--color-remote)',
                       border: '1px solid var(--border-color)'
                     }}
                   >
@@ -477,7 +477,7 @@ export default function VideoLearning({ setCurrentTab, unlockBadge, completeModu
             flexDirection: 'column',
             gap: '0.35rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary)', fontWeight: 700, fontSize: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary-text)', fontWeight: 700, fontSize: '0.75rem' }}>
               <Sparkles size={14} />
               <span>Metodología Activa</span>
             </div>

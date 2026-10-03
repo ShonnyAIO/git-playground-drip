@@ -42,3 +42,19 @@ Color exacto del anillo de foco, texto del enlace de salto.
 ## Debe seguir verde
 
 Lint, build, tests, suite Playwright.
+
+## Estado
+
+✅ Implementado. `scripts/a11y.py` (axe en 6 pestañas × 2 temas + 6 pruebas de teclado)
+sale con 0 bloqueantes; antes del slice había 12 combinaciones con contraste `serious`.
+Evidencia en `assets/slice03/`.
+
+- Tokens de contraste calculados (no tanteados) para ≥ 4.5:1: `--primary` pasa a ser
+  solo **relleno** (47 % de luminosidad, texto blanco encima) y se agrega
+  `--primary-text` para texto e íconos sobre superficies (40 % claro / 65 % oscuro).
+  `--text-tertiary` 42 % / 62 %. Estados Git del tema claro oscurecidos.
+- `transition: all` reemplazado por listas explícitas de propiedades: animaba
+  `visibility` heredada y dejaba los botones del drawer no enfocables al abrir.
+- Paneles de diff del Conflict Solver operables con teclado (`role="button"`,
+  `aria-pressed`). El grafo del simulador ya tenía teclado.
+- Queda 1 aviso `moderate` (`landmark-unique`) en el Dashboard; no bloquea.

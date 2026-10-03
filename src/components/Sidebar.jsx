@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { 
   Terminal, 
   Share2, 
@@ -22,13 +22,42 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  const asideRef = useRef(null);
+  const menuBtnRef = useRef(null);
+  const wasOpen = useRef(false);
+
+  // Drawer abierto: foco adentro, Tab no se escapa y Esc cierra. Al cerrar, el foco vuelve al botón.
   useEffect(() => {
-    if (!drawerOpen) return undefined;
+    if (!drawerOpen) {
+      if (wasOpen.current) menuBtnRef.current?.focus();
+      wasOpen.current = false;
+      return undefined;
+    }
+    wasOpen.current = true;
+    const focusables = () => [...asideRef.current.querySelectorAll('button:not([disabled])')];
+    const frame = requestAnimationFrame(() => focusables()[0]?.focus());
     const onKey = (e) => {
-      if (e.key === 'Escape') setDrawerOpen(false);
+      if (e.key === 'Escape') {
+        setDrawerOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const list = focusables();
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener('keydown', onKey);
+    };
   }, [drawerOpen]);
 
   const selectTab = (id) => {
@@ -64,6 +93,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
       <span className="mobile-topbar-xp">{xp} XP</span>
       <button
         id="mobile-menu-btn"
+        ref={menuBtnRef}
         className="icon-btn"
         aria-label={drawerOpen ? 'Cerrar menú' : 'Abrir menú'}
         aria-expanded={drawerOpen}
@@ -74,7 +104,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
       </button>
     </header>
     {drawerOpen && <div className="drawer-backdrop" onClick={() => setDrawerOpen(false)} />}
-    <aside className={`sidebar ${drawerOpen ? 'open' : ''}`} id="sidebar-container">
+    <aside ref={asideRef} className={`sidebar ${drawerOpen ? 'open' : ''}`} id="sidebar-container" aria-label="Menú y progreso del estudiante">
       <div className="brand-container">
         <div className="brand-icon">
           <Terminal size={20} />
@@ -122,7 +152,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
         <div style={{ marginTop: '0.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.2rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Experiencia (XP)</span>
-            <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{xp} / 1000 XP</span>
+            <span style={{ color: 'var(--primary-text)', fontWeight: 700 }}>{xp} / 1000 XP</span>
           </div>
           <div style={{ width: '100%', height: '5px', backgroundColor: 'var(--border-color)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
             <div style={{ width: `${(xp / 1000) * 100}%`, height: '100%', backgroundColor: 'var(--primary)', transition: 'width 0.5s ease-out' }}></div>
@@ -143,6 +173,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
                 <button
                   id={`nav-btn-${item.id}`}
                   className={`nav-item-btn ${currentTab === item.id ? 'active' : ''}`}
+                  aria-current={currentTab === item.id ? 'page' : undefined}
                   onClick={() => selectTab(item.id)}
                 >
                   <Icon size={18} />

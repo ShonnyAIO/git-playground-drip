@@ -165,7 +165,7 @@ const LoginButton = () => {
           <div className="layout-split" style={{ '--cols': '1fr 1fr', gap: '1.5rem' }}>
             <div style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-secondary)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', marginBottom: '0.5rem', fontWeight: 800 }}>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-text)', marginBottom: '0.5rem', fontWeight: 800 }}>
                   <GitMerge size={20} />
                   <span>Método 1: Git Merge</span>
                 </h4>
@@ -325,8 +325,17 @@ const LoginButton = () => {
                     <div 
                       id="diff-pane-current"
                       className={`diff-pane-body ${selectedChange === 'current' ? 'selected' : ''}`}
-                      onClick={() => handleSelect('current')}
-                      disabled={resolved}
+                      onClick={() => !resolved && handleSelect('current')}
+                      onKeyDown={(e) => {
+                        if (!resolved && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault();
+                          handleSelect('current');
+                        }
+                      }}
+                      role="button"
+                      tabIndex={resolved ? -1 : 0}
+                      aria-pressed={selectedChange === 'current'}
+                      aria-disabled={resolved}
                       aria-label="Seleccionar cambio actual"
                       style={{ opacity: resolved && selectedChange !== 'current' ? 0.4 : 1 }}
                     >
@@ -343,8 +352,17 @@ const LoginButton = () => {
                     <div 
                       id="diff-pane-incoming"
                       className={`diff-pane-body ${selectedChange === 'incoming' ? 'selected' : ''}`}
-                      onClick={() => handleSelect('incoming')}
-                      disabled={resolved}
+                      onClick={() => !resolved && handleSelect('incoming')}
+                      onKeyDown={(e) => {
+                        if (!resolved && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault();
+                          handleSelect('incoming');
+                        }
+                      }}
+                      role="button"
+                      tabIndex={resolved ? -1 : 0}
+                      aria-pressed={selectedChange === 'incoming'}
+                      aria-disabled={resolved}
                       aria-label="Seleccionar cambio entrante"
                       style={{ opacity: resolved && selectedChange !== 'incoming' ? 0.4 : 1 }}
                     >

@@ -1130,7 +1130,7 @@ export default function VisualSimulator({ progress, completeModule, addTutorMess
             <span className="dot dot-green"></span>
           </div>
           <span className="terminal-title">bash - git@ucv-dpred: ~/workspace/project</span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>Rama actual: {currentBranch}</span>
+          <span style={{ fontSize: '0.75rem', color: 'hsl(222, 12%, 65%)', fontFamily: 'var(--font-mono)' }}>Rama actual: {currentBranch}</span>
         </div>
 
         <div className="terminal-body" style={{ minHeight: '220px' }}>
@@ -1191,7 +1191,7 @@ export default function VisualSimulator({ progress, completeModule, addTutorMess
                     style={{
                       backgroundColor: 'var(--bg-card)',
                       border: '1px solid var(--border-color)',
-                      color: 'var(--primary)',
+                      color: 'var(--primary-text)',
                       borderRadius: '4px',
                       padding: '0.15rem 0.45rem',
                       fontSize: '0.72rem',

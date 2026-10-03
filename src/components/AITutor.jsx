@@ -129,7 +129,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, gitContext
             justifyContent: 'space-between'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800, fontSize: '0.88rem' }}>
-              <Sparkles size={16} style={{ color: 'var(--primary)' }} />
+              <Sparkles size={16} style={{ color: 'var(--primary-text)' }} />
               <span>Nova AI Tutor</span>
               <span style={{
                 fontSize: '0.62rem',
@@ -163,7 +163,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, gitContext
               >
                 <Settings size={15} />
               </button>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary)' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary-text)' }}>
                 {xp} XP
               </span>
             </div>
@@ -295,7 +295,7 @@ export default function AITutor({ tutorMessages, addTutorMessage, xp, gitContext
 
             {isLoading && (
               <div className="tutor-msg bot" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-                <RefreshCw size={13} className="animate-spin" style={{ color: 'var(--primary)' }} />
+                <RefreshCw size={13} className="animate-spin" style={{ color: 'var(--primary-text)' }} />
                 <span>Nova está analizando tu grafo con ShonnyProxy...</span>
               </div>
             )}

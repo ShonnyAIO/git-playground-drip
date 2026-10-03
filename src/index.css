@@ -29,20 +29,22 @@
   
   --text-primary: hsl(230, 30%, 15%);
   --text-secondary: hsl(230, 15%, 38%);
-  --text-tertiary: hsl(230, 10%, 55%);
+  --text-tertiary: hsl(230, 12%, 42%);
   
-  --primary: hsl(var(--hue-primary), 85%, 55%);
-  --primary-hover: hsl(var(--hue-primary), 90%, 45%);
+  /* --primary es relleno (texto blanco encima, ≥ 4.5:1); --primary-text es texto sobre superficies. */
+  --primary: hsl(var(--hue-primary), 85%, 47%);
+  --primary-hover: hsl(var(--hue-primary), 90%, 40%);
+  --primary-text: hsl(var(--hue-primary), 85%, 40%);
   --primary-light: hsl(var(--hue-primary), 85%, 94%);
   
   /* Git States - Light Mode */
-  --color-working: hsl(var(--hue-danger), 85%, 52%);
+  --color-working: hsl(var(--hue-danger), 85%, 41%);
   --color-working-bg: hsl(var(--hue-danger), 85%, 96%);
   
-  --color-staging: hsl(var(--hue-warning), 85%, 43%);
+  --color-staging: hsl(var(--hue-warning), 85%, 28%);
   --color-staging-bg: hsl(var(--hue-warning), 85%, 94%);
   
-  --color-local: hsl(var(--hue-success), 75%, 38%);
+  --color-local: hsl(var(--hue-success), 75%, 27%);
   --color-local-bg: hsl(var(--hue-success), 70%, 94%);
   
   --color-remote: hsl(var(--hue-info), 85%, 43%);
@@ -77,10 +79,11 @@
   
   --text-primary: hsl(230, 20%, 96%);
   --text-secondary: hsl(230, 15%, 72%);
-  --text-tertiary: hsl(230, 10%, 50%);
+  --text-tertiary: hsl(230, 12%, 62%);
   
-  --primary: hsl(var(--hue-primary), 90%, 65%);
-  --primary-hover: hsl(var(--hue-primary), 90%, 75%);
+  --primary: hsl(var(--hue-primary), 85%, 47%);
+  --primary-hover: hsl(var(--hue-primary), 90%, 40%);
+  --primary-text: hsl(var(--hue-primary), 90%, 65%);
   --primary-light: hsl(var(--hue-primary), 50%, 12%);
   
   /* Git States - Dark Mode */
@@ -260,7 +263,9 @@ code {
   border-radius: var(--radius-md);
   cursor: pointer;
   text-align: left;
-  transition: all var(--transition-fast);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item-btn:hover {
@@ -271,7 +276,7 @@ code {
 
 .nav-item-btn.active {
   background-color: var(--primary-light);
-  color: var(--primary);
+  color: var(--primary-text);
   font-weight: 600;
   box-shadow: inset 3px 0 0 var(--primary);
 }
@@ -364,7 +369,9 @@ code {
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary {
@@ -390,7 +397,7 @@ code {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--primary);
+  color: var(--primary-text);
   border-color: var(--primary);
 }
 
@@ -410,12 +417,14 @@ code {
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-icon-only:hover {
   background-color: var(--bg-secondary);
-  color: var(--primary);
+  color: var(--primary-text);
   border-color: var(--primary);
 }
 
@@ -527,7 +536,9 @@ code {
   flex-direction: column;
   gap: 0.75rem;
   border: 1px solid var(--border-color);
-  transition: all var(--transition-normal);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .state-column.working {
@@ -729,7 +740,9 @@ code {
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: all var(--transition-fast);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quiz-option:hover {
@@ -961,7 +974,9 @@ code {
 }
 
 .file-box {
-  transition: all var(--transition-fast);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .file-box:hover {
   transform: translateX(4px) scale(1.02);
@@ -1006,12 +1021,14 @@ code {
   background-color: var(--bg-card);
   border: 4px solid var(--border-color);
   color: var(--text-tertiary);
-  transition: all var(--transition-normal);
+  transition-property: background-color, color, border-color, box-shadow, transform, opacity, width;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mission-indicator.active {
   border-color: var(--primary);
-  color: var(--primary);
+  color: var(--primary-text);
   box-shadow: 0 0 15px rgba(170, 59, 255, 0.2);
 }
 
@@ -1104,7 +1121,7 @@ code {
     margin-left: auto;
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--primary-text);
   }
   .sidebar {
     position: fixed;
@@ -1117,11 +1134,13 @@ code {
     background-color: var(--bg-primary);
     transform: translateX(-100%);
     visibility: hidden;
-    transition: transform var(--transition-normal), visibility var(--transition-normal);
+    /* Se oculta cuando termina de deslizar; se muestra al instante para poder enfocar. */
+    transition: transform var(--transition-normal), visibility 0s linear 0.3s;
   }
   .sidebar.open {
     transform: translateX(0);
     visibility: visible;
+    transition: transform var(--transition-normal), visibility 0s;
     box-shadow: var(--shadow-lg);
   }
   .drawer-backdrop {
@@ -1181,4 +1200,46 @@ code {
 .btn-link-subtle:hover {
   color: var(--text-primary);
   text-decoration: underline;
+}
+
+/* ===== Accesibilidad ===== */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary-text);
+  outline-offset: 2px;
+}
+
+/* Títulos y contenedores que reciben foco por programa: sin anillo, el lector ya anuncia. */
+h2[tabindex="-1"]:focus,
+.main-content:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg-glow-1, .bg-glow-2 {
+    display: none;
+  }
 }

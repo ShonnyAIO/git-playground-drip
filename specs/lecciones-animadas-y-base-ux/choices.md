@@ -28,3 +28,16 @@ Decisiones tomadas donde el spec callaba. Se consolida al cerrar el spec.
   con estudiantes.
 - **Se descartaron las capturas de 1024 px** de la evidencia por redundantes (el script las
   sigue generando).
+
+## Slice 03
+
+- **El naranja de marca se oscureció** (47 % de luminosidad en ambos temas) para que el
+  texto blanco de los botones cumpla 4.5:1. Es el cambio visual más notorio del slice;
+  si la cátedra prefiere el naranja anterior, la alternativa es texto oscuro sobre
+  naranja claro. Reversible en un token.
+- **El enlace de salto se superpone al logo** mientras tiene foco. Patrón habitual; aceptado.
+- **El foco salta al título del módulo solo cuando el estudiante cambia de pestaña**, no
+  en la carga inicial (para no secuestrar el foco al entrar).
+- **Reducción de movimiento global**: con `prefers-reduced-motion` se anulan todas las
+  animaciones y transiciones y se ocultan los brillos. El reproductor (slice 05) define
+  además su propio comportamiento.

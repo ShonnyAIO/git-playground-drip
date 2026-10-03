@@ -1,0 +1,267 @@
+/* Reproductor de lecciones animadas. Colores solo por tokens de index.css. */
+.lesson-player {
+  --scene-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --scene-move: 0.75s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+.lesson-stage {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+
+.scene-svg {
+  display: block;
+  overflow: visible;
+  font-family: var(--font-sans);
+}
+
+/* Viaje entre pasos: elementos con key estable cambian su transform. */
+.scene-item {
+  transition: transform var(--scene-move) var(--scene-ease);
+}
+
+.scene-edge {
+  fill: none;
+  stroke: var(--text-tertiary);
+  stroke-width: 2.5;
+  /* d: path() se anima en Chromium; en otros navegadores el trazo cambia sin transición. */
+  transition: d var(--scene-move) var(--scene-ease);
+}
+
+.scene-edge.is-ghost {
+  stroke-dasharray: 5 4;
+  opacity: 0.5;
+}
+
+.scene-pop {
+  animation: scene-pop 0.5s var(--scene-ease) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.scene-fade {
+  animation: scene-fade 0.6s ease both;
+}
+
+.is-ghost {
+  opacity: 0.45;
+}
+
+.scene-halo {
+  fill: none;
+  stroke: var(--primary-text);
+  stroke-width: 2.5;
+  animation: scene-halo 1.4s ease-in-out infinite;
+}
+
+.scene-zone-title,
+.scene-panel-title {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.scene-panel-title {
+  fill: var(--text-secondary);
+}
+
+.scene-file-name,
+.scene-code-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  fill: var(--text-primary);
+}
+
+.scene-file-status {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.scene-commit-id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  fill: var(--text-secondary);
+}
+
+.scene-tag-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@keyframes scene-pop {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scene-fade {
+  from { opacity: 0; }
+}
+
+@keyframes scene-halo {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* Mini terminal: el comando del paso se "tipea". */
+.lesson-terminal {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.6rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: hsl(222, 24%, 9%);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: hsl(222, 20%, 88%);
+}
+
+.lesson-terminal-prompt {
+  color: hsl(136, 60%, 60%);
+}
+
+.lesson-terminal-cmd {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+  border-right: 2px solid hsl(222, 20%, 88%);
+  animation: lesson-typing 0.9s steps(var(--chars)) both, lesson-caret 0.8s step-end infinite;
+}
+
+@keyframes lesson-typing {
+  from { width: 0; }
+  to { width: calc(var(--chars) * 1ch); }
+}
+
+@keyframes lesson-caret {
+  50% { border-color: transparent; }
+}
+
+.lesson-caption {
+  min-height: 3.2em;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.lesson-caption.is-hidden {
+  visibility: hidden;
+}
+
+.lesson-caption-step {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.lesson-progress {
+  display: flex;
+  gap: 4px;
+}
+
+.lesson-segment {
+  flex: 1;
+  height: 18px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.lesson-segment span {
+  display: block;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  transform-origin: left;
+  box-shadow: inset 0 0 0 100px transparent;
+}
+
+.lesson-segment::before {
+  content: '';
+  display: block;
+  height: 6px;
+  margin-bottom: -6px;
+  border-radius: var(--radius-full);
+  background: var(--border-color);
+}
+
+.lesson-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lesson-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.lesson-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.lesson-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lesson-btn.is-on {
+  border-color: var(--primary-text);
+  color: var(--primary-text);
+}
+
+.lesson-btn-main {
+  width: 52px;
+  height: 52px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+}
+
+.lesson-speed select {
+  height: 44px;
+  padding: 0 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-player {
+    --scene-move: 0s;
+  }
+  .scene-halo {
+    animation: none;
+    opacity: 1;
+  }
+}

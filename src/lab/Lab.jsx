@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { LESSONS } from '../lessons/content/index.js';
 import { layoutGraph, lessonDuration, validateLesson } from '../lessons/engine/index.js';
 import { FIXTURE } from './fixture.js';
+import LessonPlayer from '../lessons/render/LessonPlayer.jsx';
+import SceneView from '../lessons/render/SceneView.jsx';
+import { layoutScene } from '../lessons/render/sceneLayout.js';
 import './lab.css';
 
 // Laboratorio solo de desarrollo (npm run dev → /lab.html): valida cada lección y muestra sus escenas.
@@ -45,6 +48,23 @@ export default function Lab() {
           {Math.round(lessonDuration(lesson) / 1000)} s
         </h2>
         {errors.map(e => <p key={e} className="lab-error">{e}</p>)}
+      </section>
+
+      <section>
+        <h2>Reproductor</h2>
+        <LessonPlayer key={lesson.id} lesson={lesson} onComplete={id => console.log('completada', id)} />
+      </section>
+
+      <section>
+        <h2>Hoja de contactos</h2>
+        <div className="lab-sheet">
+          {lesson.steps.map((step, i) => (
+            <figure key={step.id} className="lab-frame">
+              <SceneView layout={layoutScene(step.scene, 560, lesson.files)} focus={step.focus} />
+              <figcaption><strong>{i + 1}.</strong> {step.command && <code className="lab-mono">$ {step.command} </code>}{step.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
       </section>
 
       <section>

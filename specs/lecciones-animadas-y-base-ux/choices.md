@@ -41,3 +41,16 @@ Decisiones tomadas donde el spec callaba. Se consolida al cerrar el spec.
 - **Reducción de movimiento global**: con `prefers-reduced-motion` se anulan todas las
   animaciones y transiciones y se ocultan los brillos. El reproductor (slice 05) define
   además su propio comportamiento.
+
+## Slices 04–05
+
+- **Sin reproducción automática**: el estudiante pulsa Play. Evita sorpresas (y audio) al
+  abrir la pestaña y satisface la reducción de movimiento sin lógica extra.
+- **Altura del escenario fija por lección** (la del paso más alto): estabilidad sobre
+  aprovechamiento del espacio.
+- **Un foco puede iluminar dos vistas del mismo commit** (zona Repositorio y grafo).
+  Aceptado: es el mismo objeto.
+- **Paleta por carril** (main naranja, segunda rama azul, tercera verde, cuarta amarilla)
+  reutilizando tokens existentes; los commits `ghost` en gris punteado.
+- **Narración por voz**: usa la primera voz `es-*` del sistema; si no hay, la del
+  navegador con `lang = es-ES`. Su calidad depende del sistema operativo del estudiante.

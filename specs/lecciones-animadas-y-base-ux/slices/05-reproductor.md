@@ -56,3 +56,20 @@ tamaños del SVG, diseño de la mini-terminal.
 ## Debe seguir verde
 
 Lint, build, tests del motor.
+
+## Estado
+
+✅ Implementado: `engine/playback.js` (+5 tests), `render/sceneLayout.js` (posiciones
+puras), `render/SceneView.jsx` (dibujo), `render/LessonPlayer.jsx` + `player.css`.
+`lab.html` muestra el reproductor y la hoja de contactos. Evidencia en `assets/slice05/`.
+
+- El SVG usa el ancho real del contenedor (1 unidad = 1 px) en vez de escalar un
+  `viewBox` fijo: el texto se lee igual a 375 px. Bajo 640 px las zonas y los grafos
+  local/remoto se apilan.
+- El escenario reserva la altura del paso más alto: no salta entre pasos, a costa de
+  un vacío en los pasos cortos.
+- El grafo se centra en su panel: cuando nace un commit todo se desplaza como un paneo.
+- La lección no se reproduce sola; arranca con Play (cumple `prefers-reduced-motion`
+  sin caso especial).
+- Bordes del grafo: `d: path()` se anima en Chromium; en otros navegadores cambia sin
+  transición.

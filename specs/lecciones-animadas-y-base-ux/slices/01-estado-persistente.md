@@ -17,10 +17,8 @@ sobreviven a recargar la página. Hoy todo vive en `useState` de `App.jsx` y se 
     excepción ⇒ estado inicial, nunca un crash. Campos desconocidos se descartan.
   - `deriveXp(state)` y `deriveLevel(xp)` (misma fórmula y niveles que hoy en `App.jsx`).
 - `src/state/useLearner.js` — hook `useLearner()` = `useReducer` + guardado en `useEffect`.
-- `App.jsx` usa el hook; los componentes siguen recibiendo `progress`, `setProgress`,
-  `unlockBadge` con la misma forma para no tocar sus internos en este slice.
-  `setProgress(fn)` se adapta a `completeModule` (el adaptador vive en `App.jsx` y se
-  borra cuando un componente deje de usarlo; ver "andamiaje").
+- `App.jsx` usa el hook y pasa `completeModule(id)` a los módulos en lugar de
+  `setProgress` (todos los usos eran `prev => ({ ...prev, X: true })`).
 - El mensaje del tutor "🏆 ¡LOGRO DESBLOQUEADO!" se dispara solo cuando el reducer
   reporta un desbloqueo nuevo (no al rehidratar).
 
@@ -42,11 +40,11 @@ Completar algo en el simulador, recargar: XP, medallas y pestaña siguen ahí. U
   `deriveLevel` en los bordes 249/250, 999/1000.
 - Manual: recargar en cada pestaña conserva la pestaña.
 
-## Andamiaje con fecha de muerte
+## Estado
 
-El adaptador `setProgress(fn)` en `App.jsx` muere en el slice 12, cuando la Videoteca
-pasa a llamar acciones del store directamente; los demás módulos lo conservan hasta que
-se refactoricen (fuera de alcance; anotarlo en el ledger).
+✅ Implementado. Se descartó el adaptador `setProgress(fn)` planeado: pasar
+`completeModule` era más simple y no deja andamiaje. Acción `setLessonCompleted(id, bool)`
+en lugar de `toggleLesson` (idempotente; la usa el autocompletado del slice 12).
 
 ## Decisiones delegadas
 

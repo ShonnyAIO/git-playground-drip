@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { 
   Terminal, 
   Share2, 
@@ -7,7 +7,6 @@ import {
   BookOpen, 
   CheckCircle,
   Play,
-  ExternalLink,
   GitCommit,
   GitBranch,
   GitMerge,
@@ -15,7 +14,6 @@ import {
   CloudLightning,
   Lock,
   Sparkles,
-  User,
   Compass,
   Video
 } from 'lucide-react';
@@ -31,7 +29,7 @@ const iconMap = {
   Award
 };
 
-export default function Dashboard({ setCurrentTab, progress, xp, level, badges, unlockBadge }) {
+export default function Dashboard({ setCurrentTab, progress, xp, level, badges }) {
   
   const modules = [
     {

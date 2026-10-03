@@ -2,7 +2,7 @@
 
 ## Next Agent Prompt
 
-> Última actualización: 2026-10-03. Estado: **spec redactado, ningún slice implementado.**
+> Última actualización: 2026-10-03. Estado: **slice 01 cerrado; siguiente: 02.**
 >
 > Trabajas en la rama `feat/lecciones-animadas-base-ux` (nunca en `main`). Haz commit al
 > cerrar cada slice; **no hagas `push` ni deploy a Netlify** sin confirmación de Shonny.
@@ -14,7 +14,7 @@
 
 ### TODO global
 
-- [ ] [01 — Estado persistente del estudiante](slices/01-estado-persistente.md)
+- [x] [01 — Estado persistente del estudiante](slices/01-estado-persistente.md)
 - [ ] [02 — Layout responsive](slices/02-layout-responsive.md)
 - [ ] [03 — Accesibilidad base](slices/03-accesibilidad.md)
 - [ ] [04 — Motor de escenas (puro)](slices/04-motor-escenas.md)
@@ -95,7 +95,8 @@ YouTube inventados.
 
 ## Puertas de verificación permanentes
 
-- `npm run lint` y `npm run build` en verde en cada slice.
+- `npm run lint` sin errores (quedan 4 warnings `exhaustive-deps` previos en módulos fuera de alcance) y `npm run build` en verde en cada slice.
+- La app carga sin `pageerror` (el build pasa aunque la app quede en blanco; se comprobó en el slice 01).
 - `npm test` (Vitest, se agrega en el slice 01) en verde.
 - **Todo slice visual** termina con la skill `screenshot-critique`
   sobre sus capturas como último chequeo antes de aceptarlo. Si el slice cambia un aspecto

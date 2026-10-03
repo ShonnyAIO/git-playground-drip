@@ -1061,3 +1061,24 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+.btn-link-subtle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.btn-link-subtle:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}

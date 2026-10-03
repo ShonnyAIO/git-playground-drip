@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   AlertTriangle, 
   GitMerge, 
   GitCommit, 
   Code, 
   Check, 
-  HelpCircle,
-  Maximize2,
   CheckCircle,
   RotateCcw
 } from 'lucide-react';
 
-export default function ConflictSolver({ progress, setProgress, addTutorMessage, unlockBadge }) {
+export default function ConflictSolver({ progress, completeModule, addTutorMessage, unlockBadge }) {
   const [conflictActive, setConflictActive] = useState(false);
   const [selectedChange, setSelectedChange] = useState(null); // 'current', 'incoming', 'both'
   const [resolved, setResolved] = useState(false);
@@ -28,7 +26,7 @@ export default function ConflictSolver({ progress, setProgress, addTutorMessage,
 
   useEffect(() => {
     if (commitCreated && !progress.conflicts) {
-      setProgress(prev => ({ ...prev, conflicts: true }));
+      completeModule('conflicts');
       unlockBadge('conflict');
       addTutorMessage(
         `¡Soberbio! Has resuelto el conflicto usando el flujo de ${conflictType === 'merge' ? 'Merge (Fusión)' : 'Rebase (Reorganización)'}. Entender la diferencia entre ambos y saber cómo elegir cambios en el editor es lo que te mantendrá a salvo de perder código en tus proyectos de trabajo real.`

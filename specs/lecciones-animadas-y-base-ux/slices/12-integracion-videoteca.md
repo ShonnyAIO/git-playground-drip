@@ -15,10 +15,9 @@ YouTube ni marcas de tiempo o duraciones inventadas.
   sus pasos, sin duplicar datos), botón de práctica (`practice.tab`) y "Para profundizar"
   con `furtherReading` (enlaces externos, `rel="noopener"`, título y autor).
 - Completar: al terminar la reproducción (`ended`) la lección se marca sola vía
-  `toggleLesson`/acción del store; el botón manual se mantiene para desmarcar.
+  `setLessonCompleted(id, true)`; el botón manual se mantiene para desmarcar.
 - Medalla `video_master` al completar las 6 (antes: 3 y con ID equivocado; se corrige en
   el slice 01). `progress.videolearning = true` al completar las 6.
-- Se elimina el adaptador `setProgress(fn)` para la Videoteca (andamiaje del slice 01).
 - Dashboard: el botón "Clases en Video (6 Lecciones)" y la descripción del módulo se
   actualizan a "Lecciones animadas".
 

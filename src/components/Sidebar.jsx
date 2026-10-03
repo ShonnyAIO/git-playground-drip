@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { 
   Terminal, 
   Share2, 
   AlertTriangle, 
-  HelpCircle, 
   Award, 
-  BookOpen, 
   Video,
   Sun, 
   Moon, 
-  Home
+  Home,
+  RotateCcw
 } from 'lucide-react';
 
-export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges }) {
+export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress }) {
   
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -151,6 +150,19 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
               <span>Modo Oscuro</span>
             </>
           )}
+        </button>
+
+        <button
+          id="reset-progress-btn"
+          className="btn-link-subtle"
+          onClick={() => {
+            if (window.confirm('¿Reiniciar todo tu progreso? Perderás XP, medallas y lecciones completadas.')) {
+              onResetProgress();
+            }
+          }}
+        >
+          <RotateCcw size={14} />
+          <span>Reiniciar progreso</span>
         </button>
       </div>
     </aside>

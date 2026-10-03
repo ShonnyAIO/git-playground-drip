@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Play, 
   CheckCircle, 
   Clock, 
-  BookOpen, 
   Terminal, 
-  ExternalLink, 
   Sparkles, 
   Award,
   Video,
@@ -20,7 +18,7 @@ import {
 
 const LESSONS = [
   {
-    id: 1,
+    id: '1',
     title: '1. La Trinidad de Git: Working Directory, Staging y Repositorio',
     category: 'Básico',
     duration: '07:15',
@@ -38,7 +36,7 @@ const LESSONS = [
     targetActionLabel: 'Practicar en Simulador Core'
   },
   {
-    id: 2,
+    id: '2',
     title: '2. Ramas y Punteros: Navegando en el Grafo sin Miedo a HEAD',
     category: 'Básico',
     duration: '08:40',
@@ -56,7 +54,7 @@ const LESSONS = [
     targetActionLabel: 'Crear Ramas en el Grafo Vivo'
   },
   {
-    id: 3,
+    id: '3',
     title: '3. Integración de Código: Fast-Forward vs 3-Way Merge',
     category: 'Intermedio',
     duration: '06:50',
@@ -74,7 +72,7 @@ const LESSONS = [
     targetActionLabel: 'Simular Fusiones en la Consola'
   },
   {
-    id: 4,
+    id: '4',
     title: '4. GitHub y Remotos: Push, Pull y Pull Requests Profesionales',
     category: 'Intermedio',
     duration: '09:20',
@@ -92,7 +90,7 @@ const LESSONS = [
     targetActionLabel: 'Abrir Simulador de GitHubHub'
   },
   {
-    id: 5,
+    id: '5',
     title: '5. Anatomía de Conflictos: Resolución Línea por Línea',
     category: 'Avanzado',
     duration: '10:15',
@@ -110,7 +108,7 @@ const LESSONS = [
     targetActionLabel: 'Entrar al Conflict Solver 3-Way'
   },
   {
-    id: 6,
+    id: '6',
     title: '6. El Botiquín de Emergencias: Stash, Restore y Reflog',
     category: 'Avanzado',
     duration: '08:10',
@@ -129,34 +127,19 @@ const LESSONS = [
   }
 ];
 
-export default function VideoLearning({ setCurrentTab, unlockBadge }) {
-  const [selectedLessonId, setSelectedLessonId] = useState(1);
-  const [completedLessons, setCompletedLessons] = useState(() => {
-    try {
-      const saved = localStorage.getItem('gitplayground_completed_lessons');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+export default function VideoLearning({ setCurrentTab, unlockBadge, completeModule, completedLessons, setLessonCompleted }) {
+  const [selectedLessonId, setSelectedLessonId] = useState('1');
   const [activeFilter, setActiveFilter] = useState('Todas');
 
   const selectedLesson = LESSONS.find(l => l.id === selectedLessonId) || LESSONS[0];
 
   const toggleLessonCompleted = (id) => {
-    setCompletedLessons(prev => {
-      const isAlreadyDone = prev.includes(id);
-      const next = isAlreadyDone ? prev.filter(item => item !== id) : [...prev, id];
-      try {
-        localStorage.setItem('gitplayground_completed_lessons', JSON.stringify(next));
-      } catch (e) {
-        console.error(e);
-      }
-      if (!isAlreadyDone && next.length >= 3 && unlockBadge) {
-        unlockBadge('quiz');
-      }
-      return next;
-    });
+    const completed = !completedLessons.includes(id);
+    setLessonCompleted(id, completed);
+    if (completed && LESSONS.every(l => l.id === id || completedLessons.includes(l.id))) {
+      unlockBadge('video_master');
+      completeModule('videolearning');
+    }
   };
 
   const filteredLessons = LESSONS.filter(l => {

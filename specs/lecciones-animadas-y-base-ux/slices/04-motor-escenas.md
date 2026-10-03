@@ -87,3 +87,15 @@ Organización de archivos dentro de `engine/`, nombres internos, formato de la t
 
 Si una lección necesita un panel nuevo (p. ej. un árbol de objetos `.git`), se agrega aquí
 como clave de `scene` con su validación; nunca como componente especial de una lección.
+
+## Estado
+
+✅ Implementado en `src/lessons/engine/` (`schema.js` con el JSDoc, `validate.js`,
+`layout.js`, `timing.js`) con 23 tests en `engine.test.js`. `lab.html` + `src/lab/`
+muestra validación, duración y layout por paso; `vite build` no lo incluye.
+
+- `focus` admite además `zone:working|staging|repo` y `head`.
+- `layoutGraph` devuelve también `stack` por etiqueta (varias ramas en el mismo commit)
+  y `columns`/`rows` para que el renderer dimensione el SVG.
+- Los commits que ninguna rama alcanza (ghost, detached huérfano) forman cadenas en
+  carriles posteriores: el rebase muestra la historia vieja debajo de la nueva.

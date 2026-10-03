@@ -1,0 +1,150 @@
+<mxfile host="app.diagrams.net" modified="2026-09-16T10:00:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="MapaContenido_AlgoLearn" name="Mapa de Contenido - AlgoLearn">
+    <mxGraphModel dx="1422" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Nivel 0: Acceso -->
+        <mxCell id="n0_bienvenida" value="&lt;b&gt;Interfaz: Pantalla de Bienvenida&lt;/b&gt;&lt;hr&gt;- Atributos: EstadoRed, Idioma" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n0_form_auth" value="&lt;b&gt;[Formulario]&lt;/b&gt; Inicio / Registro&lt;hr&gt;Entradas: Correo, Clave, GoogleOAuth" style="shape=rect;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="360" y="80" width="230" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n0_sys_valida" value="&lt;b&gt;Acción Sistema:&lt;/b&gt;&lt;br&gt;Validar Credenciales y Perfil" style="shape=rect;dashed=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#10B981;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="670" y="80" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n0_dec_auth" value="¿Credenciales&lt;br&gt;Válidas?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FDF2F8;strokeColor=#DB2777;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="950" y="65" width="130" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="con_01" value="Actor pulsa &#39;Comenzar&#39;" edge="1" source="n0_bienvenida" target="n0_form_auth" parent="1" style="strokeColor=#2563EB;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="con_02" value="Envío de datos" edge="1" source="n0_form_auth" target="n0_sys_valida" parent="1" style="strokeColor=#D97706;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="con_03" edge="1" source="n0_sys_valida" target="n0_dec_auth" parent="1" style="strokeColor=#10B981;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="con_04" value="NO: Notificar error" edge="1" source="n0_dec_auth" target="n0_form_auth" parent="1" style="strokeColor=#EF4444;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1015" y="190" />
+              <mxPoint x="475" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Nivel 1: Dashboard y Selección -->
+        <mxCell id="n1_rutas" value="&lt;b&gt;Interfaz: Catálogo Abierto de Rutas&lt;/b&gt;&lt;hr&gt;- Atributos: ListaMaterias, Dificultad" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="80" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="con_05" value="SI: Acceso exitoso" edge="1" source="n0_dec_auth" target="n1_rutas" parent="1" style="strokeColor=#10B981;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n1_dashboard" value="&lt;b&gt;Interfaz: Árbol de Conocimiento (Dashboard)&lt;/b&gt;&lt;hr&gt;- Atributos: PuntosXP, RachaDias, Modulos, EstadoOffline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="240" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_06" value="Seleccionar Materia" edge="1" source="n1_rutas" target="n1_dashboard" parent="1" style="strokeColor=#2563EB;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Nivel 2: Workspace de Lección -->
+        <mxCell id="n2_teoria" value="&lt;b&gt;Interfaz: Lección Teórica Visual&lt;/b&gt;&lt;hr&gt;- Atributos: DiagramaSintaxis, Concepto, TiempoMin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="240" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_07" value="Pulsar lección activa" edge="1" source="n1_dashboard" target="n2_teoria" parent="1" style="strokeColor=#2563EB;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n2_editor" value="&lt;b&gt;Interfaz: Editor de Código Interactivo&lt;/b&gt;&lt;hr&gt;- Atributos: Plantilla, BufferTexto, TecladoNativo, BarraSimbolos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="380" y="240" width="290" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_08" value="Ir a la Práctica" edge="1" source="n2_teoria" target="n2_editor" parent="1" style="strokeColor=#2563EB;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Nivel 3: Asistente Predictivo y Ejecución -->
+        <mxCell id="n3_sys_eval" value="&lt;b&gt;Acción Sistema:&lt;/b&gt;&lt;br&gt;Parsear AST y Evaluar Casos de Prueba" style="shape=rect;dashed=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#10B981;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="395" y="400" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="con_09" value="Actor pulsa &#39;Comprobar&#39;" edge="1" source="n2_editor" target="n3_sys_eval" parent="1" style="strokeColor=#2563EB;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n3_dec_eval" value="¿Sintaxis y Lógica&lt;br&gt;Correctas?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FDF2F8;strokeColor=#DB2777;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="450" y="530" width="150" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="con_10" edge="1" source="n3_sys_eval" target="n3_dec_eval" parent="1" style="strokeColor=#10B981;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Salida Éxito -->
+        <mxCell id="n3_exito" value="&lt;b&gt;Interfaz: Modal de Recompensa&lt;/b&gt;&lt;hr&gt;- Atributos: +25 XP, RachaActualizada, SiguienteDesbloqueado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="545" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_11" value="SI: Validación exitosa (&lt;100ms)" edge="1" source="n3_dec_eval" target="n3_exito" parent="1" style="strokeColor=#16A34A;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="con_12" value="Avanzar siguiente lección" edge="1" source="n3_exito" target="n1_dashboard" parent="1" style="strokeColor=#16A34A;endArrow=classic;exitX=1;exitY=0.5;entryX=0.5;entryY=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1310" y="585" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Salida Fallo: Tooltip Predictivo -->
+        <mxCell id="n3_tooltip" value="&lt;b&gt;Interfaz: Tooltip Predictivo de Sintaxis&lt;/b&gt;&lt;hr&gt;- Atributos: LineaExacta, ExplicacionHumana, PistaDidactica" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE2E2;strokeColor=#EF4444;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="545" width="270" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_13" value="NO: Error de sintaxis" edge="1" source="n3_dec_eval" target="n3_tooltip" parent="1" style="strokeColor=#EF4444;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="con_14" value="Pista contextual y corrección rápida" edge="1" source="n3_tooltip" target="n2_editor" parent="1" style="strokeColor=#EF4444;endArrow=classic;exitX=0.5;exitY=0;entryX=0.25;entryY=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="215" y="360" />
+              <mxPoint x="453" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Nivel 4: Capa Social y Foros -->
+        <mxCell id="n4_foro" value="&lt;b&gt;Interfaz: Foro Contextual de la Lección&lt;/b&gt;&lt;hr&gt;- Atributos: IdLeccion, TotalHilos, RespuestasVerificadas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="740" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_15" value="Actor pulsa &#39;Discutir Lección&#39;" edge="1" source="n2_editor" target="n4_foro" parent="1" style="strokeColor=#8B5CF6;dashed=1;endArrow=classic;exitX=0.1;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="409" y="700" />
+              <mxPoint x="220" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="n4_form_coment" value="&lt;b&gt;[Formulario]&lt;/b&gt; Nueva Consulta / Aporte&lt;hr&gt;Entradas: TituloPregunta, BloqueCodigo, Texto" style="shape=rect;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="450" y="740" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="con_16" value="Publicar aporte" edge="1" source="n4_foro" target="n4_form_coment" parent="1" style="strokeColor=#8B5CF6;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Nivel 5: Modo Offline -->
+        <mxCell id="n5_offline" value="&lt;b&gt;Acción Sistema:&lt;/b&gt;&lt;br&gt;Descargar Módulo a SQLite Local" style="shape=rect;dashed=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#F59E0B;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="380" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="con_17" value="Actor pulsa &#39;Descargar Módulo&#39;" edge="1" source="n1_dashboard" target="n5_offline" parent="1" style="strokeColor=#F59E0B;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

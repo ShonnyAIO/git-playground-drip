@@ -26,3 +26,6 @@ dist-ssr
 # Local tooling & virtual environments
 .codegraph/
 docs/venv/
+
+# Contiene datos personales (cédula); se conserva solo en local
+docs/LABORATORIOS/AlgoLearn_Documentacion_Laboratorios_TAIHC_Grupo4.pdf

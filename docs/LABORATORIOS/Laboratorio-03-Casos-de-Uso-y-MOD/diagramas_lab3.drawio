@@ -1,0 +1,161 @@
+<mxfile host="app.diagrams.net" modified="2026-09-16T10:00:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="DCU_AlgoLearn" name="Diagrama de Casos de Uso - AlgoLearn">
+    <mxGraphModel dx="1422" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Límite del Sistema -->
+        <mxCell id="sys_box" value="Sistema AlgoLearn (Web &amp; Mobile)" style="shape=rect;html=1;whiteSpace=wrap;strokeColor=#2563EB;strokeWidth=2;fillColor=#F8FAFC;verticalAlign=top;fontStyle=1;fontSize=16;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="280" y="40" width="1050" height="920" as="geometry" />
+        </mxCell>
+
+        <!-- Actores -->
+        <mxCell id="act_estudiante" value="Estudiante" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeColor=#2563EB;fillColor=#DBEAFE;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="50" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_docente" value="Docente /&#xa;Preparador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeColor=#10B981;fillColor=#D1FAE5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="680" width="50" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_admin" value="Administrador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeColor=#64748B;fillColor=#F1F5F9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="850" width="50" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act_motor" value="&lt;&lt;Sistema&gt;&gt;&#xa;Motor Predictivo" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeColor=#8B5CF6;fillColor=#EDE9FE;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="340" width="50" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Paquetes de Casos de Uso -->
+        
+        <!-- 1. Onboarding -->
+        <mxCell id="pkg_onboarding" value="1. Acceso y Onboarding Académico" style="swimlane;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontStyle=1;fontColor=#1E3A8A;" vertex="1" parent="1">
+          <mxGeometry x="320" y="80" width="460" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_01" value="CU-01: Iniciar Sesión /&#xa;Registrarse" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2563EB;" vertex="1" parent="pkg_onboarding">
+          <mxGeometry x="30" y="40" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_02" value="CU-02: Seleccionar Ruta&#xa;de Aprendizaje" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2563EB;" vertex="1" parent="pkg_onboarding">
+          <mxGeometry x="250" y="70" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Núcleo Práctico -->
+        <mxCell id="pkg_learning" value="2. Núcleo de Aprendizaje y Práctica Interactiva" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontStyle=1;fontColor=#065F46;" vertex="1" parent="1">
+          <mxGeometry x="320" y="270" width="580" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_03" value="CU-03: Visualizar Lección&#xa;Teórica / Diagrama" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;" vertex="1" parent="pkg_learning">
+          <mxGeometry x="30" y="40" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_04" value="CU-04: Resolver Ejercicio en&#xa;Editor de Código" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;fontStyle=1;" vertex="1" parent="pkg_learning">
+          <mxGeometry x="30" y="140" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_05" value="CU-05: Recibir Feedback&#xa;Predictivo Inteligente" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontStyle=1;" vertex="1" parent="pkg_learning">
+          <mxGeometry x="340" y="145" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_06" value="CU-06: Consultar Progreso&#xa;y Logros (XP / Racha)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;" vertex="1" parent="pkg_learning">
+          <mxGeometry x="340" y="40" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Modo Offline -->
+        <mxCell id="pkg_offline" value="3. Almacenamiento Local y Modo Offline (Mobile)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FDE68A;fontStyle=1;fontColor=#92400E;" vertex="1" parent="1">
+          <mxGeometry x="930" y="80" width="370" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_07" value="CU-07: Descargar Contenido&#xa;para Modo Offline" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97706;" vertex="1" parent="pkg_offline">
+          <mxGeometry x="70" y="40" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_08" value="CU-08: Sincronizar Progreso&#xa;Local al Conectar" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97706;" vertex="1" parent="pkg_offline">
+          <mxGeometry x="70" y="125" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Comunidad -->
+        <mxCell id="pkg_comunidad" value="4. Comunidad y Capa Social" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#DDD6FE;fontStyle=1;fontColor=#5B21B6;" vertex="1" parent="1">
+          <mxGeometry x="320" y="560" width="580" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_09" value="CU-09: Participar en Foro&#xa;de la Lección" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8B5CF6;" vertex="1" parent="pkg_comunidad">
+          <mxGeometry x="40" y="50" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_10" value="CU-10: Marcar Respuesta&#xa;como Solución Válida" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8B5CF6;" vertex="1" parent="pkg_comunidad">
+          <mxGeometry x="330" y="70" width="210" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Analíticas y Gestión Docente -->
+        <mxCell id="pkg_docente" value="5. Gestión Académica Docente" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#CBD5E1;fontStyle=1;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="320" y="760" width="580" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_11" value="CU-11: Monitorear Analíticas&#xa;y Tasa de Error" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#475569;" vertex="1" parent="pkg_docente">
+          <mxGeometry x="40" y="50" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cu_12" value="CU-12: Gestionar Temario&#xa;y Casos de Prueba" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#475569;" vertex="1" parent="pkg_docente">
+          <mxGeometry x="330" y="50" width="210" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Conexiones Actor Estudiante -->
+        <mxCell id="rel_e_cu01" edge="1" source="act_estudiante" target="cu_01" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu02" edge="1" source="act_estudiante" target="cu_02" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu03" edge="1" source="act_estudiante" target="cu_03" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu04" edge="1" source="act_estudiante" target="cu_04" parent="1" style="strokeColor=#2563EB;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu06" edge="1" source="act_estudiante" target="cu_06" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu07" edge="1" source="act_estudiante" target="cu_07" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu08" edge="1" source="act_estudiante" target="cu_08" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_e_cu09" edge="1" source="act_estudiante" target="cu_09" parent="1" style="strokeColor=#2563EB;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Conexiones Actor Docente -->
+        <mxCell id="rel_d_cu01" edge="1" source="act_docente" target="cu_01" parent="1" style="strokeColor=#10B981;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_d_cu09" edge="1" source="act_docente" target="cu_09" parent="1" style="strokeColor=#10B981;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_d_cu10" edge="1" source="act_docente" target="cu_10" parent="1" style="strokeColor=#10B981;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_d_cu11" edge="1" source="act_docente" target="cu_11" parent="1" style="strokeColor=#10B981;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_d_cu12" edge="1" source="act_docente" target="cu_12" parent="1" style="strokeColor=#10B981;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Conexiones Admin -->
+        <mxCell id="rel_a_cu01" edge="1" source="act_admin" target="cu_01" parent="1" style="strokeColor=#64748B;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_a_cu12" edge="1" source="act_admin" target="cu_12" parent="1" style="strokeColor=#64748B;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Relaciones Include / Extend -->
+        <mxCell id="rel_include_feedback" value="&lt;&lt;include&gt;&gt;" edge="1" source="cu_04" target="cu_05" parent="1" style="dashed=1;strokeColor=#D97706;strokeWidth=2;endArrow=open;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_extend_foro" value="&lt;&lt;extend&gt;&gt;" edge="1" source="cu_09" target="cu_04" parent="1" style="dashed=1;strokeColor=#8B5CF6;endArrow=open;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_motor_feedback" edge="1" source="act_motor" target="cu_05" parent="1" style="strokeColor=#8B5CF6;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_extend_solucion" value="&lt;&lt;extend&gt;&gt;" edge="1" source="cu_10" target="cu_09" parent="1" style="dashed=1;strokeColor=#8B5CF6;endArrow=open;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

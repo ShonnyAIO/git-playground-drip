@@ -7,7 +7,13 @@ GitPlayground resuelve el problema de la memorización de comandos de Git sin un
 
 ---
 
+Versión en línea: <https://git-playground-ucv.netlify.app/>
+
 ## 🎨 Características Clave
+
+0. **Lecciones animadas (motion graphics propios)**
+   * Seis micro-lecciones (estados, ramas y HEAD, merge, rebase, remotos, conflictos) que muestran cómo se mueve Git por dentro: los archivos viajan entre zonas, las ramas avanzan y la historia se reescribe a la vista.
+   * Se controlan como un video —play, pausa, paso a paso, velocidad— con subtítulos, narración por voz opcional y teclado. Cada una enlaza a su práctica y a lecturas verificadas (Pro Git en español). Ver [docs/lecciones-animadas.md](docs/lecciones-animadas.md).
 
 1. **Módulo 1: El Core (Estados de Git)**
    * **Simulador de Terminal:** Una consola interactiva en tiempo real para escribir comandos reales (`git init`, `git add`, `git commit`, `git checkout`, `git merge`, etc.).
@@ -26,7 +32,11 @@ GitPlayground resuelve el problema de la memorización de comandos de Git sin un
 4. **Módulo 4: Quizzes de Flujos de Trabajo**
    * Desafíos de opción múltiple sobre **Gitflow**, **Trunk-Based Development** y buenas prácticas con explicaciones pedagógicas integradas tras responder.
 
-5. **Tutor Git Invisible (IA Simulada)**
+5. **Progreso y accesibilidad**
+   * XP, medallas, lecciones y pestaña se guardan en el navegador y sobreviven a recargar; se pueden reiniciar.
+   * Usable de teléfono (375 px) a escritorio, operable solo con teclado y con contraste WCAG 2.2 AA en tema claro y oscuro.
+
+6. **Tutor Git Invisible (IA Simulada)**
    * Asistente conversacional flotante que guía al estudiante, ofrece pistas en español y explica conceptos como `rebase`, `merge`, `conflictos` y `HEAD` de forma interactiva y contextual.
 
 ---
@@ -64,17 +74,22 @@ npm run build
 
 ---
 
+## 🧪 Pruebas
+
+* `npm test` — pruebas unitarias (Vitest) del estado del estudiante y del motor de lecciones; incluye un oráculo que valida cada lección.
+* `npm run lint` — ESLint.
+* Pruebas de interfaz con Playwright contra el build (`npm run build && npm run preview`, puerto 4173):
+  * `python tests/playwright_ux_suite.py` — recorrido de usuario (TUC-UX-01 a 12).
+  * `python scripts/a11y.py` — axe-core en cada sección y tema, más navegación por teclado.
+  * `python scripts/capture.py <carpeta>` — capturas de cada sección a 375, 768, 1024 y 1440 px.
+  * Con `uv`: `uv run --with playwright==1.57.0 python <script>`.
+* Checklist manual de aceptación: [tuc/TUC-lecciones-y-ux.md](tuc/TUC-lecciones-y-ux.md).
+
 ## 📂 Estructura del Código
 
-* `index.html`: SEO tags, tipografías personalizadas (Outfit, Plus Jakarta Sans, Fira Code).
-* `src/App.jsx`: Componente raíz y enrutador de pestañas del taller.
-* `src/index.css`: Sistema de diseño responsivo y estilos de componentes.
-* `src/components/`:
-  * [Sidebar.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/Sidebar.jsx): Menú de navegación lateral, control de progreso y tema oscuro.
-  * [Dashboard.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/Dashboard.jsx): Portal de bienvenida, mapa interactivo y estadísticas.
-  * [VisualSimulator.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/VisualSimulator.jsx): Simulador del área de trabajo, terminal y grafo SVG de commits.
-  * [GitHubHub.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/GitHubHub.jsx): Enlace local-remoto y flujo de Pull Requests.
-  * [ConflictSolver.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/ConflictSolver.jsx): Resolutor interactivo de conflictos en el editor.
-  * [Quizzes.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/Quizzes.jsx): Evaluaciones con retroalimentación instantánea.
-  * [AITutor.jsx](file:///home/shonny-torres/Workspace/UCV/Semestre%20I-2026/DRIP/src/components/AITutor.jsx): Chatbot asistente en español.
-* `docs/`: Carpeta con los documentos de la cátedra DPRED de la UCV.
+* `src/components/` — un componente por módulo de la barra lateral, más el tutor.
+* `src/state/` — el estado del estudiante (progreso, medallas, lecciones, pestaña, tema) y su persistencia; único dueño de `localStorage` para el progreso.
+* `src/lessons/` — lecciones animadas: `engine/` (puro, con tests), `render/` (reproductor SVG) y `content/` (una lección por archivo).
+* `src/index.css` — sistema de diseño: tokens de color (incluidos los de estados Git) y estilos compartidos. `--primary` es color de relleno; para texto naranja se usa `--primary-text`.
+* `lab.html` — laboratorio solo de desarrollo (`npm run dev` → `/lab.html`) para revisar lecciones.
+* `specs/` — planes de trabajo y sus decisiones; `docs/` — material de la cátedra DPRED y documentación técnica.

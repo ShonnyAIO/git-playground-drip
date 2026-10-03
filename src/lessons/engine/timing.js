@@ -9,3 +9,9 @@ export function stepDuration(step, speed = 1) {
 }
 
 export const lessonDuration = (lesson, speed = 1) => lesson.steps.reduce((ms, s) => ms + stepDuration(s, speed), 0);
+
+/** 58000 → "0:58" */
+export const formatClock = (ms) => {
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};

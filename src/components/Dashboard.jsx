@@ -1,4 +1,5 @@
 
+import { LESSONS } from '../lessons/content/index.js';
 import { 
   Terminal, 
   Share2, 
@@ -156,7 +157,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
                 style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'var(--bg-secondary)' }}
               >
                 <Video size={16} style={{ color: '#3b82f6' }} />
-                <span>Clases en Video (6 Lecciones)</span>
+                <span>Lecciones animadas ({LESSONS.length})</span>
               </button>
             </div>
           </div>

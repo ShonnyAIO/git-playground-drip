@@ -73,3 +73,12 @@ Decisiones tomadas donde el spec callaba. Se consolida al cerrar el spec.
 - **Una sola regla de carriles para todo**: una rama que sale de la punta de otra la
   continúa. Consecuencia visible: en la lección 2, c4 nace en el carril de main y se
   desplaza a un carril propio cuando main avanza (c5).
+
+## Slice 12
+
+- **Póster con botón "Ver lección"** antes de la primera interacción (no estaba en el
+  spec). Corrige la primera impresión de escenario vacío.
+- **La lección se marca completada al llegar al final**, aunque el estudiante haya
+  saltado pasos con las flechas. Prioriza no frustrar; el botón permite desmarcar.
+- **El menú pasa de "Clases & Videos" a "Lecciones animadas"**; el id interno
+  `videolearning` se mantiene para no tocar estado guardado ni la suite.

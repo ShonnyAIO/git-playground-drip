@@ -2,7 +2,7 @@
 
 ## Next Agent Prompt
 
-> Última actualización: 2026-10-03. Estado: **slices 01–11 cerrados; siguiente: 12 (integrar las lecciones en la Videoteca).** Para ver el motor: `npm run dev` y abrir `/lab.html`.
+> Última actualización: 2026-10-03. Estado: **slices 01–12 cerrados; siguiente: 13 (docs, TUC, suite E2E, revisión final y cierre).** Para ver el motor: `npm run dev` y abrir `/lab.html`.
 >
 > Trabajas en la rama `feat/lecciones-animadas-base-ux` (nunca en `main`). Haz commit al
 > cerrar cada slice; **no hagas `push` ni deploy a Netlify** sin confirmación de Shonny.
@@ -25,7 +25,7 @@
 - [x] [09 — Lección 4: rebase vs merge](slices/09-leccion-rebase.md)
 - [x] [10 — Lección 5: remotos (push/fetch/pull)](slices/10-leccion-remotos.md)
 - [x] [11 — Lección 6: anatomía de un conflicto](slices/11-leccion-conflictos.md)
-- [ ] [12 — Integración en la Videoteca](slices/12-integracion-videoteca.md)
+- [x] [12 — Integración en la Videoteca](slices/12-integracion-videoteca.md)
 - [ ] [13 — Cierre: docs, TUC y suite E2E](slices/13-cierre.md)
 
 ## Objetivo

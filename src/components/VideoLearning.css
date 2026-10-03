@@ -1,0 +1,269 @@
+/* Videoteca de lecciones animadas. */
+.library {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.library-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.library-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.library-title svg {
+  color: var(--color-remote);
+}
+
+.library-subtitle {
+  margin-top: 0.3rem;
+  max-width: 60ch;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.library-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--primary-text);
+}
+
+.library-stat-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.library-stat-value {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.library-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.library-chip {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.library-chip.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.library-grid {
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.library-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.library-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.library-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.library-meta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary-text);
+}
+
+.library-lesson-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.library-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.library-done.is-done {
+  border-color: var(--color-local);
+  color: var(--color-local);
+}
+
+.library-label {
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.library-objectives {
+  padding-left: 1.2rem;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.library-commands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.library-commands code {
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-remote);
+}
+
+.library-practice .btn {
+  display: inline-flex;
+}
+
+.library-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.library-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--primary-text);
+}
+
+.library-author {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+}
+
+.library-playlist {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.library-playlist ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.library-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.library-item:hover {
+  background: var(--bg-primary);
+}
+
+.library-item.is-current {
+  border-color: var(--primary);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.library-item-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--bg-tertiary);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.library-item-num.is-done {
+  background: var(--color-local-bg);
+  color: var(--color-local);
+}
+
+.library-item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.library-item-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.library-item-meta {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}

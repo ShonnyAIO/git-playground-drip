@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Captions, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
-import { stepDuration } from '../engine/index.js';
+import { formatClock, lessonDuration, stepDuration } from '../engine/index.js';
 import { initialPlayback, playbackReducer, SPEEDS } from '../engine/playback.js';
 import { layoutScene } from './sceneLayout.js';
 import SceneView from './SceneView.jsx';
@@ -25,7 +25,13 @@ function useWidth(ref) {
 /** Reproduce una lección como un video controlable. `onComplete` se llama al llegar al final. */
 export default function LessonPlayer({ lesson, onComplete }) {
   const durations = useMemo(() => lesson.steps.map(s => stepDuration(s)), [lesson]);
-  const [state, dispatch] = useReducer(playbackReducer, durations, initialPlayback);
+  const [state, rawDispatch] = useReducer(playbackReducer, durations, initialPlayback);
+  // Póster: hasta la primera interacción se muestra el título y un botón grande, como en un video.
+  const [started, setStarted] = useState(false);
+  const dispatch = (action) => {
+    if (action.type !== 'tick') setStarted(true);
+    rawDispatch(action);
+  };
   const [captionsOn, setCaptionsOn] = useState(true);
   const [voiceOn, setVoiceOn] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -42,7 +48,7 @@ export default function LessonPlayer({ lesson, onComplete }) {
     if (!state.playing) return undefined;
     let last = performance.now();
     let frame = requestAnimationFrame(function loop(now) {
-      dispatch({ type: 'tick', ms: now - last, waiting: speaking });
+      rawDispatch({ type: 'tick', ms: now - last, waiting: speaking });
       last = now;
       frame = requestAnimationFrame(loop);
     });
@@ -107,6 +113,16 @@ export default function LessonPlayer({ lesson, onComplete }) {
       aria-label={`Lección animada: ${lesson.title}. Espacio reproduce o pausa; flechas cambian de paso.`}>
       <div className="lesson-stage" ref={stageRef} style={{ minHeight: stageHeight }}>
         <SceneView layout={layouts[state.index]} focus={step.focus} />
+        {!started && (
+          <div className="lesson-poster">
+            <span className="lesson-poster-level">{lesson.level} · {lesson.steps.length} pasos</span>
+            <h3 className="lesson-poster-title">{lesson.title}</h3>
+            <button className="lesson-poster-play" onClick={() => dispatch({ type: 'play' })}>
+              <Play size={22} aria-hidden="true" />
+              Ver lección ({formatClock(lessonDuration(lesson))})
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="lesson-terminal" aria-hidden={!step.command}>

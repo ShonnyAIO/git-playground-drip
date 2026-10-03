@@ -71,7 +71,7 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
 
   const navItems = [
     { id: 'dashboard', name: 'Dashboard', icon: Home },
-    { id: 'videolearning', name: 'Clases & Videos', icon: Video },
+    { id: 'videolearning', name: 'Lecciones animadas', icon: Video },
     { id: 'simulator', name: 'Simulador Core', icon: Terminal },
     { id: 'github', name: 'GitHub & Remotos', icon: Share2 },
     { id: 'conflicts', name: 'Resolución de Conflictos', icon: AlertTriangle },

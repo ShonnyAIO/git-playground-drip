@@ -27,7 +27,7 @@ Producción local (`npm run build && npm run preview`): recorrer la Videoteca co
 
 ## Verificación
 
-- `grep -r "youtube" src/` vacío.
+- Sin `iframe`, `embedUrl` ni `timestamps` en `src/` (YouTube solo aparece como enlace atribuido en `furtherReading`).
 - Playwright: elegir lección 3, reproducir hasta el final con velocidad 1.5 → queda
   marcada como completada y persiste tras recargar.
 - Capturas a 375 y 1440 px. `compare-screenshots` contra la línea base de la Videoteca
@@ -42,3 +42,15 @@ Distribución de la información bajo el reproductor y textos de UI.
 
 Si Shonny quiere conservar los videos externos embebidos, "Para profundizar" los muestra
 como embeds colapsados en vez de enlaces.
+
+## Estado
+
+✅ Implementado. `VideoLearning.jsx` + `VideoLearning.css` sobre `LessonPlayer`; menú y
+Dashboard dicen "Lecciones animadas". Evidencia en `assets/slice12/`.
+
+- Verificado en el build de producción: la lección 3 a 1,5× se marca sola al terminar y
+  sigue completada tras recargar; sin desbordes de 375 a 1440 px; axe 0 bloqueantes.
+- Agregado tras la crítica: **póster** sobre el escenario (título, nivel, pasos y
+  "Ver lección (0:58)") hasta la primera interacción; sin él, la primera vista era un
+  escenario casi vacío que parecía roto.
+- `formatClock` vive en `engine/timing.js` (un solo dueño para la duración mostrada).

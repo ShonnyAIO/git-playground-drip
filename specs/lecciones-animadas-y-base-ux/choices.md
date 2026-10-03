@@ -54,3 +54,22 @@ Decisiones tomadas donde el spec callaba. Se consolida al cerrar el spec.
   reutilizando tokens existentes; los commits `ghost` en gris punteado.
 - **Narración por voz**: usa la primera voz `es-*` del sistema; si no hay, la del
   navegador con `lang = es-ES`. Su calidad depende del sistema operativo del estudiante.
+
+## Slices 06–11
+
+- **Lecciones de 41 a 58 segundos** (8–10 pasos): micro-lecciones para ver antes de
+  practicar. El ritmo es 380 ms por palabra con mínimo de 3,5 s por paso; el estudiante
+  puede bajar a 0,75×. Si en pruebas resulta rápido, se ajusta en `timing.js`.
+- **Orden del temario**: estados → ramas/HEAD → merge → rebase → remotos → conflictos.
+  Rebase va antes que remotos (como en el spec), aunque su paso de "peligro" menciona
+  `origin/feature`; se explica en el propio subtítulo.
+- **Rebase en la lección 4 manda a practicar en la pestaña de Conflictos** (que tiene la
+  teoría Merge vs Rebase); no existe práctica de rebase en el simulador.
+- **El foco `branch:main` ilumina main en ambos paneles** (local y GitHub) en la lección
+  de remotos. Aceptado; separar focos por panel exigiría ampliar el esquema.
+- **Videos externos en "Para profundizar"**: se reutilizaron los cinco que existían y
+  responden (con autor real; los de freeCodeCamp marcados "en inglés"); el que daba 404
+  se descartó. Se sumaron Pro Git en español y Learn Git Branching.
+- **Una sola regla de carriles para todo**: una rama que sale de la punta de otra la
+  continúa. Consecuencia visible: en la lección 2, c4 nace en el carril de main y se
+  desplaza a un carril propio cuando main avanza (c5).

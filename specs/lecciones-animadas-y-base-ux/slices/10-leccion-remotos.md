@@ -17,3 +17,7 @@ Sigue el [contrato común](_plantilla-leccion.md). Paneles: `graph` (local) y `r
 
 Nota: `origin/main` es una rama más del grafo local; el slice 04 la marca como
 `remoteTracking` por el prefijo `origin/`.
+
+## Estado
+
+✅ Implementada en `src/lessons/content/remotos.js`. Hojas de contactos en `assets/remotos/` (tema oscuro y claro).

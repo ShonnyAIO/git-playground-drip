@@ -16,9 +16,11 @@ const LINE_STYLE = {
 };
 
 const move = (x, y) => ({ transform: `translate(${x}px, ${y}px)` });
+const tagWidth = (text) => text.length * 7.4 + 16;
+const headText = (head) => (head.attachedTo ? 'HEAD' : 'HEAD (detached)');
 
 function Tag({ text, color, filled, dashed }) {
-  const w = text.length * 7.4 + 16;
+  const w = tagWidth(text);
   return (
     <g className="scene-pop">
       <rect x={-w / 2} y={-11} width={w} height={22} rx={6}
@@ -57,7 +59,7 @@ export default function SceneView({ layout, focus = [] }) {
               <g className="scene-pop">
                 {isFocused(`commit:${c.id}`) && <circle className="scene-halo" r={NODE_R + 6} />}
                 <circle r={NODE_R - 2} fill="var(--color-local)" />
-                <text x={NODE_R + 4} y={4} className="scene-commit-id">{c.id}</text>
+                <text x={NODE_R + 10} y={4} className="scene-commit-id">{c.id}</text>
               </g>
             </g>
           ))}
@@ -85,13 +87,13 @@ export default function SceneView({ layout, focus = [] }) {
           ))}
           {g.labels.map(lb => (
             <g key={lb.key} className="scene-item" style={move(lb.cx, lb.cy)}>
-              {isFocused(`branch:${lb.branch}`) && <rect className="scene-halo" x={-(lb.branch.length * 7.4 + 24) / 2} y={-15} width={lb.branch.length * 7.4 + 24} height={30} rx={9} />}
+              {isFocused(`branch:${lb.branch}`) && <rect className="scene-halo" x={-tagWidth(lb.branch) / 2 - 4} y={-15} width={tagWidth(lb.branch) + 8} height={30} rx={9} />}
               <Tag text={lb.branch} color={lb.remoteTracking ? 'var(--color-remote)' : 'var(--primary-text)'} filled={!lb.remoteTracking} dashed={lb.remoteTracking} />
             </g>
           ))}
           <g key={g.head.key} className="scene-item" style={move(g.head.cx, g.head.cy)}>
-            {isFocused('head') && <rect className="scene-halo" x={-34} y={-15} width={68} height={30} rx={9} />}
-            <Tag text={g.head.attachedTo ? 'HEAD' : 'HEAD (detached)'} color="var(--text-primary)" />
+            {isFocused('head') && <rect className="scene-halo" x={-tagWidth(headText(g.head)) / 2 - 4} y={-15} width={tagWidth(headText(g.head)) + 8} height={30} rx={9} />}
+            <Tag text={headText(g.head)} color="var(--text-primary)" />
           </g>
         </g>
       ))}

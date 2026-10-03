@@ -14,3 +14,7 @@ Práctica: `simulator`.
 6. Foco en el ancestro común `c3` y las dos puntas. "Tres versiones: base, tuya, suya."
 7. `git merge login` → nace `m1` con **dos padres**; `main` avanza a `m1`.
 8. Resumen lado a lado: FF (sin commit nuevo) vs 3 vías (commit de fusión). Mención de `--no-ff`.
+
+## Estado
+
+✅ Implementada en `src/lessons/content/merge.js`. Hojas de contactos en `assets/merge/` (tema oscuro y claro).

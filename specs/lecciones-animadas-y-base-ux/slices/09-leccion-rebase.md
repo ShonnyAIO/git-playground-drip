@@ -15,3 +15,7 @@ Referencia: Pro Git 3.6 ("Los peligros de reorganizar"). Práctica: `conflicts`.
 7. Peligro: escenario con `origin/feature` compartido → los ghost siguen existiendo en el
    remoto de un compañero. Regla de oro: "No hagas rebase de commits ya publicados."
 8. Resumen: merge conserva la historia; rebase la reescribe para dejarla lineal.
+
+## Estado
+
+✅ Implementada en `src/lessons/content/rebase.js`. Hojas de contactos en `assets/rebase/` (tema oscuro y claro).

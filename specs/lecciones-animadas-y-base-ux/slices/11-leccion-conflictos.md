@@ -16,3 +16,7 @@ Práctica: `conflicts`.
 6. "Git no adivina: tú decides." Se eliminan marcadores y se deja la línea combinada (kind `added`).
 7. `git add saludo.js` + `git commit` → nace el commit de fusión con dos padres.
 8. Resumen: mismo archivo + misma zona + dos ramas = conflicto.
+
+## Estado
+
+✅ Implementada en `src/lessons/content/conflictos.js`. Hojas de contactos en `assets/conflictos/` (tema oscuro y claro).

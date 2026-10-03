@@ -17,3 +17,7 @@ Referencia: Pro Git 1.3 y 2.2. Práctica: `simulator`.
 7. Se edita `index.html` → reaparece en Working como *modificado*.
 8. `git add .` → ambos a Staging; `git commit` → `c2` con su padre `c1`.
 9. Cierre: las tres zonas con flechas `add` y `commit` (resumen).
+
+## Estado
+
+✅ Implementada en `src/lessons/content/estados.js`. Hojas de contactos en `assets/estados/` (tema oscuro y claro).

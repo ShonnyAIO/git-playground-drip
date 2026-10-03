@@ -21,3 +21,13 @@ cada paso, ids internos.
 **Revisión humana (no bloqueante)**: al cerrar la lección, mostrar la hoja de contactos a
 Shonny; si no responde en ~5 min, decidir con la evidencia, anotar la decisión en el
 README y seguir.
+
+## Resultado de la revisión de las seis lecciones
+
+La revisión de las hojas de contactos destapó tres defectos del motor, corregidos allí y
+no en las lecciones: (1) las etiquetas de un carril inferior tapaban commits del superior
+(ahora cada fila reserva el alto de su pila); (2) HEAD podía quedar sobre otra rama del
+mismo commit (la rama de HEAD va arriba de su pila); (3) una cadena que continúa la punta
+de un carril abría carril nuevo, dibujando `origin/main` adelantada como una bifurcación
+(ahora continúa el carril; el rebase queda como la figura de Pro Git 3.6).
+Hojas generadas con `scripts/contact_sheets.py` (requiere `npm run dev`).

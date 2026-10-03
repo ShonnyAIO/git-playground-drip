@@ -63,16 +63,23 @@ function layoutZones(zones, width, top, compact, files) {
 
 function layoutGraphPanel(graph, x, top, width, title, prefix) {
   const l = layoutGraph(graph);
-  // Espacio sobre la primera fila para las etiquetas apiladas (ramas + HEAD) del commit más cargado.
+  // Cada fila reserva sobre sí el alto de la pila de etiquetas (ramas + HEAD) más alta de esa fila,
+  // para que las etiquetas de un carril inferior no tapen los commits del de arriba.
   const tagsOnCommit = new Map();
   l.labels.forEach(lb => tagsOnCommit.set(lb.commitId, (tagsOnCommit.get(lb.commitId) ?? 0) + 1));
-  const maxTags = Math.max(0, ...[...tagsOnCommit.entries()].map(([id, n]) => n + (id === l.head.commitId ? 1 : 0)), 1);
-  const graphTop = TITLE_H + NODE_R + 4 + maxTags * TAG_STEP;
+  tagsOnCommit.set(l.head.commitId, (tagsOnCommit.get(l.head.commitId) ?? 0) + 1);
+  const rowTags = Array.from({ length: l.rows }, () => 0);
+  l.nodes.forEach(n => { rowTags[n.y] = Math.max(rowTags[n.y], tagsOnCommit.get(n.id) ?? 0); });
+  const rowY = [];
+  rowTags.forEach((tags, r) => {
+    const above = tags * TAG_STEP;
+    rowY.push(r === 0 ? TITLE_H + NODE_R + 8 + Math.max(above, TAG_STEP) : Math.max(rowY[r - 1] + ROW_H, rowY[r - 1] + 2 * NODE_R + 26 + above));
+  });
   const colW = Math.min(104, (width - 120) / Math.max(l.columns - 1, 1));
   // Centrado: al crecer la historia, todo se desplaza como un paneo de cámara.
   const left = x + Math.max(60, (width - (l.columns - 1) * colW) / 2);
   const px = (col) => left + col * colW;
-  const py = (row) => top + graphTop + row * ROW_H;
+  const py = (row) => top + rowY[row];
   const nodes = l.nodes.map(n => ({ ...n, key: `${prefix}c:${n.id}`, cx: px(n.x), cy: py(n.y) }));
   const at = new Map(nodes.map(n => [n.id, n]));
   const edges = l.edges.map(e => {
@@ -96,7 +103,7 @@ function layoutGraphPanel(graph, x, top, width, title, prefix) {
     cy: headNode.cy - NODE_R - 14 - stackTop * TAG_STEP,
     attachedTo: headLabel?.branch ?? null,
   };
-  const height = graphTop + (l.rows - 1) * ROW_H + NODE_R + 30;
+  const height = rowY[l.rows - 1] + NODE_R + 30;
   return { title, x, y: top, w: width, h: height, nodes, edges, labels, head };
 }
 

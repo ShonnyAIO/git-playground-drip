@@ -2,7 +2,7 @@
 
 ## Next Agent Prompt
 
-> Última actualización: 2026-10-03. Estado: **slices 01–05 cerrados; siguiente: 06 (lección 1, primera con contenido real).** Para ver el motor: `npm run dev` y abrir `/lab.html`.
+> Última actualización: 2026-10-03. Estado: **slices 01–11 cerrados; siguiente: 12 (integrar las lecciones en la Videoteca).** Para ver el motor: `npm run dev` y abrir `/lab.html`.
 >
 > Trabajas en la rama `feat/lecciones-animadas-base-ux` (nunca en `main`). Haz commit al
 > cerrar cada slice; **no hagas `push` ni deploy a Netlify** sin confirmación de Shonny.
@@ -19,12 +19,12 @@
 - [x] [03 — Accesibilidad base](slices/03-accesibilidad.md)
 - [x] [04 — Motor de escenas (puro)](slices/04-motor-escenas.md)
 - [x] [05 — Reproductor de lecciones](slices/05-reproductor.md)
-- [ ] [06 — Lección 1: los tres estados](slices/06-leccion-estados.md)
-- [ ] [07 — Lección 2: ramas y HEAD](slices/07-leccion-ramas-head.md)
-- [ ] [08 — Lección 3: merge fast-forward vs 3 vías](slices/08-leccion-merge.md)
-- [ ] [09 — Lección 4: rebase vs merge](slices/09-leccion-rebase.md)
-- [ ] [10 — Lección 5: remotos (push/fetch/pull)](slices/10-leccion-remotos.md)
-- [ ] [11 — Lección 6: anatomía de un conflicto](slices/11-leccion-conflictos.md)
+- [x] [06 — Lección 1: los tres estados](slices/06-leccion-estados.md)
+- [x] [07 — Lección 2: ramas y HEAD](slices/07-leccion-ramas-head.md)
+- [x] [08 — Lección 3: merge fast-forward vs 3 vías](slices/08-leccion-merge.md)
+- [x] [09 — Lección 4: rebase vs merge](slices/09-leccion-rebase.md)
+- [x] [10 — Lección 5: remotos (push/fetch/pull)](slices/10-leccion-remotos.md)
+- [x] [11 — Lección 6: anatomía de un conflicto](slices/11-leccion-conflictos.md)
 - [ ] [12 — Integración en la Videoteca](slices/12-integracion-videoteca.md)
 - [ ] [13 — Cierre: docs, TUC y suite E2E](slices/13-cierre.md)
 

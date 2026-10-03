@@ -4,11 +4,12 @@ import { isRemoteTracking } from './schema.js';
  * Coloca un grafo en una rejilla abstracta (columna = generación, fila = carril).
  * Determinista: el mismo grafo produce siempre la misma salida.
  *
- * Carriles: cada rama (en orden de declaración, `main` primero, sin las `origin/*`)
- * reclama los commits de su cadena de primeros padres que nadie reclamó antes. Los
- * commits que ninguna rama alcanza (p. ej. los `ghost` de un rebase o un HEAD detached
- * huérfano) forman cadenas propias en carriles posteriores, de modo que la historia
- * reescrita queda a la vista junto a la nueva.
+ * Carriles: cada rama (en orden de declaración, `main` primero, las `origin/*` al final)
+ * reclama los commits de su cadena de primeros padres que nadie reclamó antes. Una cadena
+ * que parte de la punta de un carril lo continúa; si parte de un commit con hijos ya
+ * dibujados en su carril, abre uno nuevo. Los commits que ninguna rama alcanza (los
+ * `ghost` de un rebase, un HEAD detached huérfano) forman cadenas propias, de modo que
+ * la historia reescrita queda a la vista junto a la nueva.
  */
 export function layoutGraph(graph) {
   const byId = new Map(graph.commits.map(c => [c.id, c]));
@@ -23,18 +24,23 @@ export function layoutGraph(graph) {
   };
 
   const lane = new Map();
-  let nextLane = 0;
+  const laneTip = [];
   const claimChain = (tip) => {
-    let claimed = false;
-    for (let id = tip; id && !lane.has(id); id = byId.get(id).parents[0]) {
-      lane.set(id, nextLane);
-      claimed = true;
-    }
-    if (claimed) nextLane += 1;
+    const chain = [];
+    let id = tip;
+    for (; id && !lane.has(id); id = byId.get(id).parents[0]) chain.push(id);
+    if (!chain.length) return;
+    // Si la cadena sale de la punta de un carril, lo continúa (p. ej. origin/main adelantada,
+    // o un rebase ya integrado); si sale de un commit que ya tiene hijo en su carril, bifurca.
+    const fork = id;
+    const forkLane = fork ? lane.get(fork) : undefined;
+    const target = forkLane !== undefined && laneTip[forkLane] === fork ? forkLane : laneTip.length;
+    chain.forEach(c => lane.set(c, target));
+    laneTip[target] = tip;
   };
 
-  const branchNames = Object.keys(graph.branches).filter(b => !isRemoteTracking(b));
-  branchNames.sort((a, b) => (a === 'main' ? -1 : b === 'main' ? 1 : 0));
+  const rank = (b) => (b === 'main' ? 0 : isRemoteTracking(b) ? 2 : 1);
+  const branchNames = Object.keys(graph.branches).sort((a, b) => rank(a) - rank(b));
   branchNames.forEach(b => claimChain(graph.branches[b]));
   if ('detached' in graph.head) claimChain(graph.head.detached);
   // Restantes: de la punta de cada cadena huérfana (commits sin hijos sin carril) hacia atrás.
@@ -47,8 +53,10 @@ export function layoutGraph(graph) {
   const edges = graph.commits.flatMap(c => c.parents.map(p => ({ from: p, to: c.id })));
 
   const headBranch = 'branch' in graph.head ? graph.head.branch : null;
+  // La rama de HEAD va arriba de su pila, pegada a la etiqueta HEAD que se dibuja encima.
+  const ordered = Object.entries(graph.branches).sort(([a], [b]) => (a === headBranch) - (b === headBranch));
   const stackCount = new Map();
-  const labels = Object.entries(graph.branches).map(([branch, commitId]) => {
+  const labels = ordered.map(([branch, commitId]) => {
     const stack = stackCount.get(commitId) ?? 0;
     stackCount.set(commitId, stack + 1);
     const { x, y } = pos.get(commitId);
@@ -59,5 +67,5 @@ export function layoutGraph(graph) {
   const { x, y } = pos.get(headCommit);
   const head = { commitId: headCommit, branch: headBranch, x, y };
 
-  return { nodes, edges, labels, head, columns: Math.max(0, ...nodes.map(n => n.x)) + 1, rows: nextLane };
+  return { nodes, edges, labels, head, columns: Math.max(0, ...nodes.map(n => n.x)) + 1, rows: laneTip.length };
 }

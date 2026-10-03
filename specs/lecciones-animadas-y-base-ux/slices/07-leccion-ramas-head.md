@@ -15,3 +15,7 @@ dónde estás.
 6. `git commit` → nace `c5` desde `c3`: la historia diverge (dos carriles).
 7. `git switch --detach c2` → HEAD apunta directo a `c2` (detached). "Commits aquí quedan huérfanos si no creas una rama."
 8. `git switch main` → vuelve. Resumen: rama = puntero, HEAD = "estás aquí".
+
+## Estado
+
+✅ Implementada en `src/lessons/content/ramas-head.js`. Hojas de contactos en `assets/ramas-head/` (tema oscuro y claro).

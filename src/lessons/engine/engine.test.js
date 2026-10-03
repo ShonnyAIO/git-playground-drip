@@ -58,12 +58,17 @@ describe('layoutGraph', () => {
     expect(l.edges).toContainEqual({ from: 'c3', to: 'm' });
   });
 
-  it('rebase: los ghost quedan en un carril propio debajo de la historia nueva', () => {
+  it('una rama que sale de la punta de otra continúa su carril', () => {
+    const l = layoutGraph({ commits: [c('c1'), c('c2', 'c1'), c('c3', 'c2')], branches: { main: 'c2', 'origin/main': 'c3' }, head: { branch: 'main' } });
+    expect(xy(l)).toEqual({ c1: [0, 0], c2: [1, 0], c3: [2, 0] });
+  });
+
+  it('rebase: la historia nueva sigue el carril de main y los ghost quedan debajo', () => {
     const l = layoutGraph({
       commits: [c('c1'), c('c2', 'c1'), c('c3', 'c1'), c('c4', 'c3'), c("c3'", 'c2'), c("c4'", "c3'")].map(x => (x.id === 'c3' || x.id === 'c4' ? { ...x, ghost: true } : x)),
       branches: { main: 'c2', feature: "c4'" }, head: { branch: 'feature' },
     });
-    expect(xy(l)).toEqual({ c1: [0, 0], c2: [1, 0], c3: [1, 2], c4: [2, 2], "c3'": [2, 1], "c4'": [3, 1] });
+    expect(xy(l)).toEqual({ c1: [0, 0], c2: [1, 0], c3: [1, 1], c4: [2, 1], "c3'": [2, 0], "c4'": [3, 0] });
     expect(l.nodes.filter(n => n.ghost).map(n => n.id)).toEqual(['c3', 'c4']);
   });
 
@@ -77,6 +82,11 @@ describe('layoutGraph', () => {
   it('apila etiquetas que apuntan al mismo commit', () => {
     const l = layoutGraph({ commits: [c('c1')], branches: { main: 'c1', login: 'c1' }, head: { branch: 'login' } });
     expect(l.labels.map(x => [x.branch, x.stack, x.isHead])).toEqual([['main', 0, false], ['login', 1, true]]);
+  });
+
+  it('la rama de HEAD queda arriba de la pila aunque se declare primero', () => {
+    const l = layoutGraph({ commits: [c('c1')], branches: { main: 'c1', feature: 'c1' }, head: { branch: 'main' } });
+    expect(l.labels.map(x => [x.branch, x.stack])).toEqual([['feature', 0], ['main', 1]]);
   });
 });
 

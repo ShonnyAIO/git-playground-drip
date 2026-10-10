@@ -53,7 +53,7 @@ export default function GitHubHub({ progress, completeModule, addTutorMessage, u
         '¡Impresionante! Has terminado el módulo de GitHub y Remotos. Lograste simular el flujo completo de colaboración profesional: 1) Conectarte al servidor remoto (git remote add). 2) Empujar tus ramas locales (git push). 3) Proponer cambios mediante un Pull Request. 4) Recibir y resolver Code Reviews del equipo. 5) Integrar el PR en el servidor y 6) Sincronizar de vuelta a tu máquina (git pull).'
       );
     }
-  }, [remoteAdded, localPushed, prCreated, reviewSolved, prMerged, localSynced, progress.github]);
+  }, [remoteAdded, localPushed, prCreated, reviewSolved, prMerged, localSynced, progress.github, addTutorMessage, completeModule]);
 
   const handleAddRemote = () => {
     setRemoteAdded(true);

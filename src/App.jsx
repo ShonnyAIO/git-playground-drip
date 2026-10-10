@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import VisualSimulator from './components/VisualSimulator';
@@ -14,9 +14,9 @@ import { useLearner } from './state/useLearner';
 function App() {
   const [learner, dispatch] = useLearner();
   const { currentTab, theme, progress } = learner;
-  const setCurrentTab = (tab) => dispatch({ type: 'setTab', tab });
+  const setCurrentTab = useCallback((tab) => dispatch({ type: 'setTab', tab }), [dispatch]);
   const setTheme = (next) => dispatch({ type: 'setTheme', theme: typeof next === 'function' ? next(theme) : next });
-  const completeModule = (module) => dispatch({ type: 'completeModule', module });
+  const completeModule = useCallback((module) => dispatch({ type: 'completeModule', module }), [dispatch]);
 
   // Git state context shared with AI Tutor
   const [gitContext, setGitContext] = useState({
@@ -38,9 +38,9 @@ function App() {
     }
   ]);
 
-  const addTutorMessage = (text, sender = 'bot') => {
+  const addTutorMessage = useCallback((text, sender = 'bot') => {
     setTutorMessages(prev => [...prev, { text, sender }]);
-  };
+  }, []);
 
   // Ref, no estado: varias llamadas en el mismo render no deben notificar dos veces.
   const unlockedRef = useRef(new Set(learner.unlockedBadges));
@@ -48,7 +48,7 @@ function App() {
     unlockedRef.current = new Set(learner.unlockedBadges);
   }, [learner.unlockedBadges]);
 
-  const unlockBadge = (id) => {
+  const unlockBadge = useCallback((id) => {
     const badge = BADGES.find(b => b.id === id);
     if (!badge || unlockedRef.current.has(id)) return;
     unlockedRef.current.add(id);
@@ -56,7 +56,7 @@ function App() {
     setTimeout(() => {
       addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${badge.name}". ${badge.desc}`, 'bot');
     }, 600);
-  };
+  }, [dispatch, addTutorMessage]);
 
   // Cada pestaña empieza arriba y, si la eligió el estudiante, el foco va a su título
   // para que el lector de pantalla anuncie el cambio. En la carga inicial no se mueve el foco.

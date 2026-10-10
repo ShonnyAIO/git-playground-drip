@@ -104,6 +104,7 @@ export default function VisualSimulator({ progress, completeModule, addTutorMess
         '¡Increíble trabajo! Has completado el simulador local para la fusión de ramas. Lograste inicializar un repositorio, staged/commit de archivos, creaste una rama paralela (feature/login) para desarrollar código seguro, e hiciste una fusión (merge). ¡Intenta ahora completar la Misión 2 para dominar la recuperación ante errores!'
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commits, branches, gitInit, progress.simulator]);
 
 

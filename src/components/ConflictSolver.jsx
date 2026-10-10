@@ -32,7 +32,7 @@ export default function ConflictSolver({ progress, completeModule, addTutorMessa
         `¡Soberbio! Has resuelto el conflicto usando el flujo de ${conflictType === 'merge' ? 'Merge (Fusión)' : 'Rebase (Reorganización)'}. Entender la diferencia entre ambos y saber cómo elegir cambios en el editor es lo que te mantendrá a salvo de perder código en tus proyectos de trabajo real.`
       );
     }
-  }, [commitCreated, progress.conflicts]);
+  }, [commitCreated, progress.conflicts, addTutorMessage, completeModule, conflictType, unlockBadge]);
 
   const handleStartMerge = (type = 'merge') => {
     setConflictType(type);

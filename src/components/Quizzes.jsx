@@ -76,7 +76,7 @@ export default function Quizzes({ progress, completeModule, addTutorMessage, unl
         '¡Formidable! Has aprobado todas las preguntas sobre flujos de Git. Comprender las arquitecturas de trabajo (Trunk-based y Gitflow) y saber cuándo aplicar merge vs rebase es lo que distingue a un estudiante júnior de un ingeniero que entra al campo profesional. ¡Has completado con éxito la ruta teórica!'
       );
     }
-  }, [quizFinished, correctAnswers, progress.quizzes]);
+  }, [quizFinished, correctAnswers, quizData.length, progress.quizzes, addTutorMessage, completeModule, unlockBadge]);
 
   const handleSelectOption = (optIdx) => {
     if (answered) return;

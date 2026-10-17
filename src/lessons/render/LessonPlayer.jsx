@@ -21,6 +21,34 @@ function useWidth(ref) {
   return width;
 }
 
+// En pantallas angostas (teléfono) se prioriza leer sobre caber: hacer scroll ahí es natural.
+const minScale = (width) => (width < 480 ? 0.85 : 0.6);
+const EDGE = 16; // aire entre el reproductor y los bordes de la ventana
+
+/**
+ * Escala del escenario para que el reproductor completo (escena + terminal + subtítulo +
+ * controles) quepa en la altura de la ventana. `chrome` es todo lo que no es la escena.
+ */
+function useFitScale(playerRef, stageRef, stageHeight, width) {
+  const [scale, setScale] = useState(1);
+  useLayoutEffect(() => {
+    const player = playerRef.current;
+    const stage = stageRef.current;
+    if (!player || !stage) return undefined;
+    const update = () => {
+      const chrome = player.offsetHeight - stage.offsetHeight;
+      const topbar = document.querySelector('.mobile-topbar');
+      const reserved = topbar && topbar.offsetParent !== null ? topbar.offsetHeight : 0;
+      const available = window.innerHeight - reserved - chrome - 2 * EDGE;
+      setScale(Math.min(1, Math.max(minScale(width), available / stageHeight)));
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [playerRef, stageRef, stageHeight, width]);
+  return scale;
+}
+
 /** Reproduce una lección como un video controlable. `onComplete` se llama al llegar al final. */
 export default function LessonPlayer({ lesson, onComplete }) {
   const durations = useMemo(() => lesson.steps.map(s => stepDuration(s)), [lesson]);
@@ -35,12 +63,23 @@ export default function LessonPlayer({ lesson, onComplete }) {
   const [voiceOn, setVoiceOn] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const stageRef = useRef(null);
+  const playerRef = useRef(null);
   const width = useWidth(stageRef);
 
   const step = lesson.steps[state.index];
   // Altura fija = la del paso más alto, para que el reproductor no salte entre pasos.
   const layouts = useMemo(() => lesson.steps.map(s => layoutScene(s.scene, width, lesson.files)), [lesson, width]);
   const stageHeight = Math.max(...layouts.map(l => l.height));
+  const scale = useFitScale(playerRef, stageRef, stageHeight, width);
+
+  // Al empezar, el reproductor completo queda a la vista (si no lo estaba).
+  const reveal = () => {
+    const r = playerRef.current?.getBoundingClientRect();
+    if (r && (r.top < 0 || r.bottom > window.innerHeight)) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      playerRef.current.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+    }
+  };
 
   // Reloj: avanza mientras se reproduce.
   useEffect(() => {
@@ -110,15 +149,15 @@ export default function LessonPlayer({ lesson, onComplete }) {
   };
 
   return (
-    <div className="lesson-player" tabIndex={0} onKeyDown={onKeyDown}
+    <div className="lesson-player" ref={playerRef} tabIndex={0} onKeyDown={onKeyDown}
       aria-label={`Lección animada: ${lesson.title}. Espacio reproduce o pausa; flechas cambian de paso.`}>
-      <div className="lesson-stage" ref={stageRef} style={{ minHeight: stageHeight }}>
-        <SceneView layout={layouts[state.index]} focus={step.focus} />
+      <div className="lesson-stage" ref={stageRef} style={{ minHeight: stageHeight * scale }}>
+        <SceneView layout={layouts[state.index]} focus={step.focus} scale={scale} />
         {!started && (
           <div className="lesson-poster">
             <span className="lesson-poster-level">{lesson.level} · {lesson.steps.length} pasos</span>
             <h3 className="lesson-poster-title">{lesson.title}</h3>
-            <button className="lesson-poster-play" onClick={() => dispatch({ type: 'play' })}>
+            <button className="lesson-poster-play" onClick={() => { reveal(); dispatch({ type: 'play' }); }}>
               <Play size={22} aria-hidden="true" />
               Ver lección ({formatClock(lessonDuration(lesson))})
             </button>
@@ -152,7 +191,7 @@ export default function LessonPlayer({ lesson, onComplete }) {
         <button className="lesson-btn" onClick={() => dispatch({ type: 'prev' })} aria-label="Paso anterior" disabled={state.index === 0}>
           <ChevronLeft size={20} />
         </button>
-        <button className="lesson-btn lesson-btn-main" onClick={() => dispatch({ type: 'toggle' })}
+        <button className="lesson-btn lesson-btn-main" onClick={() => { if (!state.playing) reveal(); dispatch({ type: 'toggle' }); }}
           aria-label={state.playing ? 'Pausar' : state.ended ? 'Volver a ver' : 'Reproducir'}>
           {state.playing ? <Pause size={22} /> : state.ended ? <RotateCcw size={20} /> : <Play size={22} />}
         </button>

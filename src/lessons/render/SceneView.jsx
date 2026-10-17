@@ -30,12 +30,12 @@ function Tag({ text, color, filled, dashed }) {
   );
 }
 
-export default function SceneView({ layout, focus = [] }) {
+export default function SceneView({ layout, focus = [], scale = 1 }) {
   const isFocused = (id) => focus.includes(id);
   const { width, height } = layout;
 
   return (
-    <svg className="scene-svg" viewBox={`0 0 ${width} ${height}`} width={width} height={height} role="img" aria-hidden="true">
+    <svg className="scene-svg" viewBox={`0 0 ${width} ${height}`} width={width * scale} height={height * scale} role="img" aria-hidden="true">
       {layout.zones && (
         <g>
           {layout.zones.boxes.map(b => (

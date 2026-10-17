@@ -120,7 +120,8 @@ html, body {
   font-size: 16px;
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: hidden;
+  /* clip, no hidden: hidden convierte al body en contenedor de scroll y rompe position: sticky. */
+  overflow-x: clip;
   transition: background-color var(--transition-normal), color var(--transition-normal);
   -webkit-font-smoothing: antialiased;
 }
@@ -197,6 +198,9 @@ code {
 .sidebar {
   width: 280px;
   flex-shrink: 0;
+  /* En pantallas bajas el menú se desplaza por dentro; si no, sus botones finales no se alcanzan. */
+  overflow-y: auto;
+  scrollbar-width: thin;
   background-color: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);

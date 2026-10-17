@@ -163,6 +163,53 @@ with sync_playwright() as p:
 
     step("TUC-ACC-07: recupera la contraseña desde el enlace del correo", password_recovery)
 
+    def offline_login_does_not_overwrite():
+        ctx = browser.new_context(viewport={"width": 1440, "height": 900})
+        p4 = ctx.new_page()
+        p4.goto(BASE_URL, wait_until="networkidle")
+        # La lectura del progreso de la cuenta falla (p. ej. corte de red justo al entrar)
+        p4.route("**/rest/v1/learner_progress*", lambda route: route.abort() if route.request.method == "GET" else route.continue_())
+        p4.click("#open-account-btn")
+        dlg = p4.locator("#account-dialog")
+        dlg.get_by_label("Correo", exact=True).fill(EMAIL)
+        dlg.get_by_label("Contraseña", exact=True).fill(PASSWORD + "-nueva")
+        dlg.get_by_role("button", name="Entrar", exact=True).click()
+        expect(p4.locator("#account-card")).not_to_contain_text("guardado en tu cuenta", timeout=3000)
+        p4.wait_for_timeout(2500)  # más que la espera de guardado: no debe haberse escrito nada
+        p4.unroute("**/rest/v1/learner_progress*")
+        p4.reload(wait_until="networkidle")
+        # Al volver la red, la cuenta conserva su progreso (200 XP) en vez del local vacío
+        expect(p4.locator("#sidebar-container")).to_contain_text("200 / 1000 XP", timeout=15000)
+        ctx.close()
+
+    step("TUC-ACC-08: si falla la lectura al entrar, no se sobrescribe la nube", offline_login_does_not_overwrite)
+
+    def offline_logout_asks():
+        ctx = browser.new_context(viewport={"width": 1440, "height": 900})
+        p5 = ctx.new_page()
+        p5.goto(BASE_URL, wait_until="networkidle")
+        p5.click("#open-account-btn")
+        dlg = p5.locator("#account-dialog")
+        dlg.get_by_label("Correo", exact=True).fill(EMAIL)
+        dlg.get_by_label("Contraseña", exact=True).fill(PASSWORD + "-nueva")
+        dlg.get_by_role("button", name="Entrar", exact=True).click()
+        expect(p5.locator("#account-card")).to_contain_text("Carlos Mendoza", timeout=15000)
+        p5.route("**/rest/v1/learner_progress*", lambda route: route.abort())
+        p5.click("#nav-btn-simulator")
+        p5.fill("#terminal-user-input", "git init")
+        p5.press("#terminal-user-input", "Enter")
+        p5.fill("#terminal-user-input", "git branch feature/login")
+        p5.press("#terminal-user-input", "Enter")
+        asked = []
+        p5.once("dialog", lambda d: (asked.append(d.message), d.dismiss()))
+        p5.click("#sign-out-btn")
+        p5.wait_for_timeout(800)
+        assert asked and "no se pudo guardar" in asked[0].lower(), asked
+        expect(p5.locator("#account-card")).to_contain_text("Carlos Mendoza")  # sigue con sesión
+        ctx.close()
+
+    step("TUC-ACC-09: salir sin conexión pide confirmación y no borra el avance", offline_logout_asks)
+
     step("TUC-ACC-06: sin errores de JavaScript", lambda: (_ for _ in ()).throw(AssertionError(errors[:3])) if errors else None)
     browser.close()
 

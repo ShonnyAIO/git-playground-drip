@@ -197,7 +197,12 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
               <span className={`account-sync ${account.sync === 'error' ? 'is-error' : ''}`} role="status">
                 {{ idle: 'Progreso vinculado a tu cuenta.', saving: 'Guardando en tu cuenta…', saved: 'Progreso guardado en tu cuenta.', error: 'No se pudo guardar: se reintentará con tu próximo avance.' }[account.sync]}
               </span>
-              <button id="sign-out-btn" className="btn btn-secondary" onClick={() => account.signOut()}>
+              <button id="sign-out-btn" className="btn btn-secondary" onClick={async () => {
+                const result = await account.signOut();
+                if (result?.unsaved && window.confirm('No se pudo guardar tu avance más reciente en la cuenta (¿sin conexión?). Si cierras sesión ahora, ese avance se perderá. ¿Cerrar sesión de todos modos?')) {
+                  await account.signOut({ force: true });
+                }
+              }}>
                 Cerrar sesión
               </button>
             </>

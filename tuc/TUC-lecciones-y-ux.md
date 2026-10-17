@@ -85,3 +85,33 @@ La versión automatizada de varios casos vive en `tests/playwright_ux_suite.py`
 - [ ] Rebase: queda claro que crea commits nuevos y la regla de no reorganizar commits ya
   publicados.
 - [ ] Remotos: queda claro que `fetch` no mueve tu rama y que `pull = fetch + merge`.
+
+## 6. Racha diaria y cuentas
+
+La racha funciona siempre. Las cuentas solo aparecen si el sitio tiene Supabase configurado
+(ver `docs/supabase.md`). La versión automatizada está en `tests/account_flow.py`.
+
+- [ ] **Dado** que no practiqué hoy, **cuando** completo una lección, un módulo o gano una
+  medalla, **entonces** la racha del menú muestra al menos «1 día».
+- [ ] **Dado** que practiqué 3 días seguidos, **entonces** gano la medalla «Constancia»; a
+  los 7 días, «Hábito de Git».
+- [ ] **Caso borde — saltar un día:** si no practico un día completo, la racha vuelve a 0
+  (practicar ayer o hoy la mantiene).
+- [ ] **Dado** que soy invitado con progreso, **cuando** creo una cuenta (nombre, correo,
+  contraseña de 8 o más caracteres y aceptación del aviso de datos), **entonces** me piden
+  confirmar el correo.
+- [ ] **Caso borde — sin aceptar el aviso:** no se crea la cuenta y se explica por qué.
+- [ ] **Cuando** abro el enlace del correo, **entonces** entro con mi nombre visible y
+  conservo el progreso que tenía como invitado.
+- [ ] **Cuando** avanzo con la sesión iniciada, **entonces** el menú muestra «Progreso
+  guardado en tu cuenta».
+- [ ] **Cuando** cierro sesión, **entonces** la computadora queda en cero (XP, medallas y
+  racha) para el siguiente estudiante.
+- [ ] **Dado** otro dispositivo, **cuando** inicio sesión, **entonces** recupero todo mi
+  progreso.
+- [ ] **Caso borde — contraseña equivocada:** se muestra «Correo o contraseña incorrectos.»
+  y puedo reintentar.
+- [ ] **Caso borde — olvidé la contraseña:** pido el enlace, elijo una contraseña nueva y
+  entro con mi progreso.
+- [ ] **Caso borde — sin internet:** la app sigue funcionando; el progreso se guarda en el
+  navegador y en la cuenta cuando vuelve la conexión, con el siguiente avance.

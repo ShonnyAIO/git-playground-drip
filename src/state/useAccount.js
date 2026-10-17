@@ -45,9 +45,10 @@ export function useAccount({ learner, onHydrate, onSignedOut }) {
     learnerRef.current = learner;
   }, [learner]);
 
+  /** Guarda en la cuenta; devuelve false si no se pudo (sin conexión, sesión vencida…). */
   const save = useCallback(async (userId, state) => {
     const payload = JSON.stringify(toRemote(state));
-    if (payload === lastSaved.current) return;
+    if (payload === lastSaved.current) return true;
     setSync('saving');
     const supabase = await getSupabase();
     const { error } = await supabase
@@ -55,20 +56,28 @@ export function useAccount({ learner, onHydrate, onSignedOut }) {
       .upsert({ user_id: userId, state: JSON.parse(payload) });
     if (error) {
       setSync('error');
-      return;
+      return false;
     }
     lastSaved.current = payload;
     setSync('saved');
+    return true;
   }, []);
 
   const hydrate = useCallback(async (sessionUser) => {
     if (hydratedFor.current === sessionUser.id) return;
     hydratedFor.current = sessionUser.id;
     const supabase = await getSupabase();
-    const [{ data: row }, { data: profile }] = await Promise.all([
+    const [{ data: row, error }, { data: profile }] = await Promise.all([
       supabase.from('learner_progress').select('state').eq('user_id', sessionUser.id).maybeSingle(),
       supabase.from('profiles').select('display_name').eq('id', sessionUser.id).maybeSingle(),
     ]);
+    if (error) {
+      // Sin leer la cuenta no se fusiona ni se guarda: se sobrescribiría el progreso de la nube.
+      // Se reintenta en el próximo evento de sesión (p. ej. al renovar el token o recargar).
+      hydratedFor.current = null;
+      setSync('error');
+      return;
+    }
     setDisplayName(profile?.display_name || sessionUser.email);
     const merged = mergeLearnerStates(learnerRef.current, row?.state ?? null);
     onHydrate(merged);
@@ -134,10 +143,12 @@ export function useAccount({ learner, onHydrate, onSignedOut }) {
   }, [status, user, save]);
 
   // Cerrar sesión guarda primero lo pendiente: si no, un avance de hace menos de un segundo se perdería.
-  const signOut = useCallback(async () => {
-    if (user) await save(user.id, learnerRef.current);
+  // Si no se puede guardar, no sale (devuelve { unsaved: true }) salvo que se fuerce.
+  const signOut = useCallback(async ({ force = false } = {}) => {
+    const saved = user && status === 'signedIn' ? await save(user.id, learnerRef.current) : true;
+    if (!saved && !force) return { unsaved: true };
     return (await getSupabase()).auth.signOut();
-  }, [user, save]);
+  }, [user, status, save]);
 
   const updatePassword = useCallback(async (password) => {
     const result = await (await getSupabase()).auth.updateUser({ password });

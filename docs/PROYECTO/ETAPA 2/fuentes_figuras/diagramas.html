@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Figuras del informe Fase II</title>
+<style>
+  body { margin: 0; padding: 24px; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #1a365d; }
+  figure { margin: 0 0 40px; display: inline-block; background: #fff; }
+  svg text { font-family: Arial, Helvetica, sans-serif; }
+</style>
+</head>
+<body>
+<!-- Cada <figure id=...> se captura como un PNG independiente (render.py). -->
+<figure id="mapa_navegacion"><svg id="svg-mapa" width="1400" height="860"></svg></figure>
+<figure id="ruta_pedagogica"><svg id="svg-ruta" width="1000" height="510"></svg></figure>
+<div id="bocetos"></div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const el = (parent, tag, attrs = {}, text) => {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  parent.appendChild(e);
+  return e;
+};
+// Texto multilínea centrado en (cx, cy).
+const label = (svg, cx, cy, lines, size = 15, weight = 'normal', fill = '#1a365d') => {
+  const n = lines.length;
+  lines.forEach((ln, i) => el(svg, 'text', { x: cx, y: cy + (i - (n - 1) / 2) * (size * 1.25) + size * 0.35, 'text-anchor': 'middle', 'font-size': size, 'font-weight': weight, fill }, ln));
+};
+
+const COLORS = {
+  hub: ['#1a365d', '#ffffff'], seccion: ['#dbeafe', '#1a365d'], sub: ['#f1f5f9', '#1e293b'],
+  global: ['#fef3c7', '#78350f'], meta: ['#dcfce7', '#14532d'],
+};
+const node = (svg, x, y, w, h, lines, kind = 'sub', size = 14) => {
+  const [bg, fg] = COLORS[kind];
+  el(svg, 'rect', { x, y, width: w, height: h, rx: 12, fill: bg, stroke: kind === 'hub' ? '#1a365d' : '#94a3b8', 'stroke-width': 1.5, 'stroke-dasharray': kind === 'global' ? '6 4' : '' });
+  label(svg, x + w / 2, y + h / 2, lines, size, kind === 'sub' ? 'normal' : 'bold', fg);
+  return { x, y, w, h, cx: x + w / 2, cy: y + h / 2 };
+};
+const defsArrow = (svg) => {
+  const d = el(svg, 'defs');
+  const m = el(d, 'marker', { id: 'flecha', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' });
+  el(m, 'path', { d: 'M0,0 L10,5 L0,10 z', fill: '#475569' });
+};
+const link = (svg, a, b, opts = {}) => {
+  // Conecta bordes: elige el lado según la posición relativa.
+  let x1, y1, x2, y2;
+  if (opts.vertical) {
+    x1 = a.cx; y1 = a.y + a.h; x2 = b.cx; y2 = b.y;
+  } else if (Math.abs(b.cy - a.cy) > Math.abs(b.cx - a.cx) * 0.6) {
+    x1 = a.cx; y1 = b.cy > a.cy ? a.y + a.h : a.y; x2 = b.cx; y2 = b.cy > a.cy ? b.y : b.y + b.h;
+  } else {
+    y1 = a.cy; x1 = b.cx > a.cx ? a.x + a.w : a.x; y2 = b.cy; x2 = b.cx > a.cx ? b.x : b.x + b.w;
+  }
+  const midY = (y1 + y2) / 2;
+  const d = opts.straight ? `M${x1},${y1} L${x2},${y2}` : `M${x1},${y1} C${x1},${midY} ${x2},${midY} ${x2},${y2}`;
+  el(svg, 'path', { d, fill: 'none', stroke: opts.color || '#475569', 'stroke-width': 1.6, 'stroke-dasharray': opts.dashed ? '6 5' : '', 'marker-end': opts.noArrow ? '' : 'url(#flecha)', ...(opts.both ? { 'marker-start': 'url(#flecha)' } : {}) });
+};
+
+/* ---------- Figura: mapa de navegación tipo red ---------- */
+(() => {
+  const s = document.getElementById('svg-mapa');
+  defsArrow(s);
+  label(s, 700, 28, ['Mapa de navegación de GitPlayground (estructura en red)'], 24, 'bold');
+  const hub = node(s, 530, 60, 340, 74, ['Inicio · Dashboard', 'misión narrativa, XP, ruta y medallas'], 'hub', 18);
+  const W = 232, Y = 200;
+  const secs = [
+    ['Lecciones animadas', '6 micro-lecciones'],
+    ['Simulador Core', 'terminal + grafo vivo'],
+    ['GitHub & Remotos', 'push, PR, review, pull'],
+    ['Resolución de Conflictos', 'teoría + editor'],
+    ['Desafíos & Quizzes', '5 preguntas'],
+  ].map((t, i) => node(s, 50 + i * 268, Y, 232, 70, t, 'seccion', 17));
+  secs.forEach(n => link(s, hub, n, { vertical: true }));
+
+  // Subniveles de cada sección
+  const sub = (col, rows) => rows.map((t, j) => node(s, secs[col].x - 4, 320 + j * 72, W + 8, 58, t, 'sub', 16));
+  const lec = sub(0, [['1. Los tres estados', '↪ Simulador'], ['2. Ramas y HEAD', '↪ Simulador'], ['3. Merge FF vs 3 vías', '↪ Simulador'], ['4. Rebase vs merge', '↪ Conflictos'], ['5. Remotos', '↪ GitHub'], ['6. Conflictos', '↪ Conflictos']]);
+  const sim = sub(1, [['Misión 1: ramas y fusión'], ['Misión 2: deshacer', '(restore / reset / revert)'], ['Comandos: init, add, commit,', 'branch, checkout, merge…']]);
+  const gh = sub(2, [['1. Conectar remoto'], ['2. git push'], ['3. Crear Pull Request'], ['4. Code review'], ['5. Merge del PR'], ['6. git pull']]);
+  const cf = sub(3, [['Teoría: Merge vs Rebase'], ['Editor de 3 vías', '(actual / entrante / ambas)'], ['Marcar resuelto + commit', 'o rebase --continue']]);
+  const qz = sub(4, [['Pregunta 1…5', 'opción múltiple'], ['Retroalimentación', 'inmediata por respuesta'], ['Resultado + medalla', '«Sabio de Git»']]);
+  [lec, sim, gh, cf, qz].forEach(list => list.slice(1).forEach((n, j) => link(s, list[j], n, { straight: true })));
+  [[0, lec], [1, sim], [2, gh], [3, cf], [4, qz]].forEach(([i, list]) => link(s, secs[i], list[0], { straight: true }));
+
+
+  // Elementos globales
+  const nova = node(s, 50, 768, 410, 70, ['Tutora Nova (flotante en todas las pantallas)', 'pistas socráticas según el estado de Git'], 'global', 16);
+  const menu = node(s, 495, 768, 410, 70, ['Menú lateral / menú desplegable móvil', 'acceso directo a cualquier sección'], 'global', 16);
+  const prog = node(s, 940, 768, 410, 70, ['Progreso persistente (navegador)', 'XP, nivel, medallas, lecciones completadas'], 'meta', 16);
+  // Leyenda
+  const ly = 112;
+  el(s, 'line', { x1: 1000, y1: ly, x2: 1060, y2: ly, stroke: '#475569', 'stroke-width': 1.6, 'marker-end': 'url(#flecha)' });
+  el(s, 'text', { x: 1070, y: ly + 5, 'font-size': 16, fill: '#1e293b' }, 'navegación / secuencia');
+  el(s, 'text', { x: 1030, y: ly + 29, 'font-size': 14, fill: '#1e293b' }, '↪');
+  el(s, 'text', { x: 1070, y: ly + 29, 'font-size': 16, fill: '#1e293b' }, 'destino del botón «Practicar»');
+})();
+
+/* ---------- Figura: ruta pedagógica recomendada ---------- */
+(() => {
+  const s = document.getElementById('svg-ruta');
+  defsArrow(s);
+  label(s, 500, 30, ['Secuencia didáctica recomendada (ciclo por tema)'], 26, 'bold');
+  const steps = [
+    ['1. Contextualizar', 'misión narrativa', 'en el Dashboard', 'hub'],
+    ['2. Observar', 'lección animada:', 'modelo mental', 'seccion'],
+    ['3. Practicar', 'simulador, GitHub', 'o conflictos', 'seccion'],
+    ['4. Pedir ayuda', 'tutora Nova:', 'pistas, no respuestas', 'global'],
+    ['5. Comprobar', 'quiz con', 'retroalimentación', 'seccion'],
+    ['6. Reconocer', 'XP, nivel', 'y medallas', 'meta'],
+  ];
+  // Fila 1: 1→2→3 de izquierda a derecha; fila 2: 4→5→6 de derecha a izquierda.
+  const pos = [[40, 80], [360, 80], [680, 80], [680, 290], [360, 290], [40, 290]];
+  const nodes = steps.map((t, i) => node(s, pos[i][0], pos[i][1], 280, 130, t.slice(0, 3), t[3], 21));
+  nodes.slice(1).forEach((n, i) => link(s, nodes[i], n, { straight: true }));
+  el(s, 'path', { d: `M${nodes[5].x + 20},${nodes[5].y + nodes[5].h} C${nodes[5].x + 20},500 ${nodes[1].x + nodes[1].w + 10},500 ${nodes[1].x + nodes[1].w / 2 + 40},${nodes[4].y + nodes[4].h + 4}`, fill: 'none', stroke: 'none' });
+  label(s, 500, 470, ['El ciclo se repite con el siguiente tema:', 'Básico → Intermedio → Avanzado'], 19, 'normal', '#475569');
+})();
+
+/* ---------- Bocetos (wireframes) con zonas numeradas ---------- */
+const BOCETOS = [
+  { id: 'boceto_dashboard', title: 'Dashboard (inicio)', zones: [
+    [260, 70, 900, 50, '1 Saludo y propósito de la estación'],
+    [260, 135, 900, 150, '2 Misión narrativa «Rescate de código» + botones Ingresar / Lecciones'],
+    [260, 300, 290, 90, '3 Rango y XP'], [565, 300, 290, 90, '3 Módulos completados'], [870, 300, 290, 90, '3 Medallas'],
+    [260, 405, 590, 300, '4 Ruta de aprendizaje: módulos con estado (bloqueado / activo / completo)'],
+    [865, 405, 295, 300, '5 Logros: grilla de 9 medallas + detalle'],
+  ]},
+  { id: 'boceto_lecciones', title: 'Lecciones animadas', zones: [
+    [260, 70, 680, 50, '1 Título, propósito y contador de completadas'], [955, 70, 205, 50, '1 Completadas 0 / 6'],
+    [260, 130, 680, 30, '2 Filtros: Todas · Básico · Intermedio · Avanzado'],
+    [260, 170, 680, 250, '3 Escenario animado: zonas de Git, grafo y código (póster «Ver lección» al inicio)'],
+    [260, 430, 680, 70, '4 Mini terminal con el comando + subtítulo del paso (aria-live)'],
+    [260, 510, 680, 50, '5 Barra de pasos + controles: anterior · play/pausa · siguiente · velocidad · CC · voz'],
+    [260, 570, 680, 135, '6 Ficha: objetivos, comandos, botón Practicar, «Para profundizar»'],
+    [955, 130, 205, 575, '7 Temario: 6 lecciones con nivel, duración y estado'],
+  ]},
+  { id: 'boceto_simulador', title: 'Simulador Core', zones: [
+    [260, 70, 640, 50, '1 Título'], [915, 70, 245, 50, '1 git status · git log'],
+    [260, 130, 900, 40, '2 Selector: Misión 1 (ramas) · Misión 2 (deshacer)'],
+    [260, 180, 900, 100, '3 Misión activa: objetivo + lista de pasos requeridos'],
+    [260, 290, 290, 160, '4 Working Directory'], [565, 290, 290, 160, '4 Staging Area'], [870, 290, 290, 160, '4 Local Repository'],
+    [260, 460, 900, 120, '5 Grafo vivo: commits, ramas y HEAD (SVG, navegable con teclado)'],
+    [260, 590, 900, 75, '6 Terminal simulada (historial con flechas)'],
+    [260, 672, 900, 33, '7 Asistente rápido: botones de comandos frecuentes'],
+  ]},
+  { id: 'boceto_github', title: 'GitHub & Remotos', zones: [
+    [260, 70, 900, 50, '1 Título y propósito'],
+    [260, 130, 900, 90, '2 Misión 2: instrucciones paso a paso (conectar → push → PR → review → merge → pull)'],
+    [260, 235, 440, 470, '3 Repositorio local: rama actual, historial de commits, botones Conectar · push · pull'],
+    [720, 235, 440, 470, '4 Servidor GitHub simulado: estado, Pull Request, comentarios de revisión, Fusionar PR'],
+  ]},
+  { id: 'boceto_conflictos', title: 'Resolución de conflictos', zones: [
+    [260, 70, 900, 50, '1 Título y propósito'],
+    [260, 130, 900, 40, '2 Pestañas: Teoría Merge vs Rebase · Simulador de conflictos'],
+    [260, 180, 900, 60, '3 Alerta de choque de commits + archivo y operación (merge / rebase)'],
+    [260, 250, 440, 230, '4 Cambio actual (HEAD, main)'], [720, 250, 440, 230, '5 Cambio entrante (feature/…)'],
+    [585, 490, 250, 36, '6 Conservar ambos'],
+    [260, 535, 900, 170, '7 Vista previa con marcadores <<<<<<< ======= >>>>>>> + Marcar resuelto + commit / rebase --continue'],
+  ]},
+  { id: 'boceto_quizzes', title: 'Desafíos & Quizzes', zones: [
+    [260, 70, 900, 50, '1 Título y propósito'],
+    [310, 140, 800, 40, '2 Progreso: Pregunta n de 5 · Respuestas correctas'],
+    [310, 190, 800, 80, '3 Enunciado del caso (Gitflow, trunk-based, rebase, revert, detached HEAD)'],
+    [310, 280, 800, 70, '4 Opción A'], [310, 360, 800, 70, '4 Opción B'], [310, 440, 800, 70, '4 Opción C'],
+    [310, 525, 800, 110, '5 Retroalimentación explicativa (correcta / incorrecta) + Siguiente'],
+  ]},
+];
+
+const SIDEBAR = [
+  [20, 20, 200, 40, 'A Logo'], [20, 75, 200, 95, 'B Perfil: nivel, XP, medallas'],
+  [20, 185, 200, 290, 'C Menú: 6 secciones'], [20, 490, 200, 215, 'D Progreso, tema, reiniciar'],
+];
+
+const wrapText = (t, max) => {
+  const words = t.split(' '); const out = []; let cur = '';
+  for (const w of words) { if ((cur + ' ' + w).trim().length > max) { out.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); }
+  if (cur) out.push(cur);
+  return out;
+};
+
+const zone = (svg, [x, y, w, h, text], fill = '#f1f5f9') => {
+  el(svg, 'rect', { x, y, width: w, height: h, rx: 8, fill, stroke: '#64748b', 'stroke-width': 1.4, 'stroke-dasharray': '7 4' });
+  const [num, ...rest] = text.split(' ');
+  el(svg, 'circle', { cx: x + 16, cy: y + 16, r: 11, fill: '#1a365d' });
+  el(svg, 'text', { x: x + 16, y: y + 20, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 'bold', fill: '#fff' }, num);
+  const lines = wrapText(rest.join(' '), Math.max(12, Math.floor(w / 9.6)));
+  label(svg, x + w / 2, y + h / 2 + (h > 50 ? 4 : 0), lines.slice(0, Math.max(1, Math.floor((h - 6) / 21))), 17, 'normal', '#1e293b');
+};
+
+const host = document.getElementById('bocetos');
+for (const b of BOCETOS) {
+  const fig = document.createElement('figure'); fig.id = b.id; host.appendChild(fig);
+  const svg = el(fig, 'svg', { width: 1180, height: 760 });
+  el(svg, 'rect', { x: 1, y: 1, width: 1178, height: 758, rx: 14, fill: '#ffffff', stroke: '#1a365d', 'stroke-width': 2 });
+  el(svg, 'rect', { x: 1, y: 1, width: 238, height: 758, rx: 14, fill: '#f8fafc', stroke: '#1a365d', 'stroke-width': 2 });
+  SIDEBAR.forEach(z => zone(svg, z, '#eef2f7'));
+  b.zones.forEach(z => zone(svg, z));
+  el(svg, 'circle', { cx: 1135, cy: 725, r: 24, fill: '#fef3c7', stroke: '#78350f', 'stroke-width': 1.5, 'stroke-dasharray': '5 3' });
+  el(svg, 'text', { x: 1135, y: 730, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 'bold', fill: '#78350f' }, 'Nova');
+  el(svg, 'text', { x: 260, y: 45, 'font-size': 20, 'font-weight': 'bold', fill: '#1a365d' }, `Boceto · ${b.title}`);
+}
+
+// Boceto móvil: barra superior + contenido apilado, y menú desplegable abierto.
+(() => {
+  const fig = document.createElement('figure'); fig.id = 'boceto_movil'; host.appendChild(fig);
+  const svg = el(fig, 'svg', { width: 1180, height: 760 });
+  el(svg, 'text', { x: 20, y: 30, 'font-size': 20, 'font-weight': 'bold', fill: '#1a365d' }, 'Boceto · Teléfono (375 px): vista y menú desplegable');
+  const phone = (ox, open) => {
+    el(svg, 'rect', { x: ox, y: 50, width: 360, height: 700, rx: 28, fill: '#fff', stroke: '#1a365d', 'stroke-width': 2 });
+    zone(svg, [ox + 15, 65, 330, 50, '1 Logo · XP · botón menú']);
+    zone(svg, [ox + 15, 125, 330, 140, '2 Título y misión de la sección']);
+    zone(svg, [ox + 15, 275, 330, 200, '3 Contenido en una columna (zonas y grafo apilados)']);
+    zone(svg, [ox + 15, 485, 330, 250, '4 Controles y ficha, debajo']);
+    if (open) {
+      el(svg, 'rect', { x: ox, y: 50, width: 360, height: 700, rx: 28, fill: 'rgba(15,23,42,0.78)' });
+      el(svg, 'rect', { x: ox, y: 50, width: 290, height: 700, rx: 28, fill: '#f8fafc', stroke: '#1a365d', 'stroke-width': 2 });
+      zone(svg, [ox + 15, 70, 260, 90, '5 Perfil: nivel y XP'], '#eef2f7');
+      zone(svg, [ox + 15, 170, 260, 330, '6 Menú: 6 secciones (foco atrapado, Esc cierra)'], '#eef2f7');
+      zone(svg, [ox + 15, 510, 260, 220, '7 Progreso, tema, reiniciar'], '#eef2f7');
+    }
+  };
+  phone(120, false);
+  phone(700, true);
+})();
+</script>
+</body>
+</html>

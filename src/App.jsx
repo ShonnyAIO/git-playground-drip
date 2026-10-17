@@ -7,8 +7,10 @@ import ConflictSolver from './components/ConflictSolver';
 import Quizzes from './components/Quizzes';
 import AITutor from './components/AITutor';
 import VideoLearning from './components/VideoLearning';
+import AccountDialog from './components/AccountDialog';
 import { BADGES } from './state/badges';
-import { computeStreak, deriveLevel, deriveXp } from './state/learnerStore';
+import { computeStreak, deriveLevel, deriveXp, sanitizeLearnerState } from './state/learnerStore';
+import { useAccount } from './state/useAccount';
 import { useLearner } from './state/useLearner';
 
 function App() {
@@ -58,6 +60,23 @@ function App() {
   useEffect(() => {
     unlockedRef.current = new Set(learner.unlockedBadges);
   }, [learner.unlockedBadges]);
+
+  // Cuenta (Supabase): al entrar llega el progreso fusionado; sus medallas no se re-anuncian.
+  const onHydrate = useCallback((state) => {
+    unlockedRef.current = new Set(sanitizeLearnerState(state).unlockedBadges);
+    dispatch({ type: 'hydrate', state });
+  }, [dispatch]);
+  // Al salir se borra el progreso local: en una computadora compartida, el siguiente
+  // estudiante no hereda el progreso (que queda a salvo en la cuenta).
+  const onSignedOut = useCallback(() => dispatch({ type: 'reset' }), [dispatch]);
+  const account = useAccount({ learner, onHydrate, onSignedOut });
+  const [accountView, setAccountView] = useState(null);
+  const dialogView = accountView ?? (account.recovery ? 'recovery' : null);
+  const { dismissRecovery } = account;
+  const closeAccount = useCallback(() => {
+    setAccountView(null);
+    dismissRecovery();
+  }, [dismissRecovery]);
 
   const unlockBadge = useCallback((id) => {
     const badge = BADGES.find(b => b.id === id);
@@ -178,6 +197,8 @@ function App() {
         level={level}
         badges={badges}
         onResetProgress={() => dispatch({ type: 'reset' })}
+        account={account}
+        onOpenAccount={setAccountView}
         streak={streak}
       />
 
@@ -187,6 +208,8 @@ function App() {
       </main>
 
       {/* Intelligent AI Tutor Powered by ShonnyProxy */}
+      {dialogView && <AccountDialog account={account} initialView={dialogView} onClose={closeAccount} />}
+
       <AITutor 
         tutorMessages={tutorMessages} 
         addTutorMessage={addTutorMessage} 

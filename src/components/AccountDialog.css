@@ -1,0 +1,194 @@
+/* Diálogo de cuenta (ingreso, registro, recuperación). Colores por tokens de index.css. */
+.account-backdrop {
+  position: fixed;
+  inset: 0;
+  /* Por encima de la tutora flotante (z-index 100): el diálogo debe quedar al frente. */
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.account-dialog {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.account-dialog h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.account-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.account-lead,
+.account-notice {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.account-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.account-field input {
+  width: 100%;
+  height: 44px;
+  padding: 0 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 400;
+}
+
+.account-field small {
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.account-password {
+  position: relative;
+  display: block;
+}
+
+.account-password input {
+  padding-right: 3rem;
+}
+
+.account-eye {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.account-consent {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.account-consent input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.account-error {
+  min-height: 1.2em;
+  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--color-working);
+}
+
+.account-error:empty {
+  margin-bottom: 0;
+}
+
+.account-submit {
+  width: 100%;
+  justify-content: center;
+}
+
+.account-submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.account-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.account-links button {
+  padding: 0.3rem 0;
+  border: none;
+  background: none;
+  color: var(--primary-text);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Tarjeta de cuenta en el menú lateral */
+.account-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.account-card strong {
+  color: var(--text-primary);
+}
+
+.account-card .btn {
+  width: 100%;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.account-sync {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+.account-sync.is-error {
+  color: var(--color-working);
+}

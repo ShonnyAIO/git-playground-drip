@@ -43,6 +43,22 @@ with sync_playwright() as p:
     check("Enter en una pestaña enfoca el h2 del módulo", active()[0] == "H2")
     check("la pestaña activa tiene aria-current", page.get_attribute("#nav-btn-conflicts", "aria-current") == "page")
 
+    # Diálogo de cuenta (solo si la app tiene Supabase configurado): axe con el diálogo abierto,
+    # foco adentro y devuelto al botón al cerrar con Esc.
+    if page.locator("#open-account-btn").count():
+        page.click("#open-account-btn")
+        page.wait_for_timeout(300)
+        page.add_script_tag(content=AXE)
+        res = page.evaluate("axe.run(document.querySelector('#account-dialog'), { resultTypes: ['violations'] })")
+        serious = [v for v in res["violations"] if v["impact"] in ("serious", "critical")]
+        for v in res["violations"]:
+            print(f"dialog {v['impact']:8s} {v['id']} x{len(v['nodes'])}")
+        check("diálogo de cuenta sin violaciones graves", not serious)
+        check("abrir el diálogo enfoca el primer campo", page.evaluate("document.activeElement.id") == "account-email")
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(200)
+        check("Esc cierra el diálogo y devuelve el foco", page.evaluate("document.activeElement.id") == "open-account-btn")
+
     # Teclado (móvil): el drawer atrapa el foco y lo devuelve al cerrarse.
     m = b.new_page(viewport={"width": 375, "height": 812})
     page = m

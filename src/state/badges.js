@@ -9,4 +9,6 @@ export const BADGES = [
   { id: 'conflict', name: 'Domador de Conflictos', desc: 'Resolviste una colisión de código en merge/rebase.', icon: 'AlertTriangle' },
   { id: 'video_master', name: 'Autodidacta Visual', desc: 'Completaste todas las lecciones animadas.', icon: 'Video' },
   { id: 'quiz', name: 'Sabio de Git', desc: 'Respondiste correctamente todos los desafíos.', icon: 'Award' },
+  { id: 'streak_3', name: 'Constancia', desc: 'Practicaste 3 días seguidos.', icon: 'Flame' },
+  { id: 'streak_7', name: 'Hábito de Git', desc: 'Practicaste 7 días seguidos.', icon: 'Flame' },
 ];

@@ -32,8 +32,9 @@ Versión en línea: <https://git-playground-ucv.netlify.app/>
 4. **Módulo 4: Quizzes de Flujos de Trabajo**
    * Desafíos de opción múltiple sobre **Gitflow**, **Trunk-Based Development** y buenas prácticas con explicaciones pedagógicas integradas tras responder.
 
-5. **Progreso y accesibilidad**
-   * XP, medallas, lecciones y pestaña se guardan en el navegador y sobreviven a recargar; se pueden reiniciar.
+5. **Progreso, cuentas y accesibilidad**
+   * XP, medallas, lecciones, pestaña y **racha diaria** (con medallas a los 3 y 7 días) se guardan en el navegador y sobreviven a recargar; se pueden reiniciar.
+   * **Cuentas opcionales con Supabase** (correo y contraseña): el progreso se recupera en cualquier computadora. Sin configurar Supabase, la app funciona en modo invitado. Ver [docs/supabase.md](docs/supabase.md).
    * Usable de teléfono (375 px) a escritorio, operable solo con teclado y con contraste WCAG 2.2 AA en tema claro y oscuro.
 
 6. **Tutor Git Invisible (IA Simulada)**
@@ -82,13 +83,15 @@ npm run build
   * `python tests/playwright_ux_suite.py` — recorrido de usuario (TUC-UX-01 a 12).
   * `python scripts/a11y.py` — axe-core en cada sección y tema, más navegación por teclado.
   * `python scripts/capture.py <carpeta>` — capturas de cada sección a 375, 768, 1024 y 1440 px.
+* Cuentas, contra Supabase local (`npx supabase start`): `node scripts/rls_check.mjs` (aislamiento entre estudiantes) y `python tests/account_flow.py` (flujo completo de cuenta, con `npm run dev`).
   * Con `uv`: `uv run --with playwright==1.57.0 python <script>`.
 * Checklist manual de aceptación: [tuc/TUC-lecciones-y-ux.md](tuc/TUC-lecciones-y-ux.md).
 
 ## 📂 Estructura del Código
 
 * `src/components/` — un componente por módulo de la barra lateral, más el tutor.
-* `src/state/` — el estado del estudiante (progreso, medallas, lecciones, pestaña, tema) y su persistencia; único dueño de `localStorage` para el progreso.
+* `src/state/` — el estado del estudiante (progreso, medallas, lecciones, racha, pestaña, tema) y su persistencia; único dueño de `localStorage` para el progreso. `useAccount.js` es el único que sincroniza con Supabase.
+* `supabase/` — configuración local y migraciones (tablas, políticas RLS).
 * `src/lessons/` — lecciones animadas: `engine/` (puro, con tests), `render/` (reproductor SVG) y `content/` (una lección por archivo).
 * `src/index.css` — sistema de diseño: tokens de color (incluidos los de estados Git) y estilos compartidos. `--primary` es color de relleno; para texto naranja se usa `--primary-text`.
 * `lab.html` — laboratorio solo de desarrollo (`npm run dev` → `/lab.html`) para revisar lecciones.

@@ -16,7 +16,8 @@ import {
   Lock,
   Sparkles,
   Compass,
-  Video
+  Video,
+  Flame
 } from 'lucide-react';
 
 const iconMap = {
@@ -27,7 +28,9 @@ const iconMap = {
   RotateCcw,
   CloudLightning,
   AlertTriangle,
-  Award
+  Award,
+  Video,
+  Flame
 };
 
 export default function Dashboard({ setCurrentTab, progress, xp, level, badges }) {

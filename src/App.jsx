@@ -7,8 +7,10 @@ import ConflictSolver from './components/ConflictSolver';
 import Quizzes from './components/Quizzes';
 import AITutor from './components/AITutor';
 import VideoLearning from './components/VideoLearning';
+import AccountDialog from './components/AccountDialog';
 import { BADGES } from './state/badges';
-import { deriveLevel, deriveXp } from './state/learnerStore';
+import { computeStreak, deriveLevel, deriveXp, sanitizeLearnerState } from './state/learnerStore';
+import { useAccount } from './state/useAccount';
 import { useLearner } from './state/useLearner';
 
 function App() {
@@ -44,19 +46,45 @@ function App() {
 
   // Ref, no estado: varias llamadas en el mismo render no deben notificar dos veces.
   const unlockedRef = useRef(new Set(learner.unlockedBadges));
+
+  const announceBadge = useCallback((badge) => {
+    setTimeout(() => addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${badge.name}". ${badge.desc}`, 'bot'), 600);
+  }, [addTutorMessage]);
+
+  // Medallas que el propio store otorga (racha): se anuncian igual que las demás.
+  useEffect(() => {
+    const fresh = learner.unlockedBadges.filter(id => !unlockedRef.current.has(id));
+    fresh.forEach(id => announceBadge(BADGES.find(b => b.id === id)));
+  }, [learner.unlockedBadges, announceBadge]);
+
   useEffect(() => {
     unlockedRef.current = new Set(learner.unlockedBadges);
   }, [learner.unlockedBadges]);
+
+  // Cuenta (Supabase): al entrar llega el progreso fusionado; sus medallas no se re-anuncian.
+  const onHydrate = useCallback((state) => {
+    unlockedRef.current = new Set(sanitizeLearnerState(state).unlockedBadges);
+    dispatch({ type: 'hydrate', state });
+  }, [dispatch]);
+  // Al salir se borra el progreso local: en una computadora compartida, el siguiente
+  // estudiante no hereda el progreso (que queda a salvo en la cuenta).
+  const onSignedOut = useCallback(() => dispatch({ type: 'reset' }), [dispatch]);
+  const account = useAccount({ learner, onHydrate, onSignedOut });
+  const [accountView, setAccountView] = useState(null);
+  const dialogView = accountView ?? (account.recovery ? 'recovery' : null);
+  const { dismissRecovery } = account;
+  const closeAccount = useCallback(() => {
+    setAccountView(null);
+    dismissRecovery();
+  }, [dismissRecovery]);
 
   const unlockBadge = useCallback((id) => {
     const badge = BADGES.find(b => b.id === id);
     if (!badge || unlockedRef.current.has(id)) return;
     unlockedRef.current.add(id);
     dispatch({ type: 'unlockBadge', id });
-    setTimeout(() => {
-      addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${badge.name}". ${badge.desc}`, 'bot');
-    }, 600);
-  }, [dispatch, addTutorMessage]);
+    announceBadge(badge);
+  }, [dispatch, announceBadge]);
 
   // Cada pestaña empieza arriba y, si la eligió el estudiante, el foco va a su título
   // para que el lector de pantalla anuncie el cambio. En la carga inicial no se mueve el foco.
@@ -75,6 +103,7 @@ function App() {
   }, [currentTab]);
 
   const xp = deriveXp(learner);
+  const streak = computeStreak(learner.activeDays);
   const level = deriveLevel(xp);
 
   // Render view based on active tab
@@ -168,6 +197,9 @@ function App() {
         level={level}
         badges={badges}
         onResetProgress={() => dispatch({ type: 'reset' })}
+        account={account}
+        onOpenAccount={setAccountView}
+        streak={streak}
       />
 
       {/* Main Core Workstation */}
@@ -176,6 +208,8 @@ function App() {
       </main>
 
       {/* Intelligent AI Tutor Powered by ShonnyProxy */}
+      {dialogView && <AccountDialog account={account} initialView={dialogView} onClose={closeAccount} />}
+
       <AITutor 
         tutorMessages={tutorMessages} 
         addTutorMessage={addTutorMessage} 

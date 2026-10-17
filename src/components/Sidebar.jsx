@@ -13,7 +13,7 @@ import {
   X
 } from 'lucide-react';
 
-export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress }) {
+export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress, streak, account, onOpenAccount }) {
   
   // Bajo 1024 px el sidebar es un drawer; en escritorio esta bandera no tiene efecto visual.
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -172,7 +172,43 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
           <span>Medallas Ganadas:</span>
           <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>🏅 {badges.filter(b => b.unlocked).length} / {badges.length}</span>
         </div>
+        <div className="streak-row" title="Días seguidos con práctica: lecciones, módulos o medallas">
+          <span>Racha diaria:</span>
+          <span id="streak-value" className={streak > 0 ? 'is-active' : ''}>
+            <span aria-hidden="true">🔥</span> {streak} {streak === 1 ? 'día' : 'días'}
+          </span>
+        </div>
       </div>
+
+      {account.status !== 'disabled' && (
+        <div className="account-card" id="account-card">
+          {account.status === 'loading' && <span>Verificando tu sesión…</span>}
+          {account.status === 'guest' && (
+            <>
+              <span>Estás como <strong>invitado</strong>: tu progreso solo vive en este navegador.</span>
+              <button id="open-account-btn" className="btn btn-primary" onClick={() => { setDrawerOpen(false); onOpenAccount('signin'); }}>
+                Crear cuenta o iniciar sesión
+              </button>
+            </>
+          )}
+          {account.status === 'signedIn' && (
+            <>
+              <span>Sesión de <strong>{account.displayName}</strong></span>
+              <span className={`account-sync ${account.sync === 'error' ? 'is-error' : ''}`} role="status">
+                {{ idle: 'Progreso vinculado a tu cuenta.', saving: 'Guardando en tu cuenta…', saved: 'Progreso guardado en tu cuenta.', error: 'No se pudo guardar: se reintentará con tu próximo avance.' }[account.sync]}
+              </span>
+              <button id="sign-out-btn" className="btn btn-secondary" onClick={async () => {
+                const result = await account.signOut();
+                if (result?.unsaved && window.confirm('No se pudo guardar tu avance más reciente en la cuenta (¿sin conexión?). Si cierras sesión ahora, ese avance se perderá. ¿Cerrar sesión de todos modos?')) {
+                  await account.signOut({ force: true });
+                }
+              }}>
+                Cerrar sesión
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <nav aria-label="Navegación principal">
         <ul className="nav-list">
@@ -235,7 +271,8 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
           id="reset-progress-btn"
           className="btn-link-subtle"
           onClick={() => {
-            if (window.confirm('¿Reiniciar todo tu progreso? Perderás XP, medallas y lecciones completadas.')) {
+            const scope = account.status === 'signedIn' ? ' También se reiniciará en tu cuenta.' : '';
+            if (window.confirm(`¿Reiniciar todo tu progreso? Perderás XP, medallas, lecciones y racha.${scope}`)) {
               onResetProgress();
             }
           }}

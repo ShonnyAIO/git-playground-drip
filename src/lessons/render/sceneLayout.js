@@ -113,7 +113,8 @@ function layoutCode(code, width, top) {
 }
 
 export function layoutScene(scene, width, files = {}) {
-  const compact = width < 640;
+  // Bajo 480 px (teléfonos) las zonas y los grafos se apilan; por encima van lado a lado.
+  const compact = width < 480;
   const out = { width, compact, zones: null, graphs: [], code: null, height: 0 };
   let y = 0;
 

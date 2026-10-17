@@ -655,7 +655,8 @@ code {
 /* Conflict Solver / Diff Interface */
 .diff-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, …): sin esto, una línea de código larga ensancha su columna y recorta la otra. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin: 1.5rem 0;
   border: 1px solid var(--border-color);
@@ -669,6 +670,7 @@ code {
   display: flex;
   flex-direction: column;
   min-height: 240px;
+  min-width: 0;
 }
 
 .diff-pane-header {
@@ -704,9 +706,15 @@ code {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   flex: 1;
+  overflow-x: auto;
   white-space: pre-wrap;
   cursor: pointer;
   transition: background-color var(--transition-fast);
+}
+
+.diff-pane-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .diff-pane-body:hover {

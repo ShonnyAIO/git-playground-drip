@@ -15,7 +15,7 @@
 
 - [x] 01 — Racha diaria (pura, también para invitados) y medallas de racha
 - [x] 02 — Fusión de progresos (pura)
-- [ ] 03 — Esquema Supabase: perfiles, progreso, RLS y prueba de aislamiento
+- [x] 03 — Esquema Supabase: perfiles, progreso, RLS y prueba de aislamiento
 - [ ] 04 — Cliente opcional y sesión (la app sigue funcionando sin Supabase)
 - [ ] 05 — Interfaz de cuenta: registro, ingreso, salida, recuperación, aviso de privacidad
 - [ ] 06 — Sincronización del progreso con la cuenta

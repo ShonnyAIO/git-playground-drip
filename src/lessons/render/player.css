@@ -1,5 +1,6 @@
 /* Reproductor de lecciones animadas. Colores solo por tokens de index.css. */
 .lesson-player {
+  scroll-margin-top: 16px;
   --scene-ease: cubic-bezier(0.65, 0, 0.35, 1);
   --scene-move: 0.75s;
   display: flex;
@@ -16,6 +17,8 @@
   width: 100%;
   display: flex;
   align-items: flex-start;
+  /* Si la escena se reduce para caber en la altura de la ventana, queda centrada. */
+  justify-content: center;
 }
 
 .lesson-poster {
@@ -309,5 +312,12 @@
   .scene-halo {
     animation: none;
     opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .lesson-player {
+    /* debajo de la barra superior fija del móvil */
+    scroll-margin-top: 72px;
   }
 }

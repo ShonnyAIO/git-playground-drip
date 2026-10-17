@@ -13,7 +13,7 @@ import {
   X
 } from 'lucide-react';
 
-export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress }) {
+export default function Sidebar({ currentTab, setCurrentTab, progress, theme, setTheme, xp, level, badges, onResetProgress, streak }) {
   
   // Bajo 1024 px el sidebar es un drawer; en escritorio esta bandera no tiene efecto visual.
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -171,6 +171,12 @@ export default function Sidebar({ currentTab, setCurrentTab, progress, theme, se
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-color)', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
           <span>Medallas Ganadas:</span>
           <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>🏅 {badges.filter(b => b.unlocked).length} / {badges.length}</span>
+        </div>
+        <div className="streak-row" title="Días seguidos con práctica: lecciones, módulos o medallas">
+          <span>Racha diaria:</span>
+          <span id="streak-value" className={streak > 0 ? 'is-active' : ''}>
+            <span aria-hidden="true">🔥</span> {streak} {streak === 1 ? 'día' : 'días'}
+          </span>
         </div>
       </div>
 

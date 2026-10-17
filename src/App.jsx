@@ -8,7 +8,7 @@ import Quizzes from './components/Quizzes';
 import AITutor from './components/AITutor';
 import VideoLearning from './components/VideoLearning';
 import { BADGES } from './state/badges';
-import { deriveLevel, deriveXp } from './state/learnerStore';
+import { computeStreak, deriveLevel, deriveXp } from './state/learnerStore';
 import { useLearner } from './state/useLearner';
 
 function App() {
@@ -44,6 +44,17 @@ function App() {
 
   // Ref, no estado: varias llamadas en el mismo render no deben notificar dos veces.
   const unlockedRef = useRef(new Set(learner.unlockedBadges));
+
+  const announceBadge = useCallback((badge) => {
+    setTimeout(() => addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${badge.name}". ${badge.desc}`, 'bot'), 600);
+  }, [addTutorMessage]);
+
+  // Medallas que el propio store otorga (racha): se anuncian igual que las demás.
+  useEffect(() => {
+    const fresh = learner.unlockedBadges.filter(id => !unlockedRef.current.has(id));
+    fresh.forEach(id => announceBadge(BADGES.find(b => b.id === id)));
+  }, [learner.unlockedBadges, announceBadge]);
+
   useEffect(() => {
     unlockedRef.current = new Set(learner.unlockedBadges);
   }, [learner.unlockedBadges]);
@@ -53,10 +64,8 @@ function App() {
     if (!badge || unlockedRef.current.has(id)) return;
     unlockedRef.current.add(id);
     dispatch({ type: 'unlockBadge', id });
-    setTimeout(() => {
-      addTutorMessage(`🏆 ¡LOGRO DESBLOQUEADO!: "${badge.name}". ${badge.desc}`, 'bot');
-    }, 600);
-  }, [dispatch, addTutorMessage]);
+    announceBadge(badge);
+  }, [dispatch, announceBadge]);
 
   // Cada pestaña empieza arriba y, si la eligió el estudiante, el foco va a su título
   // para que el lector de pantalla anuncie el cambio. En la carga inicial no se mueve el foco.
@@ -75,6 +84,7 @@ function App() {
   }, [currentTab]);
 
   const xp = deriveXp(learner);
+  const streak = computeStreak(learner.activeDays);
   const level = deriveLevel(xp);
 
   // Render view based on active tab
@@ -168,6 +178,7 @@ function App() {
         level={level}
         badges={badges}
         onResetProgress={() => dispatch({ type: 'reset' })}
+        streak={streak}
       />
 
       {/* Main Core Workstation */}

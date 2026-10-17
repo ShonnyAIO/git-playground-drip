@@ -1263,3 +1263,20 @@ h2[tabindex="-1"]:focus,
   white-space: nowrap;
   border: 0;
 }
+
+.streak-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.streak-row #streak-value {
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+
+.streak-row #streak-value.is-active {
+  color: var(--primary-text);
+}

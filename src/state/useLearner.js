@@ -1,5 +1,5 @@
-import { useEffect, useReducer } from 'react';
-import { learnerReducer, loadLearnerState, saveLearnerState } from './learnerStore.js';
+import { useCallback, useEffect, useReducer } from 'react';
+import { learnerReducer, loadLearnerState, localDay, saveLearnerState } from './learnerStore.js';
 
 const storage = () => {
   try {
@@ -10,9 +10,11 @@ const storage = () => {
 };
 
 export function useLearner() {
-  const [state, dispatch] = useReducer(learnerReducer, undefined, () => loadLearnerState(storage()));
+  const [state, rawDispatch] = useReducer(learnerReducer, undefined, () => loadLearnerState(storage()));
   useEffect(() => {
     saveLearnerState(storage(), state);
   }, [state]);
+  // El reducer es puro: la fecha de hoy (para la racha) se inyecta aquí.
+  const dispatch = useCallback((action) => rawDispatch({ ...action, today: localDay() }), []);
   return [state, dispatch];
 }

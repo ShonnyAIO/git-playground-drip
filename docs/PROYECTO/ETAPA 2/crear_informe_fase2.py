@@ -4,7 +4,6 @@ Las figuras se regeneran con fuentes_figuras/render.py y capturas.py."""
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import qn, nsdecls
@@ -704,14 +703,6 @@ def create_document():
         p_img.add_run().add_picture(path, width=Inches(width))
         return caption("figura", text)
 
-    def orientation(landscape):
-        """Nueva sección (página) apaisada o vertical; cabecera y pie se heredan."""
-        sec = doc.add_section(WD_SECTION.NEW_PAGE)
-        w, h = sec.page_width, sec.page_height
-        if landscape != (w > h):
-            sec.page_width, sec.page_height = h, w
-        sec.orientation = WD_ORIENT.LANDSCAPE if landscape else WD_ORIENT.PORTRAIT
-
     def para(*parts):
         """Párrafo con segmentos: str normal, ('b', str) negrita, ('i', str) cursiva."""
         p = add_p()
@@ -849,9 +840,7 @@ def create_document():
     add_h2("10.3. Estructura del Recurso Didáctico: Secuencia de Pantallas, Enlaces e Interacción")
     para("El RED adopta una ", ("b", "estructura en red con centro (hub)"),
          ": el Dashboard articula cinco secciones a las que también se accede desde el menú lateral en todo momento. Dentro de cada sección la secuencia es lineal y guiada (pasos de una misión, pasos de una lección, preguntas del quiz), lo que combina libertad de exploración con andamiaje. Los botones «Practicar» de cada lección enlazan con la práctica correspondiente. La Figura 3 muestra el mapa de navegación y la Tabla 13 detalla, por pantalla, los elementos de enlace y de interacción.")
-    orientation(landscape=True)
-    figure("mapa_navegacion.png", 8.6, "Mapa de navegación del RED (diagrama tipo red). Elaboración propia.")
-    orientation(landscape=False)
+    figure("mapa_navegacion.png", 6.5, "Mapa de navegación del RED (diagrama tipo red). Elaboración propia.")
     caption("tabla", "Secuencia de pantallas, elementos de enlace y elementos de interacción.")
     table(["Pantalla", "Propósito", "Elementos de enlace", "Elementos de interacción"], [
         ("Dashboard", "Contextualizar y orientar.", "Botones «Ingresar al Workspace» y «Lecciones animadas»; ruta de módulos.", "Lectura de nivel, XP y medallas."),
@@ -882,9 +871,7 @@ def create_document():
         ("boceto_quizzes.png", "Boceto de Desafíos & Quizzes: enunciado, opciones y retroalimentación."),
         ("boceto_movil.png", "Boceto en teléfono (375 px): contenido en una columna y menú desplegable con foco atrapado."),
     ]:
-        orientation(landscape=True)
-        figure(fname, 8.3, text + " Elaboración propia.")
-    orientation(landscape=False)
+        figure(fname, 6.5, text + " Elaboración propia.")
     para("Las Figuras 12 a 15 muestran las mismas vistas implementadas en alta fidelidad en el prototipo publicado (tema claro):")
     for fname, text in [
         ("captura_01_dashboard.png", "Prototipo: Dashboard."),

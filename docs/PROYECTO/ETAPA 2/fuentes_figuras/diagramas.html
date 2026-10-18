@@ -64,7 +64,7 @@ const link = (svg, a, b, opts = {}) => {
 (() => {
   const s = document.getElementById('svg-mapa');
   defsArrow(s);
-  label(s, 700, 28, ['Mapa de navegación de GitPlayground (estructura en red)'], 24, 'bold');
+  // Sin título interno: en APA 7 el título de la figura va en la leyenda.
   const hub = node(s, 530, 60, 340, 74, ['Inicio · Dashboard', 'misión narrativa, XP, ruta y medallas'], 'hub', 18);
   const W = 232, Y = 200;
   const secs = [
@@ -103,7 +103,7 @@ const link = (svg, a, b, opts = {}) => {
 (() => {
   const s = document.getElementById('svg-ruta');
   defsArrow(s);
-  label(s, 500, 30, ['Secuencia didáctica recomendada (ciclo por tema)'], 26, 'bold');
+  // Sin título interno: en APA 7 el título de la figura va en la leyenda.
   const steps = [
     ['1. Contextualizar', 'misión narrativa', 'en el Dashboard', 'hub'],
     ['2. Observar', 'lección animada:', 'modelo mental', 'seccion'],

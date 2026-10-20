@@ -930,7 +930,7 @@ def create_document():
         ("Implementación del prototipo", "Escritura de código: progreso persistente, diseño adaptable, accesibilidad, motor y reproductor de lecciones.", "Revisión de cada incremento mediante Pull Request antes de integrarlo."),
         ("Guiones de las lecciones", "Redacción de escenas y subtítulos.", "Contraste de cada afirmación con Pro Git (Chacon & Straub, 2014); validación automática de la coherencia de cada escena."),
         ("Pruebas y auditorías", "Escritura y ejecución de pruebas unitarias, de interfaz y de accesibilidad.", "Lectura de resultados; casos de aceptación manuales (TUC)."),
-        ("Documentación e informe", "Estructuración del informe de la Fase II, figuras (mapa, bocetos, capturas) y redacción preliminar.", "Revisión, corrección y aprobación final del contenido por los autores."),
+        ("Documentación del software", "Documentación técnica del repositorio y figuras del prototipo (mapa, bocetos, capturas).", "Revisión, corrección y aprobación final del contenido por los autores."),
     ], [1.6, 2.9, 2.7])
     add_h2("12.3. Beneficios, Ventajas y Precauciones")
     add_bullet("• Productividad: ", "una iteración completa (13 incrementos con pruebas) se realizó en una jornada de trabajo, lo que hizo viable un prototipo vertical dentro del período académico.")
@@ -945,7 +945,6 @@ def create_document():
         ("2", "«Si, adelante»", "Autorización para publicar la rama y abrir el Pull Request #1 con los cambios para revisión."),
         ("3", "«Genial, puedes subir los cambios»", "Integración del Pull Request en la rama principal; publicación automática en Netlify y verificación del sitio."),
         ("4", "«Si, vamos a incluir los laboratorios ya que son referencia para la documentacion del Software»", "Incorporación de los laboratorios al repositorio, retirando datos personales y corrigiendo enlaces."),
-        ("5", "«Ahora tengo el proyecto final que es del: …/docs/PROYECTO, donde tengo las mejoras del desarrollo de la Fase #1, y necesito hacer la Fase #2. Siguiendo las instrucciones que nos comenta la profesora, ya que este proyecto es académico y educativo como podrás ver del directorio. […]»", "Elaboración de este informe de la Fase II a partir de las instrucciones de la cátedra y del informe corregido de la Fase I."),
     ], [0.4, 3.9, 2.9])
 
     # ------------------ REFERENCIAS (APA 7, adaptación en español) ------------------

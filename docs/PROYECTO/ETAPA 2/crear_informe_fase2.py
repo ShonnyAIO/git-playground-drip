@@ -235,7 +235,7 @@ def create_document():
     p_t.add_run("Aprende Git Interactivo: Plataforma de Simulación Visual y Tutoría Inteligente para la Enseñanza y Comprensión del Control de Versiones").bold = True
     add_p()
     for linea in [
-        "Jonathan Torres, Ricardo Riera y Javier Darder (Grupo 6)",
+        "Jonathan Torres, Ricardo Riera y Javier Darder (Grupo 4)",
         "Informe del Proyecto, Fases I y II",
         "Prof. Felix Urbano (QEPD) y Profa. Yusneyi Carballo Barrera",
         "19 de octubre de 2026",

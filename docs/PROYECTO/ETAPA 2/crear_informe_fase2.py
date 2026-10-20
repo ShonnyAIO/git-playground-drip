@@ -219,17 +219,25 @@ def create_document():
                 if col_widths and c_idx < len(col_widths):
                     cell.width = Inches(col_widths[c_idx])
 
-    # ------------------ PORTADA (APA 7, trabajo de estudiante) ------------------
-    for _ in range(3):
+    # ------------------ PORTADA (APA 7, trabajo de estudiante, con membrete institucional) ------------------
+    for linea in [
+        "República Bolivariana de Venezuela",
+        "Ministerio del Poder Popular para la Educación Universitaria",
+        "Universidad Central de Venezuela",
+        "Facultad de Ciencias",
+        "Escuela de Computación",
+        "Diseño y Prototipado de Recursos Educativos Digitales (DPRED)",
+    ]:
+        add_p(linea, align=WD_ALIGN_PARAGRAPH.CENTER)
+    for _ in range(2):
         add_p()
     p_t = add_p(align=WD_ALIGN_PARAGRAPH.CENTER)
     p_t.add_run("Aprende Git Interactivo: Plataforma de Simulación Visual y Tutoría Inteligente para la Enseñanza y Comprensión del Control de Versiones").bold = True
     add_p()
     for linea in [
         "Jonathan Torres, Ricardo Riera y Javier Darder (Grupo 6)",
-        "Escuela de Computación, Facultad de Ciencias, Universidad Central de Venezuela",
-        "Diseño y Prototipado de Recursos Educativos Digitales (DPRED): Informe del Proyecto, Fases I y II",
-        "Prof. Felix Urbano y Profa. Yusneyi Carballo Barrera",
+        "Informe del Proyecto, Fases I y II",
+        "Prof. Felix Urbano (QEPD) y Profa. Yusneyi Carballo Barrera",
         "19 de octubre de 2026",
     ]:
         add_p(linea, align=WD_ALIGN_PARAGRAPH.CENTER)

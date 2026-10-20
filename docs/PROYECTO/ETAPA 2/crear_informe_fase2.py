@@ -4,15 +4,134 @@ Las figuras se regeneran con fuentes_figuras/render.py y capturas.py."""
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import qn, nsdecls
 import os
+import re
+import docx.text.paragraph
+import docx.opc.constants
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NOMBRE = "DPRED_Proyecto_Etapa2_R.Riera_J.Darder_J.Torres_Git_Interactivo"
+
+CAPTION_RE = re.compile(r"^(Tabla|Figura) (\d+)\. (.+)$", re.S)
+NOTA_RE = re.compile(r"\s*(Elaboración propia\.|Captura del MVP en \S+)\s*$")
+# "&" entre autores pasa a "y" (APA 7 en español), solo cuando sigue un año de cita.
+CITA_PAREN = re.compile(r"(\b[^\s(),;&]+(?: [^\s(),;&]+){0,2}) & ([^(),;&]+?, (?:\d{4}[a-z]?|s\.f\.))")
+CITA_NARR = re.compile(r" & ([A-ZÁÉÍÓÚ][^\s(),;&]*(?: [A-ZÁÉÍÓÚ][^\s(),;&]*)?) \((\d{4}[a-z]?|s\.f\.)\)")
+
+
+def _nuevo_parrafo_despues(par):
+    nuevo = OxmlElement('w:p')
+    par._p.addnext(nuevo)
+    return docx.text.paragraph.Paragraph(nuevo, par._parent)
+
+
+def formato_apa(doc, sin_sangria):
+    """Normaliza el documento a APA 7: Times New Roman 12 (tablas 10), negro, interlineado doble,
+    sangría de 1,27 cm, leyendas de tablas y figuras arriba (número en negrita, título en cursiva)."""
+    for par in list(doc.paragraphs):
+        texto = par.text
+        m = CAPTION_RE.match(texto.strip())
+        if m:
+            tipo, num, titulo = m.groups()
+            nota = None
+            if tipo == "Figura":
+                n = NOTA_RE.search(titulo)
+                if n:
+                    nota, titulo = n.group(1), titulo[:n.start()].rstrip()
+            for r in list(par.runs):
+                r._r.getparent().remove(r._r)
+            par.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            par.add_run(f"{tipo} {num}").bold = True
+            par.paragraph_format.keep_with_next = True
+            tit = _nuevo_parrafo_despues(par)
+            tit.add_run(titulo).italic = True
+            tit.paragraph_format.keep_with_next = True
+            sin_sangria.update({par._p, tit._p})
+            if tipo == "Figura":
+                # La leyenda estaba debajo de la imagen: en APA va encima y la nota debajo.
+                img = par._p.getprevious()
+                if img is not None and img.findall('.//' + qn('w:drawing')):
+                    img.addprevious(par._p)
+                    img.addprevious(tit._p)
+                    if nota:
+                        np_ = docx.text.paragraph.Paragraph(OxmlElement('w:p'), par._parent)
+                        img.addnext(np_._p)
+                        np_.add_run("Nota.").italic = True
+                        np_.add_run(" " + ("Elaboración propia." if nota.startswith("Elaboración") else nota.replace("Captura del MVP en", "Captura del prototipo publicado en") + "."))
+                        sin_sangria.add(np_._p)
+    for par in doc.paragraphs:
+        fmt = par.paragraph_format
+        fmt.space_before = Pt(0)
+        fmt.space_after = Pt(0)
+        fmt.line_spacing = 2.0
+        tiene_imagen = bool(par._p.findall('.//' + qn('w:drawing')))
+        if tiene_imagen:
+            par.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            fmt.keep_with_next = True
+        elif (par._p not in sin_sangria and fmt.left_indent is None
+              and par.alignment in (None, WD_ALIGN_PARAGRAPH.LEFT, WD_ALIGN_PARAGRAPH.JUSTIFY)
+              and par.style.name != 'List Bullet' and par.text.strip()):
+            fmt.first_line_indent = Inches(0.5)
+        if par.alignment == WD_ALIGN_PARAGRAPH.JUSTIFY:
+            par.alignment = WD_ALIGN_PARAGRAPH.LEFT  # APA: alineado a la izquierda, sin justificar
+        _fuente(par, 12)
+        _citas(par)
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for par in cell.paragraphs:
+                    par.paragraph_format.line_spacing = 1.0
+                    par.paragraph_format.space_before = Pt(0)
+                    par.paragraph_format.space_after = Pt(0)
+                    _fuente(par, 10)
+                    _citas(par)
+    for section in doc.sections:
+        for par in section.header.paragraphs:
+            _fuente(par, 12)
+
+
+def _fuente(par, size):
+    for r in par.runs:
+        r.font.name = "Times New Roman"
+        r._element.get_or_add_rPr().get_or_add_rFonts().set(qn('w:eastAsia'), "Times New Roman")
+        r.font.size = Pt(size)
+        r.font.color.rgb = RGBColor(0, 0, 0)
+
+
+def _enlace(par, url):
+    """Agrega `url` como hipervínculo activo (Times New Roman 12, negro y subrayado)."""
+    rid = par.part.relate_to(url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+    link = OxmlElement('w:hyperlink')
+    link.set(qn('r:id'), rid)
+    run = OxmlElement('w:r')
+    rpr = OxmlElement('w:rPr')
+    fonts = OxmlElement('w:rFonts')
+    for attr in ('w:ascii', 'w:hAnsi', 'w:cs', 'w:eastAsia'):
+        fonts.set(qn(attr), "Times New Roman")
+    rpr.append(fonts)
+    for tag, val in (('w:color', '000000'), ('w:sz', '24'), ('w:u', 'single')):
+        el = OxmlElement(tag)
+        el.set(qn('w:val'), val)
+        rpr.append(el)
+    run.append(rpr)
+    texto = OxmlElement('w:t')
+    texto.text = url
+    run.append(texto)
+    link.append(run)
+    par._p.append(link)
+
+
+def _citas(par):
+    for r in par.runs:
+        t = CITA_NARR.sub(r" y \1 (\2)", CITA_PAREN.sub(r"\1 y \2", r.text))
+        if t != r.text:
+            r.text = t
+
+
 
 def create_document():
     doc = docx.Document()
@@ -20,234 +139,134 @@ def create_document():
     # Configure 1-inch margins
     sections = doc.sections
     for section in sections:
+        # APA 7: márgenes de 2,54 cm (1 pulgada) por lado.
         section.top_margin = Inches(1.0)
         section.bottom_margin = Inches(1.0)
         section.left_margin = Inches(1.0)
         section.right_margin = Inches(1.0)
-        
-        # Header
-        header = section.header
-        hp = header.paragraphs[0]
+        # APA 7 (trabajo de estudiante): solo el número de página, arriba a la derecha.
+        hp = section.header.paragraphs[0]
         hp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        hrun = hp.add_run("Universidad Central de Venezuela | Facultad de Ciencias | DPRED (Semestre I-2026)")
-        hrun.font.name = "Arial"
-        hrun.font.size = Pt(8.5)
-        hrun.font.color.rgb = RGBColor(120, 144, 156)
-        
-        # Footer
-        footer = section.footer
-        fp = footer.paragraphs[0]
-        fp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        frun1 = fp.add_run("Aprende Git Interactivo — Informe Final (Fases I y II) | Página ")
-        frun1.font.name = "Arial"
-        frun1.font.size = Pt(8.5)
-        frun1.font.color.rgb = RGBColor(120, 144, 156)
-        
-        # Add Page Number field
-        fld1 = parse_xml(r'<w:fldChar %s w:fldCharType="begin"/>' % nsdecls('w'))
-        instr = parse_xml(r'<w:instrText %s xml:space="preserve"> PAGE </w:instrText>' % nsdecls('w'))
-        fld2 = parse_xml(r'<w:fldChar %s w:fldCharType="separate"/>' % nsdecls('w'))
-        fld3 = parse_xml(r'<w:fldChar %s w:fldCharType="end"/>' % nsdecls('w'))
-        frun2 = fp.add_run()
-        frun2._r.append(fld1)
-        frun2._r.append(instr)
-        frun2._r.append(fld2)
-        frun2._r.append(fld3)
-        frun2.font.name = "Arial"
-        frun2.font.size = Pt(8.5)
-        frun2.font.color.rgb = RGBColor(120, 144, 156)
+        run_num = hp.add_run()
+        for xml in (r'<w:fldChar %s w:fldCharType="begin"/>', r'<w:instrText %s xml:space="preserve"> PAGE </w:instrText>',
+                    r'<w:fldChar %s w:fldCharType="separate"/>', r'<w:fldChar %s w:fldCharType="end"/>'):
+            run_num._r.append(parse_xml(xml % nsdecls('w')))
 
-    # Styles helpers
-    PRIMARY_COLOR = RGBColor(26, 54, 93)     # #1A365D Dark Navy UCV
-    SECONDARY_COLOR = RGBColor(43, 108, 176)  # #2B6CB0 Slate Blue
-    BODY_COLOR = RGBColor(45, 55, 72)         # #2D3748 Charcoal
-    MUTED_COLOR = RGBColor(100, 116, 139)     # #64748B Muted Slate
-    
-    def add_p(text="", style=None, space_before=0, space_after=6, align=WD_ALIGN_PARAGRAPH.LEFT, line_spacing=1.15):
+    # APA 7: todo el texto en negro.
+    PRIMARY_COLOR = SECONDARY_COLOR = BODY_COLOR = MUTED_COLOR = RGBColor(0, 0, 0)
+    FUENTE = "Times New Roman"
+    # Párrafos que no llevan sangría de primera línea (títulos, viñetas, leyendas…), por identidad.
+    SIN_SANGRIA = set()
+
+    def add_p(text="", style=None, space_before=0, space_after=0, align=WD_ALIGN_PARAGRAPH.LEFT, line_spacing=2.0):
         p = doc.add_paragraph(style=style)
         p.alignment = align
-        p.paragraph_format.space_before = Pt(space_before)
-        p.paragraph_format.space_after = Pt(space_after)
-        p.paragraph_format.line_spacing = line_spacing
         if text:
-            run = p.add_run(text)
-            run.font.name = "Arial"
-            run.font.size = Pt(10.5)
-            run.font.color.rgb = BODY_COLOR
+            p.add_run(text)
         return p
 
-    def add_h1(text):
+    def _titulo(text, align, italic=False):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(16)
-        p.paragraph_format.space_after = Pt(6)
+        p.alignment = align
         p.paragraph_format.keep_with_next = True
-        run = p.add_run(text)
-        run.bold = True
-        run.font.name = "Arial"
-        run.font.size = Pt(13)
-        run.font.color.rgb = PRIMARY_COLOR
+        r = p.add_run(text)
+        r.bold = True
+        r.italic = italic
+        SIN_SANGRIA.add(p._p)
         return p
+
+    # Niveles de título APA 7: 1 centrado en negrita; 2 a la izquierda en negrita; 3 a la izquierda en negrita cursiva.
+    def add_h1(text):
+        return _titulo(text, WD_ALIGN_PARAGRAPH.CENTER)
 
     def add_h2(text):
-        p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(12)
-        p.paragraph_format.space_after = Pt(4)
-        p.paragraph_format.keep_with_next = True
-        run = p.add_run(text)
-        run.bold = True
-        run.font.name = "Arial"
-        run.font.size = Pt(11.5)
-        run.font.color.rgb = SECONDARY_COLOR
-        return p
+        return _titulo(text, WD_ALIGN_PARAGRAPH.LEFT)
 
     def add_h3(text):
-        p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(8)
-        p.paragraph_format.space_after = Pt(2)
-        p.paragraph_format.keep_with_next = True
-        run = p.add_run(text)
-        run.bold = True
-        run.italic = True
-        run.font.name = "Arial"
-        run.font.size = Pt(10.5)
-        run.font.color.rgb = BODY_COLOR
-        return p
+        return _titulo(text, WD_ALIGN_PARAGRAPH.LEFT, italic=True)
 
     def add_bullet(bold_prefix, text):
         p = doc.add_paragraph(style='List Bullet')
-        p.paragraph_format.space_before = Pt(2)
-        p.paragraph_format.space_after = Pt(4)
-        p.paragraph_format.line_spacing = 1.15
-        r1 = p.add_run(bold_prefix)
+        # El estilo de lista ya dibuja la viñeta: se quita la que traía el texto.
+        r1 = p.add_run(bold_prefix.replace("• ", "", 1))
         r1.bold = True
-        r1.font.name = "Arial"
-        r1.font.size = Pt(10)
-        r1.font.color.rgb = BODY_COLOR
-        r2 = p.add_run(text)
-        r2.font.name = "Arial"
-        r2.font.size = Pt(10)
-        r2.font.color.rgb = BODY_COLOR
+        p.add_run(text)
+        SIN_SANGRIA.add(p._p)
         return p
 
-    def set_cell_background(cell, fill_hex):
-        shading_elm = parse_xml(r'<w:shd %s w:fill="%s"/>' % (nsdecls('w'), fill_hex))
-        cell._tc.get_or_add_tcPr().append(shading_elm)
+    def _borde(cell, lados):
+        tcPr = cell._tc.get_or_add_tcPr()
+        partes = "".join(f'<w:{l} w:val="single" w:sz="8" w:space="0" w:color="000000"/>' for l in lados)
+        ninguno = "".join(f'<w:{l} w:val="nil"/>' for l in ("top", "bottom", "left", "right") if l not in lados)
+        tcPr.append(parse_xml(f'<w:tcBorders {nsdecls("w")}>{partes}{ninguno}</w:tcBorders>'))
 
-    def style_table(table, col_widths=None, header_bg="1A365D"):
+    def style_table(table, col_widths=None, header_bg=None):
+        """Tabla APA 7: sin sombreado ni líneas verticales; líneas horizontales arriba, bajo el encabezado y al final."""
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
         if col_widths:
-            # LibreOffice ignora el ancho por celda si la tabla es autoajustable: se fijan
-            # el ancho total, el diseño fijo y la rejilla de columnas.
             table.autofit = False
-            ANCHO_UTIL = 6.5  # carta con márgenes de 1 pulgada
+            ANCHO_UTIL = 6.5
             if sum(col_widths) > ANCHO_UTIL:
                 col_widths = [w * ANCHO_UTIL / sum(col_widths) for w in col_widths]
             tblPr = table._tbl.tblPr
-            total = int(sum(col_widths) * 1440)
-            for tag in ("w:tblW", "w:tblLayout"):
+            for tag in ("w:tblW", "w:tblLayout", "w:tblBorders"):
                 old = tblPr.find(qn(tag))
                 if old is not None:
                     tblPr.remove(old)
-            tblPr.append(parse_xml(r'<w:tblW %s w:w="%d" w:type="dxa"/>' % (nsdecls('w'), total)))
+            tblPr.append(parse_xml(r'<w:tblW %s w:w="%d" w:type="dxa"/>' % (nsdecls('w'), int(sum(col_widths) * 1440))))
             tblPr.append(parse_xml(r'<w:tblLayout %s w:type="fixed"/>' % nsdecls('w')))
-            grid = table._tbl.tblGrid
-            for gc, w in zip(grid.findall(qn('w:gridCol')), col_widths):
+            for gc, w in zip(table._tbl.tblGrid.findall(qn('w:gridCol')), col_widths):
                 gc.set(qn('w:w'), str(int(w * 1440)))
+        ultima = len(table.rows) - 1
         for r_idx, row in enumerate(table.rows):
             trPr = row._tr.get_or_add_trPr()
             trPr.append(parse_xml(r'<w:cantSplit %s/>' % nsdecls('w')))
             if r_idx == 0:
                 trPr.append(parse_xml(r'<w:tblHeader %s/>' % nsdecls('w')))
-            
             for c_idx, cell in enumerate(row.cells):
-                cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.TOP
                 tcPr = cell._tc.get_or_add_tcPr()
                 tcMar = OxmlElement('w:tcMar')
-                for m, val in [('top', 120), ('bottom', 120), ('left', 140), ('right', 140)]:
+                for m, val in [('top', 60), ('bottom', 60), ('left', 100), ('right', 100)]:
                     node = OxmlElement(f'w:{m}')
                     node.set(qn('w:w'), str(val))
                     node.set(qn('w:type'), 'dxa')
                     tcMar.append(node)
                 tcPr.append(tcMar)
-                
-                tcBorders = parse_xml(r'''
-                    <w:tcBorders %s>
-                        <w:top w:val="single" w:sz="4" w:space="0" w:color="CBD5E0"/>
-                        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="CBD5E0"/>
-                        <w:left w:val="none"/>
-                        <w:right w:val="none"/>
-                    </w:tcBorders>
-                ''' % nsdecls('w'))
-                tcPr.append(tcBorders)
-
-                if r_idx == 0:
-                    set_cell_background(cell, header_bg)
-                    for cp in cell.paragraphs:
+                lados = (["top", "bottom"] if r_idx == 0 else []) + (["bottom"] if r_idx == ultima and r_idx != 0 else [])
+                _borde(cell, lados)
+                for cp in cell.paragraphs:
+                    if r_idx == 0:
                         cp.alignment = WD_ALIGN_PARAGRAPH.CENTER
                         for run in cp.runs:
                             run.font.bold = True
-                            run.font.name = "Arial"
-                            run.font.size = Pt(9.5)
-                            run.font.color.rgb = RGBColor(255, 255, 255)
-                else:
-                    if r_idx % 2 == 1:
-                        set_cell_background(cell, "F8FAFC")
-                    else:
-                        set_cell_background(cell, "FFFFFF")
-                    for cp in cell.paragraphs:
-                        for run in cp.runs:
-                            run.font.name = "Arial"
-                            run.font.size = Pt(9)
-                            run.font.color.rgb = BODY_COLOR
-                            
                 if col_widths and c_idx < len(col_widths):
                     cell.width = Inches(col_widths[c_idx])
 
-    # ------------------ PORTADA FORMAL ------------------
-    p_inst = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=12, space_after=2)
-    r_inst = p_inst.add_run("UNIVERSIDAD CENTRAL DE VENEZUELA\nFACULTAD DE CIENCIAS\nESCUELA DE COMPUTACIÓN\nCÁTEDRA DE DISEÑO Y PROTOTIPADO DE RECURSOS EDUCATIVOS DIGITALES (DPRED)")
-    r_inst.bold = True
-    r_inst.font.name = "Arial"
-    r_inst.font.size = Pt(10.5)
-    r_inst.font.color.rgb = PRIMARY_COLOR
-    
-    p_div = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=12, space_after=12)
-    r_div = p_div.add_run("━" * 45)
-    r_div.font.color.rgb = SECONDARY_COLOR
-
-    p_tit = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=10, space_after=4)
-    r_tit = p_tit.add_run("PROPUESTA DE RECURSO EDUCATIVO DIGITAL:")
-    r_tit.bold = True
-    r_tit.font.name = "Arial"
-    r_tit.font.size = Pt(13)
-    r_tit.font.color.rgb = MUTED_COLOR
-
-    p_main_tit = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=2, space_after=6)
-    r_main_tit = p_main_tit.add_run("APRENDE GIT INTERACTIVO")
-    r_main_tit.bold = True
-    r_main_tit.font.name = "Arial"
-    r_main_tit.font.size = Pt(20)
-    r_main_tit.font.color.rgb = PRIMARY_COLOR
-
-    p_sub = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=0, space_after=14)
-    r_sub = p_sub.add_run("«Plataforma de Simulación Visual y Tutoría Inteligente para la Enseñanza y Comprensión del Control de Versiones»")
-    r_sub.italic = True
-    r_sub.font.name = "Arial"
-    r_sub.font.size = Pt(11)
-    r_sub.font.color.rgb = SECONDARY_COLOR
-
-    p_doc_type = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=8, space_after=20)
-    r_doc_type = p_doc_type.add_run("INFORME DEL PROYECTO — FASE II\nFase I: Análisis y Diseño (corregida según la retroalimentación docente)\nFase II: Diseño Instruccional, Diseño Informático y Desarrollo del Prototipo")
-    r_doc_type.bold = True
-    r_doc_type.font.name = "Arial"
-    r_doc_type.font.size = Pt(10.5)
-    r_doc_type.font.color.rgb = PRIMARY_COLOR
-
-    p_info = add_p(align=WD_ALIGN_PARAGRAPH.CENTER, space_before=10, space_after=20)
-    r_info = p_info.add_run("Autores (Grupo #6):\nJonathan Torres   |   Ricardo Riera   |   Javier Darder\n\nDocentes de Cátedra:\nProf. Felix Urbano   |   Profa. Yusneyi Carballo Barrera\n\nCaracas, 19 de octubre de 2026 — Semestre I-2026")
-    r_info.font.name = "Arial"
-    r_info.font.size = Pt(10)
-    r_info.font.color.rgb = BODY_COLOR
+    # ------------------ PORTADA (APA 7, trabajo de estudiante, con membrete institucional) ------------------
+    for linea in [
+        "República Bolivariana de Venezuela",
+        "Ministerio del Poder Popular para la Educación Universitaria",
+        "Universidad Central de Venezuela",
+        "Facultad de Ciencias",
+        "Escuela de Computación",
+        "Diseño y Prototipado de Recursos Educativos Digitales (DPRED)",
+    ]:
+        add_p(linea, align=WD_ALIGN_PARAGRAPH.CENTER)
+    for _ in range(2):
+        add_p()
+    p_t = add_p(align=WD_ALIGN_PARAGRAPH.CENTER)
+    p_t.add_run("Aprende Git Interactivo: Plataforma de Simulación Visual y Tutoría Inteligente para la Enseñanza y Comprensión del Control de Versiones").bold = True
+    add_p()
+    for linea in [
+        "Jonathan Torres, Ricardo Riera y Javier Darder (Grupo 4)",
+        "Informe del Proyecto, Fases I y II",
+        "Prof. Felix Urbano (QEPD) y Profa. Yusneyi Carballo Barrera",
+        "19 de octubre de 2026",
+    ]:
+        add_p(linea, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p_mvp = add_p("Prototipo (MVP): ", align=WD_ALIGN_PARAGRAPH.CENTER)
+    _enlace(p_mvp, "https://git-playground-ucv.netlify.app/")
 
     doc.add_page_break()
     add_h1("Contenido")
@@ -266,7 +285,7 @@ def create_document():
         "10. Diseño Informático",
         "11. Validación y Correspondencia con el Prototipo Funcional",
         "12. Declaración de Uso de Inteligencia Artificial Generativa (IAG)",
-        "13. Referencias",
+        "Referencias",
     ]:
         p_i = add_p(space_after=3)
         r_i = p_i.add_run(linea)
@@ -309,7 +328,7 @@ def create_document():
     # 1.1 ALCANCE Y MVP
     add_h2("1.1. Delimitación del Alcance y Definición del Producto Mínimo Viable (MVP)")
     p = add_p()
-    p.add_run("Para favorecer la viabilidad pedagógica, técnica y temporal en el marco del período semestral de la cátedra DPRED, el proyecto adopta los principios de formulación de Producto Mínimo Viable en contextos académicos de innovación (Ospina Torres & Carballo Barrera, 2022), estructurando el alcance en un Roadmap de tres fases bien diferenciadas:")
+    p.add_run("Para favorecer la viabilidad pedagógica, técnica y temporal en el marco del período semestral de la cátedra DPRED, el proyecto adopta los principios de formulación de Producto Mínimo Viable en contextos académicos de innovación (Ospina & Carballo Barrera, 2022), estructurando el alcance en un Roadmap de tres fases bien diferenciadas:")
 
     add_bullet("• Fase 1 — Producto Mínimo Viable (MVP Semestral DPRED): ", 
                "Comprende la totalidad del Módulo 1 (El Core: simulación de áreas de trabajo locales y Grafo Vivo interactivo en tiempo real con renderizado de nodos de commit, ramas y puntero HEAD), junto con una experiencia esencial y guiada de resolución de conflictos locales entre dos ramas (subconjunto prioritario del Módulo 3). Incluye terminal simulada en el navegador, asistencia mediante reglas de andamiaje socrático determinista y metas de accesibilidad digital. Durante el desarrollo (Fase II) se incorporaron además seis lecciones animadas y una versión simulada del Módulo 2 (push, Pull Requests y revisión sin conexión real con GitHub), sin servicios externos obligatorios.")
@@ -347,7 +366,7 @@ def create_document():
     p.add_run("ADDIE").bold = True
     p.add_run(" (Análisis, Diseño, Desarrollo, Implementación y Evaluación) con el marco de ")
     p.add_run("Diseño Centrado en el Usuario (DCU / Design Thinking)").bold = True
-    p.add_run(" (Brown, 2008; Caeiro-Rodríguez et al., 2016). Este modelo asegura rigor pedagógico, empatía con las necesidades reales del estudiante y entregables estructurados a lo largo de las fases de la asignatura.")
+    p.add_run(" (Brown, 2008; Costa Montenegro et al., 2016). Este modelo asegura rigor pedagógico, empatía con las necesidades reales del estudiante y entregables estructurados a lo largo de las fases de la asignatura.")
 
     p = add_p()
     p.add_run("Tabla 1. Metodología de elaboración del RED articulando ADDIE y DCU.").bold = True
@@ -397,7 +416,7 @@ def create_document():
                "Promoción institucional y regional de competencias digitales y educación STEM. En el ámbito venezolano, la Ley Orgánica de Ciencia, Tecnología e Innovación (LOCTI) y la Ley de Infogobierno (República Bolivariana de Venezuela, 2013) establecen la primacía del software libre y los estándares abiertos en las instituciones públicas y de educación superior. A nivel internacional, se alinea con la Recomendación sobre los Recursos Educativos Abiertos (REA) de la UNESCO (2019). Riesgo político bajo de restricciones sobre servicios de distribución de código abierto.")
 
     add_bullet("• Dimensión Económica (E): ", 
-               "Restricciones presupuestarias severas en la educación universitaria pública venezolana y altos costos de licencias de software comercial. Frente a esto, el modelo arquitectónico se diseña para minimizar costos de infraestructura: al ejecutar el motor de simulación de Git directamente en el navegador del cliente mediante JavaScript/WebAssembly, se reducen drásticamente los requerimientos de computación centralizada en backend. El alojamiento estático se sostiene bajo capas gratuitas institucionales (GitHub Pages, Vercel Hobby tier), manteniendo los costos operativos recurrentes en niveles marginales cercanos a cero para la universidad (IBM Cloud Education, 2022).")
+               "Restricciones presupuestarias severas en la educación universitaria pública venezolana y altos costos de licencias de software comercial. Frente a esto, el modelo arquitectónico se diseña para minimizar costos de infraestructura: al ejecutar el motor de simulación de Git directamente en el navegador del cliente mediante JavaScript/WebAssembly, se reducen drásticamente los requerimientos de computación centralizada en backend. El alojamiento estático se sostiene bajo capas gratuitas institucionales (GitHub Pages, Vercel Hobby tier), manteniendo los costos operativos recurrentes en niveles marginales cercanos a cero para la universidad (IBM, s.f.).")
 
     add_bullet("• Dimensión Social (S): ", 
                "Las nuevas cohortes de estudiantes demandan experiencias activas de aprendizaje interactivo y gamificado («learn-by-doing»), mostrando rechazo hacia manuales estáticos o videos teóricos pasivos. La interfaz busca mitigar la «ansiedad ante la terminal» (CLI anxiety) mediante representaciones visuales humanizadas, diseño empático y soporte 100% en idioma español, superando la barrera idiomática que presentan la mayoría de recursos técnicos oficiales.")
@@ -544,16 +563,16 @@ def create_document():
     p = add_p()
     p.add_run("Para determinar la propuesta de valor diferencial de «Aprende Git Interactivo», se realizó un análisis comparativo frente a soluciones existentes en el ecosistema internacional. Para subsanar declaraciones genéricas de accesibilidad, las alternativas se evaluaron bajo criterios técnicos concretos (inspección de código DOM, soporte de tecnologías asistivas y pruebas preliminares con herramientas de auditoría Lighthouse y WAVE):")
 
-    add_bullet("• Competidor Directo 1: Learn Git Branching (Cottle, s.f., consultado en octubre 2026). ", 
+    add_bullet("• Competidor Directo 1: Learn Git Branching (Cottle, s.f.). ", 
                "Es el referente más extendido a nivel global. Destaca por su visualizador de grafos y terminal interactiva. Deficiencias técnicas verificadas: carece de soporte de accesibilidad digital demostrable (el lienzo SVG carece de etiquetas WAI-ARIA, los nodos no son navegables mediante teclado ni poseen descripciones de texto alternativas para lectores de pantalla, y el contraste cromático de ciertas ramas es menor a 3:1); no ofrece tutoría explicativa contextual ante errores; y la traducción al español contiene incoherencias sintácticas.")
 
-    add_bullet("• Competidor Directo 2: Oh My Git! (Wieluch & blinry, 2021, consultado en octubre 2026). ", 
+    add_bullet("• Competidor Directo 2: Oh My Git! (Wieluch & Morr, s.f.). ", 
                "Videojuego de código abierto con excelente representación gráfica del repositorio. Deficiencias verificadas: al ser una aplicación de escritorio compilada (requiere descarga e instalación), resulta impracticable en computadoras institucionales con privilegios restringidos; carece por completo de accesibilidad para personas con discapacidad visual al renderizarse en motor gráfico no compatible con tecnologías asistivas nativas.")
 
     add_bullet("• Competidores Indirectos: Clientes Gráficos de Producción (GitKraken, GitHub Desktop, Sourcetree). ", 
                "Herramientas de entorno laboral que resuelven operaciones mediante botones, pero no poseen fines pedagógicos: el estudiante ejecuta acciones sin comprender el modelo mental subyacente, fomentando la dependencia instrumental.")
 
-    add_bullet("• Competidores de Contenido Pasivo: Cursos en Video y Documentación Oficial (Git Project Authors, 2026; Chacon & Straub, 2014; plataformas de e-learning). ", 
+    add_bullet("• Competidores de Contenido Pasivo: Cursos en Video y Documentación Oficial (Chacon & Straub, 2014; Git Project, s.f.). ", 
                "Tutoriales lineales y documentación estática de alto contenido teórico con nula interactividad práctica, propensos a la fatiga cognitiva y abandono prematuro.")
 
     p_bm = add_p(space_before=8, space_after=4)
@@ -596,7 +615,7 @@ def create_document():
     add_bullet("• Aprendizaje Significativo y Andamiaje (Díaz-Barriga Arceo & Hernández Rojas, 2002; Woolf, 2009): ", 
                "El andamiaje instruccional se activa dinámicamente cuando el alumno se enfrenta a situaciones de conflicto o bloqueo, evitando que la frustración degenere en abandono.")
 
-    add_bullet("• Interacción Persona-Computadora y Pensamiento Computacional (Lodi & Martini, 2021; Shneiderman & Plaisant, 2006): ", 
+    add_bullet("• Interacción Persona-Computadora y Pensamiento Computacional (Lodi & Martini, 2021; Shneiderman & Plaisant, 2005): ", 
                "Diseño de interfaz con retroalimentación visual continua y reducción de carga cognitiva, permitiendo al estudiante razonar en términos de abstracciones computacionales claras.")
 
     add_h2("7.2. Arquitectura de la Tutoría Inteligente (Nova): Especificación y Salvaguardas")
@@ -718,14 +737,6 @@ def create_document():
         p_img.add_run().add_picture(path, width=Inches(width))
         return caption("figura", text)
 
-    def orientation(landscape):
-        """Nueva sección (página) apaisada o vertical; cabecera y pie se heredan."""
-        sec = doc.add_section(WD_SECTION.NEW_PAGE)
-        w, h = sec.page_width, sec.page_height
-        if landscape != (w > h):
-            sec.page_width, sec.page_height = h, w
-        sec.orientation = WD_ORIENT.LANDSCAPE if landscape else WD_ORIENT.PORTRAIT
-
     def para(*parts):
         """Párrafo con segmentos: str normal, ('b', str) negrita, ('i', str) cursiva."""
         p = add_p()
@@ -746,7 +757,7 @@ def create_document():
     r_part.font.color.rgb = PRIMARY_COLOR
     para("Esta parte documenta el proceso de desarrollo del Producto Mínimo Viable (MVP) del Recurso Educativo Digital, denominado ",
          ("b", "GitPlayground"),
-         ", desplegado públicamente en https://git-playground-ucv.netlify.app y con código fuente versionado en https://github.com/ShonnyAIO/git-playground-drip. Responde a los elementos de diseño instruccional (puntos 4 a 7) y de diseño informático (puntos 8 a 12) solicitados para la Fase II.")
+         " (Torres et al., 2026), desplegado públicamente en https://git-playground-ucv.netlify.app y con código fuente versionado en https://github.com/ShonnyAIO/git-playground-drip. Responde a los elementos de diseño instruccional (puntos 4 a 7) y de diseño informático (puntos 8 a 12) solicitados para la Fase II.")
 
     # ------------------ SECCIÓN 9: DISEÑO INSTRUCCIONAL ------------------
     add_h1("9. Diseño Instruccional")
@@ -806,7 +817,7 @@ def create_document():
         ("Retroalimentación inmediata", "Mensajes de la terminal en español, actualización instantánea del grafo y explicación tras cada respuesta del quiz.", "Hattie & Timperley (2007)."),
         ("Gamificación", "Puntos de experiencia, cinco niveles (de «Novato en Git» a «Maestro Git de la UCV») y nueve medallas vinculadas a logros reales.", "Deterding et al. (2011)."),
         ("Aprendizaje basado en casos", "Conflicto real en App.jsx entre dos ramas; preguntas del quiz formuladas como situaciones de equipo.", "Díaz-Barriga Arceo & Hernández Rojas (2002)."),
-        ("Representación múltiple y accesible", "Subtítulos, narración por voz opcional, navegación completa por teclado, temas claro y oscuro, diseño adaptable a teléfonos.", "CAST (2018); W3C (2023)."),
+        ("Representación múltiple y accesible", "Subtítulos, narración por voz opcional, navegación completa por teclado, temas claro y oscuro, diseño adaptable a teléfonos.", "CAST (2018); World Wide Web Consortium (2023)."),
     ], [1.6, 3.6, 1.95])
     figure("ruta_pedagogica.png", 5.8, "Secuencia didáctica recomendada: ciclo que se repite en cada tema con dificultad creciente. Elaboración propia.")
 
@@ -838,17 +849,17 @@ def create_document():
     para("Se optó por desarrollo con código abierto en lugar de plataformas low-code o no-code. La razón principal es la naturaleza del contenido: simular Git exige un modelo de estados preciso (repositorio, ramas, HEAD, zonas) y animaciones sincronizadas con ese modelo. Además, el código abierto da control fino de la accesibilidad, permite alojamiento gratuito y deja el propio recurso versionado con Git, coherente con lo que enseña.")
     caption("tabla", "Herramientas del prototipo: versión, sitio oficial y justificación de la selección.")
     table(["Herramienta", "Versión", "Sitio oficial", "Justificación de la selección"], [
-        ("React", "19.2.6", "https://react.dev", "Interfaz por componentes y estado declarativo: cada comando actualiza el modelo y la vista se redibuja sola."),
-        ("Vite", "8.0.14", "https://vite.dev", "Servidor de desarrollo con recarga instantánea y empaquetado optimizado para producción."),
+        ("React (Meta Platforms, 2026)", "19.2.6", "https://react.dev", "Interfaz por componentes y estado declarativo: cada comando actualiza el modelo y la vista se redibuja sola."),
+        ("Vite (VoidZero, 2026a)", "8.0.14", "https://vite.dev", "Servidor de desarrollo con recarga instantánea y empaquetado optimizado para producción."),
         ("JavaScript, CSS y SVG", "Estándar web", "https://developer.mozilla.org", "SVG para el grafo de commits y las lecciones animadas; CSS para transiciones y temas claro/oscuro."),
         ("Lucide React", "1.17.0", "https://lucide.dev", "Iconografía abierta y consistente."),
-        ("Web Speech API", "Del navegador", "https://developer.mozilla.org/es/docs/Web/API/Web_Speech_API", "Narración opcional en español de los subtítulos, sin grabar audio."),
-        ("Vitest", "5.0.3", "https://vitest.dev", "Pruebas unitarias del estado del estudiante y del motor de lecciones."),
-        ("Playwright", "1.57.0", "https://playwright.dev", "Pruebas de extremo a extremo que simulan a un estudiante usando la interfaz."),
-        ("axe-core", "4.13.0", "https://github.com/dequelabs/axe-core", "Auditoría automatizada de accesibilidad frente a WCAG."),
+        ("Web Speech API (Mozilla Developer Network, s.f.)", "Del navegador", "https://developer.mozilla.org/es/docs/Web/API/Web_Speech_API", "Narración opcional en español de los subtítulos, sin grabar audio."),
+        ("Vitest (VoidZero, 2026b)", "5.0.3", "https://vitest.dev", "Pruebas unitarias del estado del estudiante y del motor de lecciones."),
+        ("Playwright (Microsoft, 2026)", "1.57.0", "https://playwright.dev", "Pruebas de extremo a extremo que simulan a un estudiante usando la interfaz."),
+        ("axe-core (Deque Systems, 2026)", "4.13.0", "https://github.com/dequelabs/axe-core", "Auditoría automatizada de accesibilidad frente a WCAG."),
         ("ESLint", "10.4.1", "https://eslint.org", "Análisis estático para mantener el código libre de errores comunes."),
         ("Git y GitHub", "—", "https://github.com", "Control de versiones, revisión mediante Pull Requests e historial de iteraciones."),
-        ("Netlify", "Plan gratuito", "https://www.netlify.com", "Alojamiento estático con publicación automática al integrar cambios en la rama principal."),
+        ("Netlify (Netlify, s.f.)", "Plan gratuito", "https://www.netlify.com", "Alojamiento estático con publicación automática al integrar cambios en la rama principal."),
         ("Node.js", "26.7.0", "https://nodejs.org", "Entorno de ejecución para las herramientas de desarrollo."),
     ], [1.15, 1.0, 1.85, 2.5])
     caption("tabla", "Ventajas y limitaciones observadas en las herramientas.")
@@ -863,9 +874,7 @@ def create_document():
     add_h2("10.3. Estructura del Recurso Didáctico: Secuencia de Pantallas, Enlaces e Interacción")
     para("El RED adopta una ", ("b", "estructura en red con centro (hub)"),
          ": el Dashboard articula cinco secciones a las que también se accede desde el menú lateral en todo momento. Dentro de cada sección la secuencia es lineal y guiada (pasos de una misión, pasos de una lección, preguntas del quiz), lo que combina libertad de exploración con andamiaje. Los botones «Practicar» de cada lección enlazan con la práctica correspondiente. La Figura 3 muestra el mapa de navegación y la Tabla 13 detalla, por pantalla, los elementos de enlace y de interacción.")
-    orientation(landscape=True)
-    figure("mapa_navegacion.png", 8.6, "Mapa de navegación del RED (diagrama tipo red). Elaboración propia.")
-    orientation(landscape=False)
+    figure("mapa_navegacion.png", 6.5, "Mapa de navegación del RED (diagrama tipo red). Elaboración propia.")
     caption("tabla", "Secuencia de pantallas, elementos de enlace y elementos de interacción.")
     table(["Pantalla", "Propósito", "Elementos de enlace", "Elementos de interacción"], [
         ("Dashboard", "Contextualizar y orientar.", "Botones «Ingresar al Workspace» y «Lecciones animadas»; ruta de módulos.", "Lectura de nivel, XP y medallas."),
@@ -896,9 +905,7 @@ def create_document():
         ("boceto_quizzes.png", "Boceto de Desafíos & Quizzes: enunciado, opciones y retroalimentación."),
         ("boceto_movil.png", "Boceto en teléfono (375 px): contenido en una columna y menú desplegable con foco atrapado."),
     ]:
-        orientation(landscape=True)
-        figure(fname, 8.3, text + " Elaboración propia.")
-    orientation(landscape=False)
+        figure(fname, 6.5, text + " Elaboración propia.")
     para("Las Figuras 12 a 15 muestran las mismas vistas implementadas en alta fidelidad en el prototipo publicado (tema claro):")
     for fname, text in [
         ("captura_01_dashboard.png", "Prototipo: Dashboard."),
@@ -938,7 +945,7 @@ def create_document():
     add_h2("12.1. Herramientas, Versión y Sitio Oficial")
     caption("tabla", "Herramientas de IAG utilizadas o incluidas en el RED.")
     table(["Herramienta", "Versión", "Sitio oficial", "Tipo de uso"], [
-        ("Claude Code (Anthropic), agente de programación con el modelo Claude Opus 5.5", "Claude Code 2.1.296", "https://claude.com/claude-code", "Herramienta de desarrollo y documentación usada por el equipo."),
+        ("Claude Code (Anthropic, 2026), agente de programación con el modelo Claude Opus 5.5", "Claude Code 2.1.296", "https://claude.com/claude-code", "Herramienta de desarrollo y documentación usada por el equipo."),
         ("Pasarela ShonnyProxy para la tutora Nova (opcional)", "Interfaz compatible con /v1/chat/completions", "Configuración local del proyecto", "Funcionalidad incluida en el RED: si se activa, Nova consulta un modelo de lenguaje; por defecto usa reglas locales."),
     ], [2.2, 1.4, 1.6, 2.0])
     add_h2("12.2. Procesos y Actividades de la Fase II Donde se Utilizó")
@@ -949,7 +956,7 @@ def create_document():
         ("Implementación del prototipo", "Escritura de código: progreso persistente, diseño adaptable, accesibilidad, motor y reproductor de lecciones.", "Revisión de cada incremento mediante Pull Request antes de integrarlo."),
         ("Guiones de las lecciones", "Redacción de escenas y subtítulos.", "Contraste de cada afirmación con Pro Git (Chacon & Straub, 2014); validación automática de la coherencia de cada escena."),
         ("Pruebas y auditorías", "Escritura y ejecución de pruebas unitarias, de interfaz y de accesibilidad.", "Lectura de resultados; casos de aceptación manuales (TUC)."),
-        ("Documentación e informe", "Estructuración del informe de la Fase II, figuras (mapa, bocetos, capturas) y redacción preliminar.", "Revisión, corrección y aprobación final del contenido por los autores."),
+        ("Documentación del software", "Documentación técnica del repositorio y figuras del prototipo (mapa, bocetos, capturas).", "Revisión, corrección y aprobación final del contenido por los autores."),
     ], [1.6, 2.9, 2.7])
     add_h2("12.3. Beneficios, Ventajas y Precauciones")
     add_bullet("• Productividad: ", "una iteración completa (13 incrementos con pruebas) se realizó en una jornada de trabajo, lo que hizo viable un prototipo vertical dentro del período académico.")
@@ -964,69 +971,67 @@ def create_document():
         ("2", "«Si, adelante»", "Autorización para publicar la rama y abrir el Pull Request #1 con los cambios para revisión."),
         ("3", "«Genial, puedes subir los cambios»", "Integración del Pull Request en la rama principal; publicación automática en Netlify y verificación del sitio."),
         ("4", "«Si, vamos a incluir los laboratorios ya que son referencia para la documentacion del Software»", "Incorporación de los laboratorios al repositorio, retirando datos personales y corrigiendo enlaces."),
-        ("5", "«Ahora tengo el proyecto final que es del: …/docs/PROYECTO, donde tengo las mejoras del desarrollo de la Fase #1, y necesito hacer la Fase #2. Siguiendo las instrucciones que nos comenta la profesora, ya que este proyecto es académico y educativo como podrás ver del directorio. […]»", "Elaboración de este informe de la Fase II a partir de las instrucciones de la cátedra y del informe corregido de la Fase I."),
     ], [0.4, 3.9, 2.9])
 
-    # ------------------ SECCIÓN 13: REFERENCIAS ------------------
-    add_h1("13. Referencias")
-    p = add_p()
-    p.add_run("Referencias normalizadas según el estilo de la American Psychological Association (APA, 7.ª edición). Los enlaces y los identificadores DOI se comprobaron el 17 de octubre de 2026.")
+    # ------------------ REFERENCIAS (APA 7, adaptación en español) ------------------
+    doc.add_page_break()
+    add_h1("Referencias")
+    # Cada referencia verificada el 18 de octubre de 2026 (DOI en Crossref, enlaces abiertos, ISBN y
+    # currículum de la autora en Saber UCV). *texto* = cursiva.
     refs = [
-        'Álvarez González, L., Carballo Barrera, Y., & Collazos Ordoñez, C. (Coords.). (2014). Objetos de aprendizaje de contenidos abiertos accesibles: del diseño a la reutilización. Iniciativa Latinoamericana de Libros de Texto Abiertos (LATIn). Repositorio Hipermedial de la Universidad Nacional de Rosario (UNR). https://rephip.unr.edu.ar/handle/2133/3549',
-        "Anderson, L. W., & Krathwohl, D. R. (Eds.). (2001). A taxonomy for learning, teaching, and assessing: A revision of Bloom's taxonomy of educational objectives. Longman.",
-        'Anthropic. (2026). Claude Code (Versión 2.1.296) [Software; modelo Claude Opus 5.5]. https://claude.com/claude-code',
-        'Brown, T. (2008). Design thinking. Harvard Business Review, 86(6), 84–92.',
-        'Caeiro-Rodríguez, M., Costa-Montenegro, E., Díaz-Otero, F., Cuiñas-Gómez, I., Mariño-Espiñeira, P., & Fernández-Iglesias, M. (2016). Evaluación de la implantación de la metodología Design Thinking en una asignatura de proyectos. En Actas del Congreso In-Red 2016 UPV (pp. 1–12). Editorial Universitat Politècnica de València. https://doi.org/10.4995/INRED2016.2016.4380',
-        'CAST. (2018). Universal Design for Learning guidelines version 2.2. https://udlguidelines.cast.org',
-        'Chacon, S., & Straub, B. (2014). Pro Git (2.ª ed.). Apress. https://git-scm.com/book/es/v2',
-        'Cottle, P. (s.f.). Learn Git Branching: An interactive Git visualization to challenge and educate! [Simulador web interactivo]. Consultado el 5 de octubre de 2026 en https://learngitbranching.js.org',
-        'Deque Systems. (2026). axe-core (Versión 4.13.0) [Software]. https://github.com/dequelabs/axe-core',
-        'Deterding, S., Dixon, D., Khaled, R., & Nacke, L. (2011). From game design elements to gamefulness: Defining “gamification”. En Proceedings of the 15th International Academic MindTrek Conference (pp. 9–15). Association for Computing Machinery. https://doi.org/10.1145/2181037.2181040',
-        'Díaz-Barriga Arceo, F., & Hernández Rojas, G. (2002). Estrategias docentes para un aprendizaje significativo: Una interpretación constructivista (2.ª ed.). McGraw-Hill Interamericana. ISBN: 978-970-10-3526-9.',
-        'Git Project Authors. (2026). Git reference manual and documentation. Software Freedom Conservancy. Consultado el 2 de octubre de 2026 en https://git-scm.com/doc',
-        'Gros Salvat, B. (1997). Diseños y programas educativos: Pautas pedagógicas para la elaboración de software. Editorial Ariel. ISBN: 978-84-344-2608-5.',
-        "Haaranen, L., & Lehtinen, T. O. (2015). Teaching Git on the side: Version-control system as a course platform. En Proceedings of the 2015 ACM Conference on Innovation and Technology in Computer Science Education (ITiCSE '15) (pp. 87–92). Association for Computing Machinery. https://doi.org/10.1145/2729094.2742608",
-        'Hattie, J., & Timperley, H. (2007). The power of feedback. Review of Educational Research, 77(1), 81–112. https://doi.org/10.3102/003465430298487',
-        'Herrera Batista, M. Á. (2006). Consideraciones para el diseño didáctico de ambientes virtuales de aprendizaje: Una propuesta basada en las funciones cognitivas del aprendizaje. Revista Iberoamericana de Educación, 38(5), 1–11. Dialnet: https://dialnet.unirioja.es/servlet/articulo?codigo=2040733',
-        "IBM Cloud Education. (2022). Low-code vs. no-code: What's the difference? IBM Think Insights. https://www.ibm.com/think/topics/low-code-vs-no-code",
-        'Kolb, D. A. (1984). Experiential learning: Experience as the source of learning and development. Prentice-Hall.',
-        'Lodi, M., & Martini, S. (2021). Computational thinking, between Papert and Wing. Science & Education, 30(4), 883–908. https://doi.org/10.1007/s11191-021-00202-5',
-        'Mayer, R. E. (2021). Multimedia learning (3.ª ed.). Cambridge University Press. https://doi.org/10.1017/9781316941355',
-        'Meta Platforms. (2026). React (Versión 19.2.6) [Software]. https://react.dev',
-        'Microsoft. (2026). Playwright (Versión 1.57.0) [Software]. https://playwright.dev',
-        'Mozilla Developer Network. (s.f.). Web Speech API. Consultado el 17 de octubre de 2026 en https://developer.mozilla.org/es/docs/Web/API/Web_Speech_API',
-        'Netlify. (s.f.). Netlify [Plataforma de alojamiento web]. Consultado el 17 de octubre de 2026 en https://www.netlify.com',
-        'Novak, J. D., & Gowin, D. B. (1988). Aprendiendo a aprender. Editorial Martínez Roca. ISBN: 978-84-270-1235-6.',
-        'Ospina Torres, M., & Carballo Barrera, Y. (2022). Revisión de técnicas y tecnologías para la construcción del Producto Mínimo Viable en el contexto del emprendimiento universitario. En Memorias de la IX Conferencia Nacional de Computación, Informática y Sistemas (CoNCISa 2022) (pp. 45–56). Escuela de Computación, Facultad de Ciencias, Universidad Central de Venezuela.',
-        'República Bolivariana de Venezuela. (2001). Ley sobre Mensajes de Datos y Firmas Electrónicas. Gaceta Oficial de la República Bolivariana de Venezuela, N° 37.148 de fecha 28 de febrero de 2001.',
-        'República Bolivariana de Venezuela. (2013). Ley de Infogobierno. Gaceta Oficial de la República Bolivariana de Venezuela, N° 40.274 de fecha 17 de octubre de 2013.',
-        'Shneiderman, B., & Plaisant, C. (2006). Designing the user interface: Strategies for effective human-computer interaction (4th ed.). Addison-Wesley. ISBN: 978-0-321-19786-3.',
-        'Sommerville, I. (2016). Software engineering (10.ª ed.). Pearson.',
-        'Spinellis, D. (2012). Git. IEEE Software, 29(3), 100–101. https://doi.org/10.1109/MS.2012.61',
-        'Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. Cognitive Science, 12(2), 257–285. https://doi.org/10.1207/s15516709cog1202_4',
-        'Torres, J., Riera, R., & Darder, J. (2026). GitPlayground: Aprende Git interactivo [Recurso educativo digital]. https://git-playground-ucv.netlify.app',
-        'UNESCO. (2019). Recomendación sobre los Recursos Educativos Abiertos (REA). Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura. https://unesdoc.unesco.org/ark:/48223/pf0000373755',
-        'VoidZero. (2026). Vite (Versión 8.0.14) [Software]. https://vite.dev',
-        'VoidZero. (2026). Vitest (Versión 5.0.3) [Software]. https://vitest.dev',
-        'Vygotsky, L. S. (1978). Mind in society: The development of higher psychological processes. Harvard University Press.',
-        'Wieluch, S., & blinry. (2021). Oh My Git! An open source game about learning Git [Videojuego de código abierto]. Consultado el 5 de octubre de 2026 en https://ohmygit.org',
-        'Wood, D., Bruner, J. S., & Ross, G. (1976). The role of tutoring in problem solving. Journal of Child Psychology and Psychiatry, 17(2), 89–100. https://doi.org/10.1111/j.1469-7610.1976.tb00381.x',
-        'Woolf, B. P. (2009). Building intelligent interactive tutors: Student-centered strategies for revolutionizing e-learning. Morgan Kaufmann / Elsevier. ISBN: 978-0-12-373594-2.',
-        'World Wide Web Consortium. (2023). Web Content Accessibility Guidelines (WCAG) 2.2 (W3C Recommendation 05 October 2023). https://www.w3.org/TR/WCAG22/',
-        "Zagalsky, A., Feliciano, J., Storey, M.-A., Zhao, Y., & Wang, W. (2015). The emergence of GitHub as a collaborative platform for education. En Proceedings of the 18th ACM Conference on Computer Supported Cooperative Work & Social Computing (CSCW '15) (pp. 1906–1917). Association for Computing Machinery. https://doi.org/10.1145/2675133.2675284",
+        "Álvarez González, L., Carballo Barrera, Y., Collazos Ordoñez, C., Echenagusía, J., Gutiérrez Hernández, R., Hernández Bieliukas, Y., Hernández Saldivar, F., Muñoz Arteaga, J., Solano Alegría, A., y Velázquez Amador, C. (2014). *Objetos de aprendizaje de contenidos abiertos accesibles: Del diseño a la reutilización*. Iniciativa Latinoamericana de Libros de Texto Abiertos (LATIn). https://www.researchgate.net/publication/312039527_Objetos_de_Aprendizaje_de_Contenidos_Abiertos_Accesibles_del_Diseno_a_la_Reutilizacion",
+        "Anderson, L. W., y Krathwohl, D. R. (Eds.). (2001). *A taxonomy for learning, teaching, and assessing: A revision of Bloom’s taxonomy of educational objectives*. Longman.",
+        "Anthropic. (2026). *Claude Code* (Versión 2.1.296) [Software]. https://claude.com/claude-code",
+        "Brown, T. (2008). Design thinking. *Harvard Business Review, 86*(6), 84–92. https://emprendedoresupa.wordpress.com/wp-content/uploads/2010/08/p02_brown-design-thinking.pdf",
+        "CAST. (2018). *Universal Design for Learning guidelines version 2.2*. https://udlguidelines.cast.org",
+        "Chacon, S., y Straub, B. (2014). *Pro Git* (2.ª ed.). Apress. https://git-scm.com/book/es/v2",
+        "Costa Montenegro, E., Díaz Otero, F., Caeiro Rodríguez, M., Cuiñas Gómez, I., Mariño Espiñeira, P., y Fernández Iglesias, M. (2016). Evaluación de la implantación de la metodología Design Thinking en una asignatura de proyectos. En *Libro de Actas IN-RED 2016: II Congreso Nacional de Innovación Educativa y de Docencia en Red*. Universitat Politècnica de València. https://doi.org/10.4995/INRED2016.2016.4357",
+        "Cottle, P. (s.f.). *Learn Git Branching* [Aplicación web]. Recuperado el 5 de octubre de 2026, de https://learngitbranching.js.org",
+        "Deque Systems. (2026). *axe-core* (Versión 4.13.0) [Software]. https://github.com/dequelabs/axe-core",
+        "Deterding, S., Dixon, D., Khaled, R., y Nacke, L. (2011). From game design elements to gamefulness: Defining “gamification”. En *Proceedings of the 15th International Academic MindTrek Conference* (pp. 9–15). Association for Computing Machinery. https://doi.org/10.1145/2181037.2181040",
+        "Díaz-Barriga Arceo, F., y Hernández Rojas, G. (2002). *Estrategias docentes para un aprendizaje significativo: Una interpretación constructivista* (2.ª ed.). McGraw-Hill.",
+        "Git Project. (s.f.). *Git documentation*. Recuperado el 2 de octubre de 2026, de https://git-scm.com/doc",
+        "Gros Salvat, B. (1997). *Diseños y programas educativos: Pautas pedagógicas para la elaboración de software*. Ariel.",
+        "Haaranen, L., y Lehtinen, T. (2015). Teaching Git on the side: Version control system as a course platform. En *Proceedings of the 2015 ACM Conference on Innovation and Technology in Computer Science Education* (pp. 87–92). Association for Computing Machinery. https://doi.org/10.1145/2729094.2742608",
+        "Hattie, J., y Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112. https://doi.org/10.3102/003465430298487",
+        "Herrera Batista, M. Á. (2006). Consideraciones para el diseño didáctico de ambientes virtuales de aprendizaje: Una propuesta basada en las funciones cognitivas del aprendizaje. *Revista Iberoamericana de Educación, 38*(5), 1–20. https://doi.org/10.35362/rie3852623",
+        "IBM. (s.f.). *Low-code vs. no-code: What’s the difference?* Recuperado el 17 de octubre de 2026, de https://www.ibm.com/think/topics/low-code-vs-no-code",
+        "Kolb, D. A. (1984). *Experiential learning: Experience as the source of learning and development*. Prentice-Hall.",
+        "Lodi, M., y Martini, S. (2021). Computational thinking, between Papert and Wing. *Science & Education, 30*(4), 883–908. https://doi.org/10.1007/s11191-021-00202-5",
+        "Mayer, R. E. (2021). *Multimedia learning* (3.ª ed.). Cambridge University Press. https://doi.org/10.1017/9781316941355",
+        "Meta Platforms. (2026). *React* (Versión 19.2.6) [Software]. https://react.dev",
+        "Microsoft. (2026). *Playwright* (Versión 1.57.0) [Software]. https://playwright.dev",
+        "Mozilla Developer Network. (s.f.). *Web Speech API*. Recuperado el 17 de octubre de 2026, de https://developer.mozilla.org/es/docs/Web/API/Web_Speech_API",
+        "Netlify. (s.f.). *Netlify* [Plataforma de alojamiento web]. Recuperado el 17 de octubre de 2026, de https://www.netlify.com",
+        "Novak, J. D., y Gowin, D. B. (1988). *Aprendiendo a aprender*. Martínez Roca.",
+        "Ospina, M., y Carballo Barrera, Y. (2022). Revisión de técnicas y tecnologías para la construcción del producto mínimo viable para emprendimientos universitarios. En *Novena Conferencia Nacional de Computación, Informática y Sistemas (CoNCISa 2022)* (pp. 6–10). Universidad Central de Venezuela. https://www.researchgate.net/publication/377235110_Revision_de_Tecnicas_y_Tecnologias_para_la_Construccion_del_Producto_Minimo_Viable_en_el_Contexto_del_Emprendimiento_Universitario",
+        "República Bolivariana de Venezuela. (2001, 28 de febrero). *Decreto con Fuerza de Ley sobre Mensajes de Datos y Firmas Electrónicas* (Decreto N.º 1.204). Gaceta Oficial N.º 37.148. https://conatel.gob.ve/wp-content/uploads/2024/08/PDF-Ley-sobre-Mensajes-de-Datos-y-Firmas-Electronicas.pdf",
+        "República Bolivariana de Venezuela. (2013, 17 de octubre). *Ley de Infogobierno*. Gaceta Oficial N.º 40.274.",
+        "Shneiderman, B., y Plaisant, C. (2005). *Designing the user interface: Strategies for effective human-computer interaction* (4.ª ed.). Pearson Addison-Wesley.",
+        "Sommerville, I. (2016). *Software engineering* (10.ª ed.). Pearson.",
+        "Spinellis, D. (2012). Git. *IEEE Software, 29*(3), 100–101. https://doi.org/10.1109/MS.2012.61",
+        "Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. *Cognitive Science, 12*(2), 257–285. https://doi.org/10.1207/s15516709cog1202_4",
+        "Torres, J., Riera, R., y Darder, J. (2026). *GitPlayground: Aprende Git interactivo* [Recurso educativo digital]. https://git-playground-ucv.netlify.app",
+        "UNESCO. (2019). *Recomendación sobre los recursos educativos abiertos (REA)*. https://unesdoc.unesco.org/ark:/48223/pf0000373755",
+        "VoidZero. (2026a). *Vite* (Versión 8.0.14) [Software]. https://vite.dev",
+        "VoidZero. (2026b). *Vitest* (Versión 5.0.3) [Software]. https://vitest.dev",
+        "Vygotsky, L. S. (1978). *Mind in society: The development of higher psychological processes*. Harvard University Press.",
+        "Wieluch, S., y Morr, S. (s.f.). *Oh My Git!* [Videojuego de código abierto]. Recuperado el 5 de octubre de 2026, de https://ohmygit.org",
+        "Wood, D., Bruner, J. S., y Ross, G. (1976). The role of tutoring in problem solving. *Journal of Child Psychology and Psychiatry, 17*(2), 89–100. https://doi.org/10.1111/j.1469-7610.1976.tb00381.x",
+        "Woolf, B. P. (2009). *Building intelligent interactive tutors: Student-centered strategies for revolutionizing e-learning*. Morgan Kaufmann.",
+        "World Wide Web Consortium. (2023). *Web Content Accessibility Guidelines (WCAG) 2.2* [Recomendación W3C]. https://www.w3.org/TR/WCAG22/",
+        "Zagalsky, A., Feliciano, J., Storey, M.-A., Zhao, Y., y Wang, W. (2015). The emergence of GitHub as a collaborative platform for education. En *Proceedings of the 18th ACM Conference on Computer Supported Cooperative Work & Social Computing* (pp. 1906–1917). Association for Computing Machinery. https://doi.org/10.1145/2675133.2675284",
     ]
-
     for ref in refs:
         p_ref = doc.add_paragraph()
+        # Sangría francesa de 1,27 cm.
         p_ref.paragraph_format.left_indent = Inches(0.5)
         p_ref.paragraph_format.first_line_indent = Inches(-0.5)
-        p_ref.paragraph_format.space_before = Pt(3)
-        p_ref.paragraph_format.space_after = Pt(4)
-        p_ref.paragraph_format.line_spacing = 1.15
-        r_ref = p_ref.add_run(ref)
-        r_ref.font.name = "Arial"
-        r_ref.font.size = Pt(9.5)
-        r_ref.font.color.rgb = BODY_COLOR
+        for k, trozo in enumerate(ref.split("*")):
+            if trozo:
+                p_ref.add_run(trozo).italic = k % 2 == 1
+
+    formato_apa(doc, SIN_SANGRIA)
 
     salida = os.path.join(HERE, NOMBRE + ".docx")
     doc.save(salida)

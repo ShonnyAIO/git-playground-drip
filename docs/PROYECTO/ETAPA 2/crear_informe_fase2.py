@@ -10,6 +10,7 @@ from docx.oxml.ns import qn, nsdecls
 import os
 import re
 import docx.text.paragraph
+import docx.opc.constants
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -99,6 +100,29 @@ def _fuente(par, size):
         r._element.get_or_add_rPr().get_or_add_rFonts().set(qn('w:eastAsia'), "Times New Roman")
         r.font.size = Pt(size)
         r.font.color.rgb = RGBColor(0, 0, 0)
+
+
+def _enlace(par, url):
+    """Agrega `url` como hipervínculo activo (Times New Roman 12, negro y subrayado)."""
+    rid = par.part.relate_to(url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+    link = OxmlElement('w:hyperlink')
+    link.set(qn('r:id'), rid)
+    run = OxmlElement('w:r')
+    rpr = OxmlElement('w:rPr')
+    fonts = OxmlElement('w:rFonts')
+    for attr in ('w:ascii', 'w:hAnsi', 'w:cs', 'w:eastAsia'):
+        fonts.set(qn(attr), "Times New Roman")
+    rpr.append(fonts)
+    for tag, val in (('w:color', '000000'), ('w:sz', '24'), ('w:u', 'single')):
+        el = OxmlElement(tag)
+        el.set(qn('w:val'), val)
+        rpr.append(el)
+    run.append(rpr)
+    texto = OxmlElement('w:t')
+    texto.text = url
+    run.append(texto)
+    link.append(run)
+    par._p.append(link)
 
 
 def _citas(par):
@@ -241,6 +265,8 @@ def create_document():
         "19 de octubre de 2026",
     ]:
         add_p(linea, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p_mvp = add_p("Prototipo (MVP): ", align=WD_ALIGN_PARAGRAPH.CENTER)
+    _enlace(p_mvp, "https://git-playground-ucv.netlify.app/")
 
     doc.add_page_break()
     add_h1("Contenido")

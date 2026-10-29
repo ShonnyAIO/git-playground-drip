@@ -90,7 +90,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
       <header className="top-bar">
         <div>
           <h2 style={{ fontSize: '2rem', fontWeight: 800, background: 'linear-gradient(135deg, var(--text-primary), var(--primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Hola, Desarrollador 👋
+            Hola, Futuro Programador 👋
           </h2>
           <p style={{ marginTop: '0.25rem' }}>Bienvenido a tu estación de entrenamiento y simulación interactiva de Git.</p>
         </div>

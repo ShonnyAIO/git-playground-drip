@@ -138,7 +138,7 @@ export default function Dashboard({ setCurrentTab, progress, xp, level, badges }
             </h3>
             <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1rem' }}>
               <strong>Tu Rol:</strong> Eres un Ingeniero de Software recién incorporado al equipo. 
-              Tus compañeros <strong>Carlos, Ricardo y Javier</strong> han estado subiendo código a lo loco: ramas rotas, 
+              Tus compañeros <strong>Jonathan, Ricardo y Javier</strong> han estado subiendo código a lo loco: ramas rotas, 
               commits sin sentido, conflictos bloqueantes en <code>main</code> y repositorios remotos totalmente desalineados. 
               Tu líder técnico te ha encargado la misión de ordenar el caos. Debes adentrarte en el core local, 
               sincronizar los cambios con la nube, resolver los choques en el editor y demostrar que dominas los flujos de trabajo profesionales.
